@@ -1,0 +1,39 @@
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 30px;
+  width: 85%;
+
+  &__input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid $main_blue;
+    height: 3em;
+    text-align: center;
+    font-size: 18px;
+    outline: none;
+
+    &:focus {
+      border-bottom: 2px solid $main_blue;
+    }
+  }
+
+  &__button {
+    width: 100%;
+    margin-top: 1em;
+    background-color: $main_orange;
+    height: 2.5em;
+    border: none;
+    box-shadow: 4px 4px 4px rgba(0,0,0,25%);
+    color: white;
+    font-size: 22px;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $main_orange_hover;
+    }
+  }
+}
