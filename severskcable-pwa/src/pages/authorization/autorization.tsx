@@ -5,7 +5,6 @@ function Autorization () {
     return (
         <div className="auth-page">
             <img src={companyLogo} className="auth-page__img" alt="logo"/>
-            <img src={companyLogo} className="auth-page__img" alt="logo"/>
             <AuthForm />
         </div>
     );
