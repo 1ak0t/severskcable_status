@@ -1,6 +1,8 @@
 @import "variables.scss";
-@import "pages/authorization/authorization.scss";
+@import "pages/authorization-page/authorization-page.scss";
 @import "components/auth-form/auth-form.scss";
+@import "components/bottom-menu/bottom-menu.scss";
+@import "components/machine/machine.scss";
 
 *,
 *::before,

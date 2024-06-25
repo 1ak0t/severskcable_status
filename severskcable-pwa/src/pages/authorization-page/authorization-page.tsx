@@ -1,7 +1,8 @@
 import companyLogo from '../../imgs/logo-main.svg';
 import AuthForm from "../../components/auth-form/auth-form";
+import './authorization-page.scss';
 
-function Autorization () {
+function AuthorizationPage () {
     return (
         <div className="auth-page">
             <img src={companyLogo} className="auth-page__img" alt="logo"/>
@@ -10,4 +11,4 @@ function Autorization () {
     );
 }
 
-export default Autorization;
+export default AuthorizationPage;
