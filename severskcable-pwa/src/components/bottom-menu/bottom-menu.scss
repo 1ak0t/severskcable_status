@@ -11,26 +11,17 @@
   &__button {
     border: 0;
     background-color: transparent;
-    padding: 0 30px;
+    padding: 0 10px;
     cursor: pointer;
     width: 40%;
   }
 
   &__main-button {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 134px;
-    height: 134px;
-    border-radius: 50%;
     border: none;
     background-color: $main_orange;
     color: white;
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    padding-top: 9px;
-    box-shadow: 0 -3px 8px rgba(0,0,0,25%);
   }
 }
