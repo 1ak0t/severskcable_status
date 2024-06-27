@@ -1,4 +1,4 @@
-import { useForm, SubmitHandler } from 'react-hook-form';
+//import { useForm, SubmitHandler } from 'react-hook-form';
 
 const Machines: any = {
     mgv: "МГВ",
@@ -15,16 +15,16 @@ interface IFormInput {
 }
 
 function BreakForm() {
-    const {
-        register,
-        handleSubmit,
-        formState: {errors}
-    } = useForm<IFormInput>()
-
-    const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data)
+    // const {
+    //     register,
+    //     handleSubmit,
+    //     formState: {errors}
+    // } = useForm<IFormInput>()
+    //
+    // const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data)
 
     return(
-        <form className="break-form" onSubmit={handleSubmit(onSubmit)}>
+        <form className="break-form">
             <input type="submit"/>
         </form>
     );
