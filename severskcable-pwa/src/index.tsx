@@ -4,13 +4,21 @@ import './index.scss';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import App from "./App";
+import {Provider} from "react-redux";
+import {store} from "./store";
+import {getState} from "./store/actions";
+import {initialStateMock} from "./mocks";
+
+store.dispatch(getState(initialStateMock));
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+      <Provider store={store}>
+          <App />
+      </Provider>
   </React.StrictMode>
 );
 

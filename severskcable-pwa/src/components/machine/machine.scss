@@ -1,36 +1,38 @@
 .machine {
   width: 100%;
-  background-color: white;
   border-radius: 8px;
-  box-shadow: 3px 3px 5px $work;
-  border: 1px solid $work;
-  height: 65px;
-  padding: 0 20px;
+  box-shadow: 3px 3px 5px $work-border;
+  border: 1px solid $work-border;
+  padding: 20px 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  color: $work;
+  justify-content: center;
+  row-gap: 15px;
+  background-color: $work;
   cursor: pointer;
 
   &--not-use {
-    color: $not-use;
-    box-shadow: 3px 3px 5px $not-use;
-    border: 1px solid $not-use;
+    background-color: $not-use;
+    box-shadow: 3px 3px 5px $not-use-border;
+    border: 1px solid $not-use-border;
   }
 
   &--wrong {
-    color: $wrong;
-    box-shadow: 3px 3px 5px $wrong;
-    border: 1px solid $wrong;
+    background-color: $wrong;
+    box-shadow: 3px 3px 5px $wrong-border;
+    border: 1px solid $wrong-border;
   }
 
   &__name {
-    font-size: 30px;
+    font-size: 25px;
     font-weight: bold;
+    color: white;
   }
 
   &__status {
     font-size: 16px;
-    text-align: right;
+    text-align: center;
+    color: white;
   }
 }
