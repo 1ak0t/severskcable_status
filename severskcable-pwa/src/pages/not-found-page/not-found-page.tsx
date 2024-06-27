@@ -1,6 +1,13 @@
+import {Helmet} from "react-helmet-async";
+
 function NotFoundPage () {
     return(
-        <h1>Страница не найдена</h1>
+        <>
+            <Helmet>
+                <title>Страница не найдена</title>
+            </Helmet>
+            <h1>Страница не найдена</h1>
+        </>
     );
 }
 
