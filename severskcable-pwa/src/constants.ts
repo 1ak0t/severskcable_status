@@ -1,7 +1,8 @@
 export enum AppRoutes {
     Login = '/login',
     Root = '/',
-    BreakRegistration = '/new-break'
+    BreakRegistration = '/new-break',
+    RepairRegistration = '/repair'
 }
 
 export enum MachinesStatus {

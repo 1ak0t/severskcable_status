@@ -8,7 +8,7 @@ function BottomMenu () {
     return(
         <>
             {isMainButtonClicked && <div className="sub-menu">
-                <Link to={AppRoutes.BreakRegistration} className="sub-menu__button sub-menu__button--work">Завершить ремонт</Link>
+                <Link to={AppRoutes.RepairRegistration} className="sub-menu__button sub-menu__button--work">Завершить ремонт</Link>
                 <Link to={AppRoutes.BreakRegistration} className="sub-menu__button sub-menu__button--wrong">Сообщить о поломке</Link>
             </div>}
             <div className="bottom-menu">

@@ -6,6 +6,7 @@ import NotFoundPage from "./pages/not-found-page/not-found-page";
 import BreakRegisterPage from "./pages/break-register-page/break-register-page";
 import PrivateRoute from "./components/private-route/private-route";
 import {HelmetProvider} from "react-helmet-async";
+import RepairRegisterPage from "./pages/repair-register-page/repair-register-page";
 
 function App () {
     return(
@@ -29,6 +30,14 @@ function App () {
                         element={
                             <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
                                 <BreakRegisterPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoutes.RepairRegistration}
+                        element={
+                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                                <RepairRegisterPage />
                             </PrivateRoute>
                         }
                     />

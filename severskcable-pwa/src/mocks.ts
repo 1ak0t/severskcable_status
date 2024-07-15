@@ -36,7 +36,18 @@ export const initialStateMock: InitialStateType = {
             name: 'МСВ',
             currentRepairId: null,
             status: MachinesStatus.Work,
-            repairs: [],
+            repairs: [
+                {
+                    id: "1",
+                    breakName: 'Ролики',
+                    operator: 'Оператор №1',
+                    breakDate: '2024-06-23 19:34',
+                    executor: 'Инженер №1',
+                    repairDate: '2024-06-24 12:16',
+                    repairDuration: '16:23',
+                    comment: 'Не исправно было одно. Поменял на другое'
+                }
+            ],
             repairTypes: []
         },
         {
