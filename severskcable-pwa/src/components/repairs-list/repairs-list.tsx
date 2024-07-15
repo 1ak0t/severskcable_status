@@ -9,12 +9,15 @@ function RepairsList() {
         if (machine.repairs.length > 0) {
             machine.repairs.map(repair => repairList.push({machine: machine.name, repair: repair}));
         }
+        return true;
     });
     console.log(repairList);
 
     return (
         <section className="repair-list">
-            {repairList.map(repair => <RepairElement repair={repair} key={repair.repair.breakName}/>)}
+            {repairList.map(repair => {
+                return <RepairElement repair={repair} key={repair.repair.breakName}/>;
+            })}
         </section>
     );
 }
