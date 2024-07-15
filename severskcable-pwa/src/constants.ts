@@ -1,7 +1,8 @@
 export enum AppRoutes {
     Login = '/login',
     Root = '/',
-    BreakRegistration = '/new-break'
+    BreakRegistration = '/new-break',
+    RepairRegistration = '/repair'
 }
 
 export enum MachinesStatus {
@@ -15,3 +16,5 @@ export enum AuthorizationStatus {
     NoAuth = 'NO_AUTH',
     Unknown = 'UNKNOWN',
 }
+
+export const Priority = ['Высокий - Неработает', 'Средний - Работает нештатно','Низкий - Требует внимания'];
