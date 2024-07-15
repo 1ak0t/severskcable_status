@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-//import { useForm, SubmitHandler } from 'react-hook-form';
-=======
 import { useForm, SubmitHandler } from 'react-hook-form';
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {OptionTypes} from "../../types/types";
@@ -10,37 +7,28 @@ import {Priority} from "../../constants";
 import CreatableSelect from "react-select/creatable";
 import {setNewRepair} from "../../store/actions";
 import dayjs from "dayjs";
->>>>>>> Forms
 
-// const Machines: any = {
-//     mgv: "МГВ",
-//     mtv: "МТВ",
-//     kel701: "КЭЛ 70/1",
-//     kel702: "КЭЛ 70/2",
-//     kel90: "КЭЛ 90",
-//     bm: "БМ",
-//     mst: "МСТ"
-// };
-//
-// interface IFormInput {
-//     machine: typeof Machines,
-// }
+const Machines: any = {
+    mgv: "МГВ",
+    mtv: "МТВ",
+    kel701: "КЭЛ 70/1",
+    kel702: "КЭЛ 70/2",
+    kel90: "КЭЛ 90",
+    bm: "БМ",
+    mst: "МСТ"
+};
+
+interface IFormInput {
+    machine: typeof Machines,
+}
 
 function BreakForm() {
-<<<<<<< HEAD
-    // const {
-    //     register,
-    //     handleSubmit,
-    //     formState: {errors}
-    // } = useForm<IFormInput>()
-    //
-    // const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data)
+    const {,
+        handleSubmit,
+        formState: {errors}
+    } = useForm<IFormInput>()
 
-    return(
-        <form className="break-form">
-            <input type="submit"/>
-        </form>
-=======
+    const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data)
     const {
         handleSubmit,
     } = useForm<IFormInput>();
@@ -172,7 +160,6 @@ function BreakForm() {
                 <span className="break-form__data">{dayjs().format("DD.MM.YYYY HH:mm").toString()}</span>
             </div>
         </>
->>>>>>> Forms
     );
 }
 
