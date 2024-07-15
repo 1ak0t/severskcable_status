@@ -1,7 +1,6 @@
 import './status-page.scss';
 import BottomMenu from "../../components/bottom-menu/bottom-menu";
 import Machine from "../../components/machine/machine";
-import {MachinesStatus} from "../../constants";
 import {Helmet} from "react-helmet-async";
 import {useAppSelector} from "../../hooks";
 

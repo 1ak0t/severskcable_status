@@ -15,3 +15,5 @@ export enum AuthorizationStatus {
     NoAuth = 'NO_AUTH',
     Unknown = 'UNKNOWN',
 }
+
+export const Priority = ['Высокий - Неработает', 'Средний - Работает нештатно','Низкий - Требует внимания'];

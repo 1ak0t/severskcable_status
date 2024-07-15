@@ -2,7 +2,7 @@ import {InitialStateType} from "./types/initialState.type";
 import {MachinesStatus} from "./constants";
 
 export const initialStateMock: InitialStateType = {
-    currentUser: 'Test Person',
+    currentUser: 'Игорь Кот',
     machines: [
         {
             name: 'МГВ',
@@ -30,7 +30,7 @@ export const initialStateMock: InitialStateType = {
                     comment: ''
                 }
             ],
-            repairTypes: ['Ролики, Раскладчик, ПО']
+            repairTypes: ['Ролики', 'Раскладчик', 'ПО']
         },
         {
             name: 'МСВ',
