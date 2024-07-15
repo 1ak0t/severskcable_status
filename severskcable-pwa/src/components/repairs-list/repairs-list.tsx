@@ -3,7 +3,7 @@ import {RepairElementType} from "../../types/types";
 import RepairElement from "../repair-element/repair-element";
 
 function RepairsList() {
-    const {machines, currentUser} = useAppSelector(state => state);
+    const {machines} = useAppSelector(state => state);
     const repairList: RepairElementType[] = [];
     machines.map(machine => {
         if (machine.repairs.length > 0) {
@@ -14,7 +14,7 @@ function RepairsList() {
 
     return (
         <section className="repair-list">
-            {repairList.map(repair => <RepairElement repair={repair} /> )}
+            {repairList.map(repair => <RepairElement repair={repair} key={repair.repair.breakName}/>)}
         </section>
     );
 }

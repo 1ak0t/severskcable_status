@@ -24,10 +24,7 @@ interface IFormInput {
 
 function BreakForm() {
     const {
-        register,
         handleSubmit,
-        formState: {errors},
-        control
     } = useForm<IFormInput>();
 
     const dispatch = useAppDispatch();

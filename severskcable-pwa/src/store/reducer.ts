@@ -1,7 +1,6 @@
 import {InitialStateType} from "../types/initialState.type";
 import {createReducer} from "@reduxjs/toolkit";
 import {getState, setNewRepair} from "./actions";
-import machine from "../components/machine/machine";
 
 const initialState: InitialStateType = {
     currentUser: '',
