@@ -23,12 +23,6 @@ interface IFormInput {
 }
 
 function BreakForm() {
-    const {,
-        handleSubmit,
-        formState: {errors}
-    } = useForm<IFormInput>()
-
-    const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data)
     const {
         handleSubmit,
     } = useForm<IFormInput>();
@@ -71,12 +65,12 @@ function BreakForm() {
         const findMachine = machines.find(machine => machine.name === newValue.value);
         if (findMachine) {
             const list: OptionTypes[] = [];
-           findMachine.repairTypes.map(type => list.push({value: type, label: type}));
-           setRepairList(list);
-           setIsMachineSelected(false);
-           if (list.length > 0) {
-               setIsOpenRepairList(true);
-           }
+            findMachine.repairTypes.map(type => list.push({value: type, label: type}));
+            setRepairList(list);
+            setIsMachineSelected(false);
+            if (list.length > 0) {
+                setIsOpenRepairList(true);
+            }
         }
     }
 
