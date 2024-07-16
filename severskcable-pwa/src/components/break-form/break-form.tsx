@@ -1,33 +1,18 @@
-import { useForm, SubmitHandler } from 'react-hook-form';
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {OptionTypes} from "../../types/types";
+import {NewBreakType, OptionTypes} from "../../types/types";
 import Select from "react-select";
 import {useState} from "react";
-import {Priority} from "../../constants";
+import {AppRoutes, Priority} from "../../constants";
 import CreatableSelect from "react-select/creatable";
-import {setNewRepair} from "../../store/actions";
+import {setNewBreak, setNewRepairType} from "../../store/actions";
 import dayjs from "dayjs";
-
-const Machines: any = {
-    mgv: "МГВ",
-    mtv: "МТВ",
-    kel701: "КЭЛ 70/1",
-    kel702: "КЭЛ 70/2",
-    kel90: "КЭЛ 90",
-    bm: "БМ",
-    mst: "МСТ"
-};
-
-interface IFormInput {
-    machine: typeof Machines,
-}
+import {nanoid} from "@reduxjs/toolkit";
+import {Navigate, useNavigate} from "react-router-dom";
+import {getPriorityNumber} from "../../helpers/helpers";
 
 function BreakForm() {
-    const {
-        handleSubmit,
-    } = useForm<IFormInput>();
-
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const {machines, currentUser} = useAppSelector(state => state);
     const [currentMachine, setCurrentMachine] = useState('');
@@ -96,7 +81,7 @@ function BreakForm() {
     }
 
     const onCreateRepair = (newRepair: string) => {
-        dispatch(setNewRepair({machine: currentMachine, repair: newRepair}));
+        dispatch(setNewRepairType({machine: currentMachine, repair: newRepair}));
         const newList = repairList;
         newList.push({value: newRepair, label: newRepair});
         setRepairList(newList);
@@ -109,11 +94,23 @@ function BreakForm() {
         setIsOpenPriorityList(true);
     }
 
-    const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data);
+    const onBreakSubmit = () => {
+        const data: NewBreakType = {
+            id: nanoid(),
+            machine: currentMachine,
+            breakName: currentRepair,
+            priority: getPriorityNumber(currentPriority),
+            operator: currentUser,
+            breakDate: dayjs().format('YYYY-MM-DD HH:mm').toString(),
+        }
+
+        dispatch(setNewBreak(data));
+        navigate(AppRoutes.Root);
+    };
 
     return(
         <>
-            <form className="break-form" onSubmit={handleSubmit(onSubmit)}>
+            <div className="break-form">
                 <label>Выберите оборудование</label>
                 <Select
                     options={machineList}
@@ -121,6 +118,7 @@ function BreakForm() {
                     onChange={onChangeMachine}
                     value={getMachineValue()}
                     required={true}
+                    noOptionsMessage={() => 'Нет вариантов'}
 
                 />
                 <label>Выберите тип поломки или добавьте свой вариант</label>
@@ -134,6 +132,8 @@ function BreakForm() {
                     required={true}
                     onCreateOption={onCreateRepair}
                     onFocus={onRepairListFocus}
+                    noOptionsMessage={() => 'Нет вариантов'}
+                    formatCreateLabel={(userInput) => `Добавить: ${userInput}`}
                 />
                 <label>Укажите приоритет</label>
                 <Select
@@ -144,9 +144,10 @@ function BreakForm() {
                     onChange={onPriorityChange}
                     menuIsOpen={isOpenPriorityList}
                     required={true}
+                    noOptionsMessage={() => 'Нет вариантов'}
                 />
-                <button className="break-form__submit" type="submit">Отправить</button>
-            </form>
+                <button className="break-form__submit" type="submit" onClick={onBreakSubmit}>Отправить</button>
+            </div>
             <div className="break-form__result">
                 <span>Кем зарегистрирован:</span>
                 <span className="break-form__data">{currentUser}</span>

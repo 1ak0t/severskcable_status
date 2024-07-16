@@ -3,10 +3,11 @@
     breakName: string,
     operator: string,
     breakDate: string,
-    executor: string,
-    repairDate: string,
-    repairDuration: string,
-    comment: string
+    executor?: string,
+    repairDate?: string,
+    repairDuration?: string,
+    comment?: string,
+    priority: number
 }
 
 export type Machine = {

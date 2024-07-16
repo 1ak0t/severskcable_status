@@ -10,11 +10,20 @@ function RepairsList() {
             machine.repairs.map(repair => repairList.push({machine: machine.name, repair: repair}));
         }
     });
-    console.log(repairList);
 
     return (
         <section className="repair-list">
-            {repairList.map(repair => <RepairElement repair={repair} key={repair.repair.breakName}/>)}
+            {repairList
+            .sort(function (a,b) {
+                if (a.repair.priority > b.repair.priority) {
+                    return 1;
+                }
+                if (a.repair.priority < b.repair.priority) {
+                    return -1;
+                }
+                return 0;
+            })
+                .map(repair => <RepairElement repair={repair} key={repair.repair.breakName}/>)}
         </section>
     );
 }

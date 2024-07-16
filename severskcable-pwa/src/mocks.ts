@@ -17,7 +17,8 @@ export const initialStateMock: InitialStateType = {
                     executor: 'Инженер №1',
                     repairDate: '2024-06-24 12:16',
                     repairDuration: '16:23',
-                    comment: 'Не исправно было одно. Поменял на другое'
+                    comment: 'Не исправно было одно. Поменял на другое',
+                    priority: 1,
                 },
                 {
                     id: "2",
@@ -27,7 +28,8 @@ export const initialStateMock: InitialStateType = {
                     executor: '',
                     repairDate: '',
                     repairDuration: '',
-                    comment: ''
+                    comment: '',
+                    priority: 2,
                 }
             ],
             repairTypes: ['Ролики', 'Раскладчик', 'ПО']
@@ -45,7 +47,8 @@ export const initialStateMock: InitialStateType = {
                     executor: 'Инженер №1',
                     repairDate: '2024-06-24 12:16',
                     repairDuration: '16:23',
-                    comment: 'Не исправно было одно. Поменял на другое'
+                    comment: 'Не исправно было одно. Поменял на другое',
+                    priority: 3
                 }
             ],
             repairTypes: []

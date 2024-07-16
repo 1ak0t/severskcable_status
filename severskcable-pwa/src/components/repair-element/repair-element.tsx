@@ -1,4 +1,6 @@
 import {RepairElementType} from "../../types/types";
+import classNames from "classnames";
+import {RepairPriority} from "../../constants";
 
 type RepairElementProps = {
     repair: RepairElementType
@@ -6,7 +8,11 @@ type RepairElementProps = {
 
 function RepairElement({repair}: RepairElementProps) {
     return(
-        <article className="repair-element">
+        <article className={classNames(
+            'repair-element',
+            {'repair-element--medium-priority': repair.repair.priority === RepairPriority.Medium},
+            {'repair-element--low-priority': repair.repair.priority === RepairPriority.Low}
+        )}>
             <h2 className="repair-element__title">{repair.machine}</h2>
             <span>Поломка:</span>
             <span>{repair.repair.breakName}</span>
