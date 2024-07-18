@@ -1,4 +1,6 @@
- export type Repair = {
+import {MachinesStatus} from "../constants";
+
+export type Repair = {
     id: string
     breakName: string,
     operator: string,
@@ -12,9 +14,9 @@
 }
 
 export type Machine = {
+    id: string,
     name: string,
-    status: string,
-    currentRepairId: string | null,
+    status: `${MachinesStatus}`,
     repairs: Repair[],
     repairTypes: string[]
 }

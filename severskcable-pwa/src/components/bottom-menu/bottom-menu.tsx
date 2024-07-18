@@ -10,7 +10,7 @@ function BottomMenu () {
         {isMainButtonClicked && <>
             <div className="bottom-menu__blur" onClick={() => setMainButtonClicked(!isMainButtonClicked)}></div>
             <div className="sub-menu">
-                <Link to={AppRoutes.RepairRegistration} className="sub-menu__button sub-menu__button--work">Завершить
+                <Link to={AppRoutes.BreaksList} className="sub-menu__button sub-menu__button--work">Завершить
                     ремонт</Link>
                 <Link to={AppRoutes.BreakRegistration} className="sub-menu__button sub-menu__button--wrong">Сообщить
                     о поломке</Link>

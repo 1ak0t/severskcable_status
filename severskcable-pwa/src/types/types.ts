@@ -1,4 +1,5 @@
 import {Repair} from "./initialState.type";
+import {MachinesStatus} from "../constants";
 
 export interface OptionTypes {
     value: string;
@@ -23,4 +24,9 @@ export type NewBreakType = {
     operator: string,
     breakDate: string,
     status: boolean
+}
+
+export type SetMachineStatusActionType = {
+    machine: string,
+    status: `${MachinesStatus}`
 }

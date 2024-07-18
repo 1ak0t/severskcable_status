@@ -27,4 +27,12 @@
     font-size: 25px;
     font-weight: bold;
   }
+
+  &__details {
+    display: block;
+  }
+
+  &__details--hidden {
+    display: block;
+  }
 }

@@ -1,13 +1,14 @@
 import {InitialStateType} from "./types/initialState.type";
 import {MachinesStatus} from "./constants";
+import {nanoid} from "@reduxjs/toolkit";
 
 export const initialStateMock: InitialStateType = {
     currentUser: 'Игорь Кот',
     machines: [
         {
+            id: nanoid(),
             name: 'МГВ',
             status: MachinesStatus.Wrong,
-            currentRepairId: '2',
             repairs: [
                 {
                     id: "1",
@@ -37,8 +38,8 @@ export const initialStateMock: InitialStateType = {
             repairTypes: ['Ролики', 'Раскладчик', 'ПО']
         },
         {
+            id: nanoid(),
             name: 'МСВ',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [
                 {
@@ -57,134 +58,134 @@ export const initialStateMock: InitialStateType = {
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МТВ 1',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МТВ 2',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МТВ 3',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МТВ 4',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'Пасма 1',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'Пасма 2',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МДС 1',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МДС 2',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МДС 3',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МОС',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'КЭЛ70 1',
-            currentRepairId: null,
-            status: MachinesStatus.NotUse,
+            status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'КЭЛ70 2',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'КЭЛ90',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'МСТ',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'БМ',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'ПУ-1000',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'ПУ-630',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'Шпильконарезной',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []
         },
         {
+            id: nanoid(),
             name: 'Отрезной станок',
-            currentRepairId: null,
             status: MachinesStatus.Work,
             repairs: [],
             repairTypes: []

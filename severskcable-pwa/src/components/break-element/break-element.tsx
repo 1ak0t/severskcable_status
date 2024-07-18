@@ -7,6 +7,7 @@ type RepairElementProps = {
 }
 
 function BreakElement({repair}: RepairElementProps) {
+
     return(
         <article className={classNames(
             'repair-element',
@@ -20,6 +21,18 @@ function BreakElement({repair}: RepairElementProps) {
             <span>{repair.repair.operator}</span>
             <span>Дата:</span>
             <span>{repair.repair.breakDate}</span>
+            {repair.repair.status &&
+                <>
+                    <span>Выполнил ремонт:</span>
+                    <span>{repair.repair.executor}</span>
+                    <span>Дата завершения ремонта:</span>
+                    <span>{repair.repair.repairDate}</span>
+                    <span>Длительность ремонта:</span>
+                    <span>{repair.repair.repairDuration}</span>
+                    <span>Что проделано:</span>
+                    <span>{repair.repair.comment}</span>
+                </>
+            }
         </article>
     );
 }
