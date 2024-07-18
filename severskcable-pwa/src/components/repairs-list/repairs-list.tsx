@@ -1,6 +1,6 @@
 import {useAppSelector} from "../../hooks";
 import {RepairElementType} from "../../types/types";
-import RepairElement from "../repair-element/repair-element";
+import BreakElement from "../break-element/break-element";
 
 function RepairsList() {
     const {machines} = useAppSelector(state => state);
@@ -16,7 +16,7 @@ function RepairsList() {
     return (
         <section className="repair-list">
             {repairList.map(repair => {
-                return <RepairElement repair={repair} key={repair.repair.breakName}/>;
+                return <BreakElement repair={repair} key={repair.repair.breakName}/>;
             })}
         </section>
     );

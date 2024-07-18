@@ -9,7 +9,7 @@ function GoodSend() {
         setTimeout(() => {
             navigate(AppRoutes.Root);
         }, 2000)
-    }, []);
+    }, [navigate]);
 
     return (
         <div className="good-send-page">
