@@ -14,3 +14,13 @@ export type RepairElementType = {
     machine: string,
     repair: Repair,
 }
+
+export type NewBreakType = {
+    id: string,
+    machine: string,
+    breakName: string,
+    priority: number,
+    operator: string,
+    breakDate: string,
+    status: boolean
+}
