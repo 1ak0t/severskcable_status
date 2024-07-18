@@ -1,6 +1,6 @@
-import {InitialStateType} from "../types/initialState.type";
+import {InitialStateType, Repair} from "../types/initialState.type";
 import {createReducer} from "@reduxjs/toolkit";
-import {getState} from "./actions";
+import {getState, setNewBreak, setNewRepairType} from "./actions";
 
 const initialState: InitialStateType = {
     currentUser: '',
@@ -12,6 +12,22 @@ const reducer = createReducer(initialState, builder => {
         .addCase(getState, (state, action) => {
             state.currentUser = action.payload.currentUser;
             state.machines =action.payload.machines;
+        })
+        .addCase(setNewRepairType, (state, action) => {
+            const currentMachineIndex = state.machines.findIndex(machine => machine.name === action.payload.machine);
+            state.machines[currentMachineIndex].repairTypes.push(action.payload.repair);
+        })
+        .addCase(setNewBreak, (state, action) => {
+            const currentMachineIndex = state.machines.findIndex(machine => machine.name === action.payload.machine);
+            const newBreak: Repair = {
+                id: action.payload.id,
+                breakName: action.payload.breakName,
+                priority: action.payload.priority,
+                operator: action.payload.operator,
+                breakDate: action.payload.breakDate,
+                status: action.payload.status
+            }
+            state.machines[currentMachineIndex].repairs.push(newBreak);
         })
 })
 

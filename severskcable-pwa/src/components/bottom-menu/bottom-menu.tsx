@@ -7,13 +7,20 @@ function BottomMenu () {
 
     return(
         <>
-            {isMainButtonClicked && <div className="sub-menu">
-                <Link to={AppRoutes.BreakRegistration} className="sub-menu__button sub-menu__button--work">Завершить ремонт</Link>
-                <Link to={AppRoutes.BreakRegistration} className="sub-menu__button sub-menu__button--wrong">Сообщить о поломке</Link>
-            </div>}
+        {isMainButtonClicked && <>
+            <div className="bottom-menu__blur" onClick={() => setMainButtonClicked(!isMainButtonClicked)}></div>
+            <div className="sub-menu">
+                <Link to={AppRoutes.RepairRegistration} className="sub-menu__button sub-menu__button--work">Завершить
+                    ремонт</Link>
+                <Link to={AppRoutes.BreakRegistration} className="sub-menu__button sub-menu__button--wrong">Сообщить
+                    о поломке</Link>
+            </div>
+        </>}
             <div className="bottom-menu">
                 <Link to={AppRoutes.Root} className="bottom-menu__button">Статусы<br></br>оборудования</Link>
-                <button className="bottom-menu__main-button" onClick={() => setMainButtonClicked(!isMainButtonClicked)}>Сообщить о поломке/ремонте</button>
+                <button className="bottom-menu__main-button"
+                        onClick={() => setMainButtonClicked(!isMainButtonClicked)}>Сообщить о поломке/ремонте
+                </button>
                 <button className="bottom-menu__button">Уведомления</button>
             </div>
         </>

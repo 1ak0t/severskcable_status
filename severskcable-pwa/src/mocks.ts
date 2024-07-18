@@ -2,7 +2,7 @@ import {InitialStateType} from "./types/initialState.type";
 import {MachinesStatus} from "./constants";
 
 export const initialStateMock: InitialStateType = {
-    currentUser: 'Test Person',
+    currentUser: 'Игорь Кот',
     machines: [
         {
             name: 'МГВ',
@@ -17,7 +17,9 @@ export const initialStateMock: InitialStateType = {
                     executor: 'Инженер №1',
                     repairDate: '2024-06-24 12:16',
                     repairDuration: '16:23',
-                    comment: 'Не исправно было одно. Поменял на другое'
+                    comment: 'Не исправно было одно. Поменял на другое',
+                    priority: 1,
+                    status: true
                 },
                 {
                     id: "2",
@@ -27,16 +29,31 @@ export const initialStateMock: InitialStateType = {
                     executor: '',
                     repairDate: '',
                     repairDuration: '',
-                    comment: ''
+                    comment: '',
+                    priority: 2,
+                    status: false
                 }
             ],
-            repairTypes: ['Ролики, Раскладчик, ПО']
+            repairTypes: ['Ролики', 'Раскладчик', 'ПО']
         },
         {
             name: 'МСВ',
             currentRepairId: null,
             status: MachinesStatus.Work,
-            repairs: [],
+            repairs: [
+                {
+                    id: "1",
+                    breakName: 'Ролики',
+                    operator: 'Оператор №1',
+                    breakDate: '2024-06-23 19:34',
+                    executor: 'Инженер №1',
+                    repairDate: '2024-06-24 12:16',
+                    repairDuration: '16:23',
+                    comment: 'Не исправно было одно. Поменял на другое',
+                    priority: 3,
+                    status: true
+                }
+            ],
             repairTypes: []
         },
         {

@@ -1,0 +1,30 @@
+.repair-element {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  border: 1px solid $wrong-border;
+  border-radius: 8px;
+  box-shadow: 3px 3px 5px $wrong-border;
+  background-color: $wrong;
+  width: 100%;
+  padding: 20px;
+  color: white;
+  cursor: pointer;
+
+  &--medium-priority {
+    background-color: $orange-light;
+    border: 1px solid $main_orange_hover;
+    box-shadow: 3px 3px 5px $main_orange_hover;
+  }
+
+  &--low-priority {
+    background-color: $not-use;
+    border: 1px solid $not-use-border;
+    box-shadow: 3px 3px 5px $not-use-border;
+  }
+
+  &__title {
+    font-size: 25px;
+    font-weight: bold;
+  }
+}

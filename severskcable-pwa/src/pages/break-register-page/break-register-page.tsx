@@ -6,9 +6,9 @@ function BreakRegisterPage() {
     return(
         <div className="breaking-page">
             <Helmet>
-                <title>Сообщить о поломке/ремонте</title>
+                <title>Сообщить о поломке</title>
             </Helmet>
-            <h1 className="breaking-page__title">Сообщить о поломке/ремонте</h1>
+            <h1 className="breaking-page__title">Сообщить о поломке</h1>
             <BreakForm />
             <BottomMenu />
         </div>
