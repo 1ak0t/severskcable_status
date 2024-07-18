@@ -102,7 +102,7 @@ function BreakForm() {
             priority: getPriorityNumber(currentPriority),
             operator: currentUser,
             breakDate: dayjs().format('YYYY-MM-DD HH:mm').toString(),
-            status: true
+            status: false
         }
 
         dispatch(setNewBreak(data));

@@ -15,11 +15,10 @@ function StatusPage () {
             <h1 className="status-page__title">Статусы оборудования</h1>
             <section className="status-page__machines">
                 {machines.map(machine => {
-                    if(machine.currentRepairId) {
-                        const currentRepair = machine.repairs.find(repair => repair.id === machine.currentRepairId);
-                        return <Machine name={machine.name} status={machine.status} currentRepairDuration={currentRepair}/>;
+                    if(machine.repairs.length > 0 && machine.repairs.find(repair => !repair.status)) {
+                        return <Machine name={machine.name} status={machine.status} currentRepairs={machine.repairs} id={machine.id} key={machine.id}/>;
                     } else {
-                        return <Machine name={machine.name} status={machine.status}/>;
+                        return <Machine name={machine.name} status={machine.status} id={machine.id} key={machine.id}/>;
                     }
 
                 })}

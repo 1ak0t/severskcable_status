@@ -6,8 +6,9 @@ import NotFoundPage from "./pages/not-found-page/not-found-page";
 import BreakRegisterPage from "./pages/break-register-page/break-register-page";
 import PrivateRoute from "./components/private-route/private-route";
 import {HelmetProvider} from "react-helmet-async";
-import RepairRegisterPage from "./pages/repair-register-page/repair-register-page";
+import BreaksListPage from "./pages/breaks-list-page/breaks-list-page";
 import GoodSend from "./pages/good-send/good-send";
+import MachineBreaksPage from "./pages/machine-breaks-page/machine-breaks-page";
 
 function App () {
     return(
@@ -35,13 +36,19 @@ function App () {
                         }
                     />
                     <Route
-                        path={AppRoutes.RepairRegistration}
+                        path={AppRoutes.BreaksList}
                         element={
                             <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
-                                <RepairRegisterPage />
+                                <BreaksListPage />
                             </PrivateRoute>
                         }
                     />
+                    <Route path={AppRoutes.MachineBreaks}>
+                        <Route path=":machineId" element={
+                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                                <MachineBreaksPage />
+                            </PrivateRoute>} />
+                    </Route>
                     <Route
                         path={AppRoutes.GoodSend}
                         element={
