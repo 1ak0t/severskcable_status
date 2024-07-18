@@ -21,5 +21,6 @@ export type NewBreakType = {
     breakName: string,
     priority: number,
     operator: string,
-    breakDate: string
+    breakDate: string,
+    status: boolean
 }

@@ -6,7 +6,7 @@ type RepairElementProps = {
     repair: RepairElementType
 }
 
-function RepairElement({repair}: RepairElementProps) {
+function BreakElement({repair}: RepairElementProps) {
     return(
         <article className={classNames(
             'repair-element',
@@ -24,4 +24,4 @@ function RepairElement({repair}: RepairElementProps) {
     );
 }
 
-export default RepairElement;
+export default BreakElement;

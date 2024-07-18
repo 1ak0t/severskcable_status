@@ -7,7 +7,8 @@
     repairDate?: string,
     repairDuration?: string,
     comment?: string,
-    priority: number
+    priority: number,
+     status: boolean
 }
 
 export type Machine = {

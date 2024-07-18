@@ -24,7 +24,8 @@ const reducer = createReducer(initialState, builder => {
                 breakName: action.payload.breakName,
                 priority: action.payload.priority,
                 operator: action.payload.operator,
-                breakDate: action.payload.breakDate
+                breakDate: action.payload.breakDate,
+                status: action.payload.status
             }
             state.machines[currentMachineIndex].repairs.push(newBreak);
         })

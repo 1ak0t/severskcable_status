@@ -1,14 +1,16 @@
 import {useAppSelector} from "../../hooks";
 import {RepairElementType} from "../../types/types";
-import RepairElement from "../repair-element/repair-element";
+import BreakElement from "../break-element/break-element";
 
-function RepairsList() {
+function BreaksList() {
     const {machines} = useAppSelector(state => state);
     const repairList: RepairElementType[] = [];
     machines.map(machine => {
         if (machine.repairs.length > 0) {
-            machine.repairs.map(repair => repairList.push({machine: machine.name, repair: repair}));
+            machine.repairs.filter(repair => repair.status === true).map(repair => repairList.push({machine: machine.name, repair: repair}));
+            return true;
         }
+        return true;
     });
 
     return (
@@ -23,9 +25,9 @@ function RepairsList() {
                 }
                 return 0;
             })
-                .map(repair => <RepairElement repair={repair} key={repair.repair.breakName}/>)}
+                .map(repair => <BreakElement repair={repair} key={repair.repair.breakName}/>)}
         </section>
     );
 }
 
-export default RepairsList;
+export default BreaksList;

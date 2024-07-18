@@ -7,7 +7,7 @@ import CreatableSelect from "react-select/creatable";
 import {setNewBreak, setNewRepairType} from "../../store/actions";
 import dayjs from "dayjs";
 import {nanoid} from "@reduxjs/toolkit";
-import {Navigate, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {getPriorityNumber} from "../../helpers/helpers";
 
 function BreakForm() {
@@ -102,10 +102,11 @@ function BreakForm() {
             priority: getPriorityNumber(currentPriority),
             operator: currentUser,
             breakDate: dayjs().format('YYYY-MM-DD HH:mm').toString(),
+            status: true
         }
 
         dispatch(setNewBreak(data));
-        navigate(AppRoutes.Root);
+        navigate(AppRoutes.GoodSend);
     };
 
     return(

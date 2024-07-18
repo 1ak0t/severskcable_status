@@ -19,6 +19,7 @@ export const initialStateMock: InitialStateType = {
                     repairDuration: '16:23',
                     comment: 'Не исправно было одно. Поменял на другое',
                     priority: 1,
+                    status: true
                 },
                 {
                     id: "2",
@@ -30,6 +31,7 @@ export const initialStateMock: InitialStateType = {
                     repairDuration: '',
                     comment: '',
                     priority: 2,
+                    status: false
                 }
             ],
             repairTypes: ['Ролики', 'Раскладчик', 'ПО']
@@ -48,7 +50,8 @@ export const initialStateMock: InitialStateType = {
                     repairDate: '2024-06-24 12:16',
                     repairDuration: '16:23',
                     comment: 'Не исправно было одно. Поменял на другое',
-                    priority: 3
+                    priority: 3,
+                    status: true
                 }
             ],
             repairTypes: []
