@@ -7,7 +7,7 @@ export type Repair = {
     breakDate: string,
     executor?: string,
     repairDate?: string,
-    repairDuration?: string,
+    repairDuration?: number,
     comment?: string,
     priority: number,
      status: boolean
