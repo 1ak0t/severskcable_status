@@ -9,6 +9,7 @@ import {HelmetProvider} from "react-helmet-async";
 import BreaksListPage from "./pages/breaks-list-page/breaks-list-page";
 import GoodSend from "./pages/good-send/good-send";
 import MachineBreaksPage from "./pages/machine-breaks-page/machine-breaks-page";
+import RepairRegisterPage from "./pages/repair-register-page/repair-register-page";
 
 function App () {
     return(
@@ -47,6 +48,12 @@ function App () {
                         <Route path=":machineId" element={
                             <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
                                 <MachineBreaksPage />
+                            </PrivateRoute>} />
+                    </Route>
+                    <Route path={AppRoutes.RepairRegistration}>
+                        <Route path=":repairId" element={
+                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                                <RepairRegisterPage />
                             </PrivateRoute>} />
                     </Route>
                     <Route

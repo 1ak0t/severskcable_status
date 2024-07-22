@@ -5,12 +5,10 @@ import BreakElement from "../break-element/break-element";
 function BreaksList() {
     const {machines} = useAppSelector(state => state);
     const repairList: RepairElementType[] = [];
-    machines.map(machine => {
+    machines.forEach(machine => {
         if (machine.repairs.length > 0) {
-            machine.repairs.filter(repair => repair.status === true).map(repair => repairList.push({machine: machine.name, repair: repair}));
-            return true;
+            machine.repairs.filter(repair => repair.status === false).map(repair => repairList.push({machine: machine.name, repair: repair}));
         }
-        return true;
     });
 
     return (

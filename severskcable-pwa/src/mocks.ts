@@ -11,25 +11,25 @@ export const initialStateMock: InitialStateType = {
             status: MachinesStatus.Wrong,
             repairs: [
                 {
-                    id: "1",
+                    id: nanoid(),
                     breakName: 'Ролики',
                     operator: 'Оператор №1',
                     breakDate: '2024-06-23 19:34',
                     executor: 'Инженер №1',
                     repairDate: '2024-06-24 12:16',
-                    repairDuration: '16:23',
+                    repairDuration: 23,
                     comment: 'Не исправно было одно. Поменял на другое',
                     priority: 1,
                     status: true
                 },
                 {
-                    id: "2",
+                    id: nanoid(),
                     breakName: 'Раскладчик',
                     operator: 'Оператор №3',
                     breakDate: '2024-06-25 11:23',
                     executor: '',
                     repairDate: '',
-                    repairDuration: '',
+                    repairDuration: 0,
                     comment: '',
                     priority: 2,
                     status: false
@@ -43,13 +43,13 @@ export const initialStateMock: InitialStateType = {
             status: MachinesStatus.Work,
             repairs: [
                 {
-                    id: "1",
+                    id: nanoid(),
                     breakName: 'Ролики',
                     operator: 'Оператор №1',
                     breakDate: '2024-06-23 19:34',
                     executor: 'Инженер №1',
                     repairDate: '2024-06-24 12:16',
-                    repairDuration: '16:23',
+                    repairDuration: 22,
                     comment: 'Не исправно было одно. Поменял на другое',
                     priority: 3,
                     status: true
