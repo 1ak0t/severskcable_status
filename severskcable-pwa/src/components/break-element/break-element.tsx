@@ -1,6 +1,7 @@
 import {RepairElementType} from "../../types/types";
 import classNames from "classnames";
-import {RepairPriority} from "../../constants";
+import {AppRoutes, RepairPriority} from "../../constants";
+import {Link} from "react-router-dom";
 
 type RepairElementProps = {
     repair: RepairElementType
@@ -8,8 +9,10 @@ type RepairElementProps = {
 
 function BreakElement({repair}: RepairElementProps) {
 
+    const repairUrl = `${AppRoutes.RepairRegistration}/${repair.repair.id}`;
+
     return(
-        <article className={classNames(
+        <Link to={repairUrl} className={classNames(
             'repair-element',
             {'repair-element--medium-priority': repair.repair.priority === RepairPriority.Medium},
             {'repair-element--low-priority': repair.repair.priority === RepairPriority.Low}
@@ -33,7 +36,7 @@ function BreakElement({repair}: RepairElementProps) {
                     <span>{repair.repair.comment}</span>
                 </>
             }
-        </article>
+        </Link>
     );
 }
 
