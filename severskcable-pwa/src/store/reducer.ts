@@ -1,6 +1,7 @@
 import {InitialStateType, Repair} from "../types/initialState.type";
 import {createReducer} from "@reduxjs/toolkit";
 import {getState, setMachineStatus, setNewBreak, setNewRepairType, setRepair} from "./actions";
+import {MachinesStatus} from "../constants";
 
 const initialState: InitialStateType = {
     currentUser: '',
@@ -28,6 +29,7 @@ const reducer = createReducer(initialState, builder => {
                 status: action.payload.status
             }
             state.machines[currentMachineIndex].repairs.push(newBreak);
+            state.machines[currentMachineIndex].status = MachinesStatus.Wrong;
         })
         .addCase(setMachineStatus, (state, action) => {
             const currentMachineIndex = state.machines.findIndex(machine => machine.name === action.payload.machine);
@@ -37,6 +39,9 @@ const reducer = createReducer(initialState, builder => {
             const currentMachineId = state.machines.findIndex(machine => machine.repairs.find(repair => repair.id === action.payload.id));
             const currentRepairId  = state.machines[currentMachineId].repairs.findIndex(repair => repair.id === action.payload.id);
             state.machines[currentMachineId].repairs[currentRepairId] = action.payload;
+            if (!state.machines[currentMachineId].repairs.find(repair => repair.status === false)) {
+                state.machines[currentMachineId].status = MachinesStatus.Work;
+            }
         })
 })
 

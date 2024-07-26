@@ -5,11 +5,10 @@
   row-gap: 20px;
 
   &__result {
-    margin-top: 45px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    row-gap: 15px;
+    row-gap: 12px;
     align-self: flex-start;
     width: 100%;
   }
@@ -28,7 +27,7 @@
 
   &__submit {
     position: absolute;
-    bottom: 15%;
+    bottom: 13%;
     width: 86%;
     padding: 1em;
     background-color: $main_orange;
