@@ -26,8 +26,6 @@ function Machine({name, status, currentRepairs, id} : MachinePropsType) {
             }
             return 0;
         })
-        console.log(currentRepairs)
-        console.log(currentRepairsSorted)
         const breakDate = dayjs(currentRepairsSorted[0].breakDate);
         const durationMinutes = currentTime.diff(breakDate, 'minute');
         duration = `${Math.floor(durationMinutes/60)}:${durationMinutes % 24}`;
@@ -39,7 +37,7 @@ function Machine({name, status, currentRepairs, id} : MachinePropsType) {
             {'machine--wrong': status === MachinesStatus.Wrong}
         )}>
             <span className="machine__name">{name}</span>
-            {currentRepairs && <span className="machine__status">{status}<br></br>{(`Длительность - ${duration}`)}</span>}
+            {currentRepairs && <span className="machine__status">{status}<br></br>{(`Длительность - ${duration} ч`)}</span>}
         </Link>
     );
 }
