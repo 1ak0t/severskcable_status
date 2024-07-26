@@ -12,7 +12,12 @@ function BreakElement({repair}: RepairElementProps) {
     const repairUrl = `${AppRoutes.RepairRegistration}/${repair.repair.id}`;
 
     return(
-        <Link to={repairUrl} className={classNames(
+        <Link to={repairUrl} onClick={(event) => {
+            if (repair.repair.status === true)
+            {
+                event.preventDefault();
+            }
+        }} className={classNames(
             'repair-element',
             {'repair-element--medium-priority': repair.repair.priority === RepairPriority.Medium},
             {'repair-element--low-priority': repair.repair.priority === RepairPriority.Low}
