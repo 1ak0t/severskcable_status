@@ -13,7 +13,6 @@ type MachinePropsType = {
 }
 
 function Machine({name, status, currentRepairs, id} : MachinePropsType) {
-    const currentTime = dayjs();
     let duration = "";
     let repairStage: null | string = "Работает";
     const machineBreaksUrl = `${AppRoutes.MachineBreaks}/${id}`;
