@@ -2,38 +2,92 @@
   display: flex;
   flex-direction: column;
   row-gap: 5px;
-  border: 1px solid $wrong-border;
-  border-radius: 8px;
-  box-shadow: 3px 3px 5px $wrong-border;
-  background-color: $wrong;
+  box-shadow: 4px 4px 4px rgba(0,0,0,0.25);
+  background-color: white;
   width: 100%;
   padding: 20px;
-  color: white;
-  cursor: pointer;
+  color: #565656;
+  font-size: 12px;
   text-decoration: none;
+  position: relative;
+  margin: 20px 0;
+
+  &::before {
+    content: '';
+    width: 30px;
+    height: 30px;
+    background: url("../../imgs/icons/machine-icon/machine-wrong-icon.svg") center center;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+  }
 
   &--medium-priority {
-    background-color: $orange-light;
-    border: 1px solid $main_orange_hover;
-    box-shadow: 3px 3px 5px $main_orange_hover;
+    &::before {
+      background: url("../../imgs/icons/machine-icon/machine-warning-icon.svg") center center;
+    }
   }
 
   &--low-priority {
-    background-color: $not-use;
-    border: 1px solid $not-use-border;
-    box-shadow: 3px 3px 5px $not-use-border;
+    &::before {
+      background: url("../../imgs/icons/machine-icon/machine-inspection-icon.svg") center center;
+    }
   }
 
   &__title {
+    padding-left: 45px;
     font-size: 25px;
-    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #A6A6A6;
+    column-gap: 50px;
+
+    span:first-child {
+      font-weight: 600;
+    }
+
+    span:last-child {
+      text-align: right;
+    }
   }
 
   &__details {
+    font-size: 12px;
     display: block;
   }
 
   &__details--hidden {
     display: block;
+  }
+
+  &__button-wrapper {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+  }
+
+  &__button {
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+
+    &--success {
+      background-color: #94F35A;
+    }
+
+    &--reject {
+      background-color: #E07979;
+    }
+
+    &--inactive {
+      background-color: #c7c7c7;
+      cursor: no-drop;
+    }
   }
 }

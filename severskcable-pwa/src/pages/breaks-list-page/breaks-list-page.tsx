@@ -6,9 +6,9 @@ function BreaksListPage () {
     return (
         <div className="repair-registration-page">
             <Helmet>
-                <title>Завершить ремонт</title>
+                <title>Текущие поломки</title>
             </Helmet>
-            <h1 className="repair-registration-page__title">Завершить ремонт</h1>
+            <h1 className="repair-registration-page__title">Текущие поломки</h1>
             <BreaksList />
             <BottomMenu />
         </div>

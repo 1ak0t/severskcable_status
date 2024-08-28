@@ -10,6 +10,7 @@ import BreaksListPage from "./pages/breaks-list-page/breaks-list-page";
 import GoodSend from "./pages/good-send/good-send";
 import MachineBreaksPage from "./pages/machine-breaks-page/machine-breaks-page";
 import RepairRegisterPage from "./pages/repair-register-page/repair-register-page";
+import AgreementPage from "./pages/agreement-page/agreement-page";
 
 function App () {
     return(
@@ -41,6 +42,14 @@ function App () {
                         element={
                             <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
                                 <BreaksListPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoutes.Agreement}
+                        element={
+                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                                <AgreementPage />
                             </PrivateRoute>
                         }
                     />
