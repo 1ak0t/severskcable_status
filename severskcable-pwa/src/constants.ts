@@ -6,12 +6,14 @@ export enum AppRoutes {
     BreaksList = '/breaks-list',
     GoodSend = '/good-send',
     MachineBreaks = '/machine-breaks',
-    NotFound = '*'
+    NotFound = '*',
+    Agreement = '/agreement'
 }
 
 export enum MachinesStatus {
     Work = "Работает",
-    NotUse = "Простаивает",
+    Warning = "Работает нештатно",
+    Inspection = "Требует внимания",
     Wrong = "Поломка"
 }
 
@@ -25,6 +27,22 @@ export enum RepairPriority {
     High = 1,
     Medium = 2,
     Low = 3
+}
+
+export enum RepairStage {
+    Register = "Зарегистрирована",
+    RepairSuccess = "Поломка потверждена",
+    Repairing = "Ремонт",
+    RepairCompleted = "Ремонт выполнен"
+}
+
+export enum UserRoles {
+    Operator = "Оператор",
+    ITR = "ИТР",
+    Engineers = "Инженеры",
+    HeadEngineer = "Главный инженер",
+    CEO = "Генеральный директор",
+    Admin = "Администратор"
 }
 
 export const Priority = ['Высокий - Неработает', 'Средний - Работает нештатно','Низкий - Требует внимания'];

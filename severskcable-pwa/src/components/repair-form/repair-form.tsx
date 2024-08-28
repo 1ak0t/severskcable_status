@@ -13,7 +13,7 @@ type RepairFormProps = {
 function RepairForm({repair}: RepairFormProps) {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const currentUser = useAppSelector(state => state.currentUser);
+    const currentUser = useAppSelector(state => state.user.name);
     const [comment, setComment] = useState('');
     const currentTime = dayjs();
 
@@ -25,14 +25,14 @@ function RepairForm({repair}: RepairFormProps) {
         const newRepair: Repair = {
             id: repair.id,
             breakName: repair.breakName,
-            operator: repair.operator,
-            breakDate: repair.breakDate,
-            executor: currentUser,
-            repairDate: currentTime.format('YYYY-MM-DD HH:MM'),
-            repairDuration: currentTime.diff(dayjs(repair.breakDate), 'hours'),
+            registerPerson: repair.registerPerson,
+            registerDate: repair.registerDate,
+            repairCompletedPerson: currentUser,
+            repairCompletedDate: currentTime.format('YYYY-MM-DD HH:MM'),
             comment: comment,
             priority: repair.priority,
-            status: true
+            status: true,
+            stages: null
         }
 
         dispatch(setRepair(newRepair));
@@ -45,15 +45,15 @@ function RepairForm({repair}: RepairFormProps) {
                 <span>Поломка:</span>
                 <span className="repair-form__data">{repair.breakName}</span>
                 <span>Зарегистрировал:</span>
-                <span className="repair-form__data">{repair.operator}</span>
+                <span className="repair-form__data">{repair.registerPerson}</span>
                 <span>Дата поломки:</span>
-                <span className="repair-form__data">{repair.breakDate}</span>
+                <span className="repair-form__data">{repair.registerDate}</span>
                 <span>Исполнитель ремонта:</span>
-                <span className="repair-form__data">{currentUser}</span>
+                <span className="repair-form__data">{repair.repairingPerson}</span>
                 <span>Дата завершения ремонта:</span>
                 <span className="repair-form__data">{currentTime.format('YYYY-MM-DD HH:MM').toString()}</span>
                 <span>Время простоя:</span>
-                <span className="repair-form__data">{currentTime.diff(dayjs(repair.breakDate), 'hours')} часов</span>
+                <span className="repair-form__data">{currentTime.diff(dayjs(repair.registerDate), 'hours')} часов</span>
                 <textarea className="repair-form__comment" onChange={onCommentChange} placeholder="Комментарий о проделанной работе (мин 20 символов)" required={true}></textarea>
                 <button disabled={comment.length < 20} className={classNames(
                     "repair-form__submit",

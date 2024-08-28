@@ -18,9 +18,9 @@ function MachineBreaksPage() {
                 <h1 className="machine-breaks-page__title">{currentMachine.name}</h1>
                 {currentMachine.repairs.length === 0 && <h3>Не было ремонтов</h3>}
                 {repairsInProgress.length > 0 && <h3>Ожидают ремонта</h3>}
-                {repairsInProgress.map(repair => <BreakElement repair={{machine: currentMachine.name, repair: repair}} />)}
+                {repairsInProgress.map(repair => <BreakElement repair={{machine: currentMachine.name, machineStatus: currentMachine.status, repair: repair}} />)}
                 {repairsCompleted.length > 0 && <h3>Выполненные ремонты</h3>}
-                {repairsCompleted.map(repair => <BreakElement repair={{machine: currentMachine.name, repair: repair}} />)}
+                {repairsCompleted.map(repair => <BreakElement repair={{machine: currentMachine.name, machineStatus: currentMachine.status, repair: repair}} />)}
                 <BottomMenu />
             </div>
         );

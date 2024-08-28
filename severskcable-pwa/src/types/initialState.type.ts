@@ -1,16 +1,22 @@
-import {MachinesStatus} from "../constants";
+import {MachinesStatus, RepairStage, UserRoles} from "../constants";
 
 export type Repair = {
     id: string
     breakName: string,
-    operator: string,
-    breakDate: string,
-    executor?: string,
-    repairDate?: string,
-    repairDuration?: number,
+    registerPerson: string,
+    registerDate: string,
+    successPerson?: string,
+    successDate?: string,
+    repairingPerson?: string,
+    repairingDate?: string,
+    repairCompletedPerson?: string,
+    repairCompletedDate?: string,
+    repairEndPerson?: string,
+    repairEndDate?: string,
     comment?: string,
     priority: number,
-     status: boolean
+    status: boolean,
+    stages: null | `${RepairStage}`,
 }
 
 export type Machine = {
@@ -22,6 +28,9 @@ export type Machine = {
 }
 
 export type InitialStateType = {
-    currentUser: string,
+    user: {
+    name: string,
+    role: `${UserRoles}`
+    }
     machines: Machine[]
 }

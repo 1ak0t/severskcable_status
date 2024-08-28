@@ -2,7 +2,7 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {NewBreakType, OptionTypes} from "../../types/types";
 import Select from "react-select";
 import {useState} from "react";
-import {AppRoutes, Priority} from "../../constants";
+import {AppRoutes, Priority, RepairStage} from "../../constants";
 import CreatableSelect from "react-select/creatable";
 import {setNewBreak, setNewRepairType} from "../../store/actions";
 import dayjs from "dayjs";
@@ -14,7 +14,7 @@ function BreakForm() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const {machines, currentUser} = useAppSelector(state => state);
+    const {machines, user} = useAppSelector(state => state);
     const [currentMachine, setCurrentMachine] = useState('');
     const [isMachineSelected, setIsMachineSelected] = useState(true);
     const [currentRepair, setCurrentRepair] = useState('');
@@ -100,9 +100,10 @@ function BreakForm() {
             machine: currentMachine,
             breakName: currentRepair,
             priority: getPriorityNumber(currentPriority),
-            operator: currentUser,
+            operator: user.name,
             breakDate: dayjs().format('YYYY-MM-DD HH:mm').toString(),
-            status: false
+            status: false,
+            stages: RepairStage.Register
         }
 
         dispatch(setNewBreak(data));
@@ -151,10 +152,30 @@ function BreakForm() {
             </div>
             <div className="break-form__result">
                 <span>Кем зарегистрирован:</span>
-                <span className="break-form__data">{currentUser}</span>
+                <span className="break-form__data">{user.name}</span>
+            </div>
+            <div className="break-form__result">
                 <span>Дата:</span>
                 <span className="break-form__data">{dayjs().format("DD.MM.YYYY HH:mm").toString()}</span>
             </div>
+            {currentMachine.length > 0 &&
+                <div className="break-form__result">
+                    <span>Оборудование:</span>
+                    <span className="break-form__data">{currentMachine}</span>
+                </div>
+            }
+            {currentRepair.length > 0 &&
+                <div className="break-form__result">
+                    <span>Поломка:</span>
+                    <span className="break-form__data">{currentRepair}</span>
+                </div>
+            }
+            {currentPriority.length > 0 &&
+                <div className="break-form__result">
+                    <span>Приоритет:</span>
+                    <span className="break-form__data">{currentPriority}</span>
+                </div>
+            }
         </>
     );
 }

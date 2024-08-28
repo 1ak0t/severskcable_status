@@ -2,7 +2,7 @@
   position: fixed;
   bottom: 0;
   display: flex;
-  height: 10%;
+  height: 90px;
   width: 100%;
   max-width: 1024px;
   justify-content: space-between;
@@ -12,64 +12,34 @@
   &__button {
     border: 0;
     background-color: transparent;
-    padding: 0 10px;
+    padding: 20px 5px;
     cursor: pointer;
     width: 40%;
     text-decoration: none;
     text-align: center;
-    align-self: center;
-    color: $main_dark;
+    align-self: flex-start;
+    color: #A6A6A6;
+    font-size: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    img {
+      margin-bottom: 5px;
+    }
   }
 
-  &__main-button {
-    border: none;
-    background-color: $main_orange;
+  &__breaks-counter {
+    width: 16px;
+    height: 16px;
+    background-color: #d2602e;
     color: white;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  &__blur {
+    padding: 3px;
+    border-radius: 50%;
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.25);
-  }
-}
-
-.sub-menu {
-  position: fixed;
-  bottom: 10%;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  background-color: white;
-  padding: 30px 7%;
-  row-gap: 20px;
-  box-shadow: 0 -3px 5px rgba(0,0,0,25%);
-
-  &__button {
-    padding: 1em;
-    background-color: white;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 8px;
-    text-decoration: none;
-    text-align: center;
-
-    &--wrong {
-      border: 1px solid $wrong;
-      color: white;
-      background-color: $wrong;
-    }
-
-    &--work {
-      border: 1px solid $work;
-      color: white;
-      background-color: $work;
-    }
+    bottom: 45px;
+    right: 29px;
   }
 }

@@ -1,5 +1,5 @@
 import {Repair} from "./initialState.type";
-import {MachinesStatus} from "../constants";
+import {MachinesStatus, RepairStage} from "../constants";
 
 export interface OptionTypes {
     value: string;
@@ -13,6 +13,7 @@ export type CreateRepairType = {
 
 export type RepairElementType = {
     machine: string,
+    machineStatus: `${MachinesStatus}`
     repair: Repair,
 }
 
@@ -23,10 +24,18 @@ export type NewBreakType = {
     priority: number,
     operator: string,
     breakDate: string,
-    status: boolean
+    status: boolean,
+    stages: null | `${RepairStage}`,
 }
 
 export type SetMachineStatusActionType = {
     machine: string,
     status: `${MachinesStatus}`
+}
+
+export type SetRepairStageType = {
+    repair: string,
+    user: string,
+    date: string,
+    stage: null | `${RepairStage}`
 }

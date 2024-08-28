@@ -1,9 +1,12 @@
 import {InitialStateType} from "./types/initialState.type";
-import {MachinesStatus} from "./constants";
+import {MachinesStatus, RepairStage, UserRoles} from "./constants";
 import {nanoid} from "@reduxjs/toolkit";
 
 export const initialStateMock: InitialStateType = {
-    currentUser: 'Игорь Кот',
+    user: {
+        name: 'Игорь Кот',
+        role: UserRoles.ITR
+    },
     machines: [
         {
             id: nanoid(),
@@ -13,26 +16,38 @@ export const initialStateMock: InitialStateType = {
                 {
                     id: nanoid(),
                     breakName: 'Ролики',
-                    operator: 'Оператор №1',
-                    breakDate: '2024-06-23 19:34',
-                    executor: 'Инженер №1',
-                    repairDate: '2024-06-24 12:16',
-                    repairDuration: 23,
+                    registerPerson: 'Оператор №1',
+                    registerDate: '2024-06-23 19:34',
+                    successPerson: 'Мастер',
+                    successDate: '2024-06-24 19:34',
+                    repairingPerson: 'Слесарь',
+                    repairingDate: '2024-06-24 21:34',
+                    repairCompletedPerson: 'Технический директор',
+                    repairCompletedDate: '2024-06-25 10:34',
+                    repairEndPerson: 'Мастер',
+                    repairEndDate: '2024-06-25 11:34',
                     comment: 'Не исправно было одно. Поменял на другое',
                     priority: 1,
-                    status: true
+                    status: true,
+                    stages: null
                 },
                 {
                     id: nanoid(),
-                    breakName: 'Раскладчик',
-                    operator: 'Оператор №3',
-                    breakDate: '2024-06-25 11:23',
-                    executor: '',
-                    repairDate: '',
-                    repairDuration: 0,
+                    breakName: 'Ролики',
+                    registerPerson: 'Оператор №1',
+                    registerDate: '2024-06-23 19:34',
+                    successPerson: '',
+                    successDate: '',
+                    repairingPerson: '',
+                    repairingDate: '',
+                    repairCompletedPerson: '',
+                    repairCompletedDate: '',
+                    repairEndPerson: '',
+                    repairEndDate: '',
                     comment: '',
                     priority: 2,
-                    status: false
+                    status: false,
+                    stages: RepairStage.Register,
                 }
             ],
             repairTypes: ['Ролики', 'Раскладчик', 'ПО']
@@ -40,19 +55,25 @@ export const initialStateMock: InitialStateType = {
         {
             id: nanoid(),
             name: 'МСВ',
-            status: MachinesStatus.Work,
+            status: MachinesStatus.Inspection,
             repairs: [
                 {
                     id: nanoid(),
                     breakName: 'Ролики',
-                    operator: 'Оператор №1',
-                    breakDate: '2024-06-23 19:34',
-                    executor: 'Инженер №1',
-                    repairDate: '2024-06-24 12:16',
-                    repairDuration: 22,
-                    comment: 'Не исправно было одно. Поменял на другое',
+                    registerPerson: 'Оператор №1',
+                    registerDate: '2024-06-23 19:34',
+                    successPerson: 'Мастер',
+                    successDate: '2024-06-24 19:34',
+                    repairingPerson: 'Слесарь',
+                    repairingDate: '2024-06-24 21:34',
+                    repairCompletedPerson: '',
+                    repairCompletedDate: '',
+                    repairEndPerson: '',
+                    repairEndDate: '',
+                    comment: '',
                     priority: 3,
-                    status: true
+                    status: false,
+                    stages: RepairStage.Repairing,
                 }
             ],
             repairTypes: []
@@ -60,8 +81,27 @@ export const initialStateMock: InitialStateType = {
         {
             id: nanoid(),
             name: 'МТВ 1',
-            status: MachinesStatus.Work,
-            repairs: [],
+            status: MachinesStatus.Warning,
+            repairs: [
+                {
+                    id: nanoid(),
+                    breakName: 'Ролики',
+                    registerPerson: 'Оператор №1',
+                    registerDate: '2024-06-23 19:34',
+                    successPerson: 'Мастер',
+                    successDate: '2024-06-24 19:34',
+                    repairingPerson: '',
+                    repairingDate: '',
+                    repairCompletedPerson: '',
+                    repairCompletedDate: '',
+                    repairEndPerson: '',
+                    repairEndDate: '',
+                    comment: '',
+                    priority: 3,
+                    status: false,
+                    stages: RepairStage.RepairSuccess,
+                }
+            ],
             repairTypes: []
         },
         {
@@ -74,8 +114,27 @@ export const initialStateMock: InitialStateType = {
         {
             id: nanoid(),
             name: 'МТВ 3',
-            status: MachinesStatus.Work,
-            repairs: [],
+            status: MachinesStatus.Wrong,
+            repairs: [
+                {
+                    id: nanoid(),
+                    breakName: 'Ролики',
+                    registerPerson: 'Оператор №1',
+                    registerDate: '2024-06-23 19:34',
+                    successPerson: 'Мастер',
+                    successDate: '2024-06-24 19:34',
+                    repairingPerson: 'Слесарь',
+                    repairingDate: '2024-06-24 21:34',
+                    repairCompletedPerson: 'Технический директор',
+                    repairCompletedDate: '2024-06-25 10:34',
+                    repairEndPerson: 'Мастер',
+                    repairEndDate: '2024-06-25 11:34',
+                    comment: 'Не исправно было одно. Поменял на другое',
+                    priority: 3,
+                    status: false,
+                    stages: RepairStage.RepairCompleted,
+                }
+            ],
             repairTypes: []
         },
         {
