@@ -1,106 +1,135 @@
-import {InitialStateType, Repair} from "../types/initialState.type";
+import {Break, InitialStateType} from "../types/initialState.type";
 import {createReducer} from "@reduxjs/toolkit";
 import {
     deleteRepair,
-    getState,
+    loadBreaks,
+    loadBreaksTypeByMachine,
+    loadMachines, loadUser, requireAuthorization, setError,
     setMachineStatus,
     setNewBreak,
     setNewRepairType,
     setRepair,
     setRepairStage
 } from "./actions";
-import {MachinesStatus, RepairStage, UserRoles} from "../constants";
+import {AuthorizationStatus, MachinesStatus, RepairStage, UserRoles} from "../constants";
 
 const initialState: InitialStateType = {
+    isLoading: false,
+    authorizationStatus: AuthorizationStatus.Auth,
+    error: null,
     user: {
+        id: '',
+        surname: '',
         name: '',
-        role: UserRoles.Operator
+        middleName: '',
+        email: '',
+        role: [],
     },
-    machines: []
+    machines: [],
+    breaks: [],
+    breaksTypesByMachine: []
 }
 
 const reducer = createReducer(initialState, builder => {
     builder
-        .addCase(getState, (state, action) => {
-            state.user = action.payload.user;
-            state.machines = action.payload.machines;
+        .addCase(loadMachines, (state, action) => {
+            state.machines = action.payload;
+        })
+        .addCase(loadBreaks, (state, action) => {
+            state.breaks = action.payload;
+        })
+        .addCase(loadBreaksTypeByMachine, (state, action) => {
+            state.breaksTypesByMachine = action.payload;
+        })
+        .addCase(loadUser, (state, action) => {
+            state.user = action.payload;
+        })
+        .addCase(requireAuthorization, (state, action) => {
+            state.authorizationStatus = action.payload;
+        })
+        .addCase(setError, (state, action) => {
+            state.error = action.payload;
         })
         .addCase(setNewRepairType, (state, action) => {
-            const currentMachineIndex = state.machines.findIndex(machine => machine.name === action.payload.machine);
-            state.machines[currentMachineIndex].repairTypes.push(action.payload.repair);
+            state.breaksTypesByMachine = state.breaksTypesByMachine.concat(action.payload);
         })
         .addCase(setNewBreak, (state, action) => {
-            const currentMachineIndex = state.machines.findIndex(machine => machine.name === action.payload.machine);
-            const newBreak: Repair = {
-                id: action.payload.id,
-                breakName: action.payload.breakName,
-                priority: action.payload.priority,
-                registerPerson: action.payload.operator,
-                registerDate: action.payload.breakDate,
-                status: action.payload.status,
-                stages: action.payload.stages
-            }
-            state.machines[currentMachineIndex].repairs.push(newBreak);
+            const currentMachine = state.machines.findIndex(machine => machine.id === action.payload.machine.id);
+            state.breaks = state.breaks.concat(action.payload);
+            const currentBreak = state.breaks.find(el => el.machine.id === action.payload.machine.id);
             switch (action.payload.priority) {
                 case 1:
-                    state.machines[currentMachineIndex].status = MachinesStatus.Wrong;
+                    state.machines[currentMachine].status = MachinesStatus.Wrong;
+                    if (currentBreak) {
+                        currentBreak.machine.status = MachinesStatus.Wrong;
+                    }
                     break;
                 case 2:
-                    state.machines[currentMachineIndex].status = MachinesStatus.Warning;
+                    state.machines[currentMachine].status = MachinesStatus.Warning;
+                    if (currentBreak) {
+                        currentBreak.machine.status = MachinesStatus.Warning;
+                    }
                     break;
                 case 3:
-                    state.machines[currentMachineIndex].status = MachinesStatus.Inspection;
+                    state.machines[currentMachine].status = MachinesStatus.Inspection;
+                    if (currentBreak) {
+                        currentBreak.machine.status = MachinesStatus.Inspection;
+                    }
                     break;
 
             }
+            state.breaks.find(el => el.machine.id === action.payload.machine.id)
         })
         .addCase(setMachineStatus, (state, action) => {
-            const currentMachineIndex = state.machines.findIndex(machine => machine.name === action.payload.machine);
+            const currentMachineIndex = state.machines.findIndex(machine => machine.id === action.payload.id);
             state.machines[currentMachineIndex].status = action.payload.status;
         })
         .addCase(setRepair, (state, action) => {
-            const currentMachineIndex = state.machines.findIndex(machine => machine.repairs.find(repair => repair.id === action.payload.id));
-            const currentRepairIndex  = state.machines[currentMachineIndex].repairs.findIndex(repair => repair.id === action.payload.id);
-            state.machines[currentMachineIndex].repairs[currentRepairIndex] = action.payload;
-            if (!state.machines[currentMachineIndex].repairs.find(repair => repair.status === false)) {
+            const currentMachineIndex = state.machines.findIndex(machine => machine.id === action.payload.machine.id);
+            const currentBreakIndex  = state.breaks.findIndex(breaks => breaks.id === action.payload.id);
+            state.breaks[currentBreakIndex].comment = action.payload.comment;
+            state.breaks[currentBreakIndex].repairCompletedDate = action.payload.repairCompletedDate;
+            state.breaks[currentBreakIndex].repairCompletedPerson = action.payload.repairCompletedPerson;
+            if (state.breaks[currentBreakIndex].status === true) {
                 state.machines[currentMachineIndex].status = MachinesStatus.Work;
             }
         })
         .addCase(setRepairStage, (state, action) => {
-            const currentMachineIndex = state.machines.findIndex(machine => machine.repairs.find(repair => repair.id === action.payload.repair));
-            const currentRepairIndex = state.machines[currentMachineIndex].repairs.findIndex(repair => repair.id === action.payload.repair);
-            state.machines[currentMachineIndex].repairs[currentRepairIndex].stages = action.payload.stage;
+            const currentBreakIndex = state.breaks.findIndex(el => el.id === action.payload.id);
+            const currentMachineIndex = state.machines.findIndex(el => el.id === action.payload.machine.id);
+            state.breaks[currentBreakIndex].stages = action.payload.stages;
 
-            switch (action.payload.stage) {
+            switch (action.payload.stages) {
                 case RepairStage.RepairSuccess: {
-                    state.machines[currentMachineIndex].repairs[currentRepairIndex].successPerson = action.payload.user;
-                    state.machines[currentMachineIndex].repairs[currentRepairIndex].successDate = action.payload.date;
+                    state.breaks[currentBreakIndex].successPerson = action.payload.successPerson;
+                    state.breaks[currentBreakIndex].successDate = action.payload.successDate;
                     break;
                 }
                 case RepairStage.Repairing: {
-                    state.machines[currentMachineIndex].repairs[currentRepairIndex].repairingPerson = action.payload.user;
-                    state.machines[currentMachineIndex].repairs[currentRepairIndex].repairingDate = action.payload.date;
+                    state.breaks[currentBreakIndex].repairingPerson = action.payload.repairingPerson;
+                    state.breaks[currentBreakIndex].repairingDate = action.payload.repairingDate;
                     break;
                 }
                 case RepairStage.RepairCompleted: {
-                    state.machines[currentMachineIndex].repairs[currentRepairIndex].repairCompletedPerson = action.payload.user;
-                    state.machines[currentMachineIndex].repairs[currentRepairIndex].repairCompletedDate = action.payload.date;
+                    state.breaks[currentBreakIndex].repairCompletedPerson = action.payload.repairCompletedPerson;
+                    state.breaks[currentBreakIndex].repairCompletedDate = action.payload.repairCompletedDate;
                     break;
                 }
             }
 
-            if (action.payload.stage === null) {
-                state.machines[currentMachineIndex].repairs[currentRepairIndex].status = true;
-                if (!state.machines[currentMachineIndex].repairs.find(repair => repair.status === false)) {
+            if (action.payload.stages === null) {
+                state.breaks[currentBreakIndex].status = true;
+                if (!(state.breaks.filter(el => el.machine.id === state.machines[currentMachineIndex].id))) {
                     state.machines[currentMachineIndex].status = MachinesStatus.Work;
                 }
             }
         })
         .addCase(deleteRepair, (state, action) => {
-            const currentMachineIndex = state.machines.findIndex(machine => machine.repairs.find(repair => repair.id === action.payload));
-            const currentRepairIndex = state.machines[currentMachineIndex].repairs.findIndex(repair => repair.id === action.payload);
-            state.machines[currentMachineIndex].repairs.splice(currentRepairIndex, 1);
-            if (!state.machines[currentMachineIndex].repairs.find(repair => repair.status === false)) {
+            const currentBreakIndex = state.breaks.findIndex(el => el.id === action.payload);
+            const currentMachineIndex = state.machines.findIndex(machine => machine.id === state.breaks[currentBreakIndex].machine.id);
+
+            state.breaks.splice(currentBreakIndex, 1);
+            if (state.machines[currentMachineIndex].status !== MachinesStatus.Work) {
                 state.machines[currentMachineIndex].status = MachinesStatus.Work;
             }
         })

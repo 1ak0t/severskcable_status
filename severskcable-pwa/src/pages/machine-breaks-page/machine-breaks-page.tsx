@@ -7,20 +7,22 @@ import BottomMenu from "../../components/bottom-menu/bottom-menu";
 function MachineBreaksPage() {
     const {machineId} = useParams();
     const machines = useAppSelector(state => state.machines);
+    const breaks = useAppSelector(state => state.breaks);
     const currentMachine = machines.find(machine => machine.id === machineId);
 
     if (currentMachine) {
-        const repairsCompleted = currentMachine.repairs.filter(repair => repair.status === true);
-        const repairsInProgress = currentMachine.repairs.filter(repair => repair.status === false);
+        const currentMachineBreaks = breaks.filter(el => el.machine.id === currentMachine.id);
+        const breaksCompleted = currentMachineBreaks.filter(el => el.status);
+        const breaksInProgress = currentMachineBreaks.filter(el => !el.status);
 
         return (
             <div className="machine-breaks-page">
                 <h1 className="machine-breaks-page__title">{currentMachine.name}</h1>
-                {currentMachine.repairs.length === 0 && <h3>Не было ремонтов</h3>}
-                {repairsInProgress.length > 0 && <h3>Ожидают ремонта</h3>}
-                {repairsInProgress.map(repair => <BreakElement repair={{machine: currentMachine.name, machineStatus: currentMachine.status, repair: repair}} />)}
-                {repairsCompleted.length > 0 && <h3>Выполненные ремонты</h3>}
-                {repairsCompleted.map(repair => <BreakElement repair={{machine: currentMachine.name, machineStatus: currentMachine.status, repair: repair}} />)}
+                {currentMachineBreaks.length === 0 && <h3>Не было ремонтов</h3>}
+                {breaksInProgress.length > 0 && <h3>Ожидают ремонта</h3>}
+                {breaksInProgress.map(el => <BreakElement repair={el} />)}
+                {breaksCompleted.length > 0 && <h3>Выполненные ремонты</h3>}
+                {breaksCompleted.map(el => <BreakElement repair={el} />)}
                 <BottomMenu />
             </div>
         );

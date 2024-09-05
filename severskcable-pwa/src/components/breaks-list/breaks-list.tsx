@@ -1,22 +1,16 @@
 import {useAppSelector} from "../../hooks";
-import {RepairElementType} from "../../types/types";
 import BreakElement from "../break-element/break-element";
 import {RepairStage} from "../../constants";
 
 function BreaksList() {
-    const {machines} = useAppSelector(state => state);
-    const repairList: RepairElementType[] = [];
-    machines.forEach(machine => {
-        if (machine.repairs.length > 0) {
-            machine.repairs.filter(repair => !repair.status).map(repair => repairList.push({machine: machine.name, machineStatus: machine.status, repair: repair}));
-        }
-    });
+    const {breaks} = useAppSelector(state => state);
+    const currentsBreaks = breaks.filter(el => !el.status);
 
-    repairList.sort(function (a,b) {
-        if (a.repair.priority > b.repair.priority) {
+    currentsBreaks.sort(function (a,b) {
+        if (a.priority > b.priority) {
             return 1;
         }
-        if (a.repair.priority < b.repair.priority) {
+        if (a.priority < b.priority) {
             return -1;
         }
         return 0;
@@ -25,22 +19,22 @@ function BreaksList() {
 
     return (
         <section className="repair-list">
-            {repairList.find(repair => repair.repair.stages === RepairStage.Register) &&
+            {currentsBreaks.find(el => el.stages === RepairStage.Register) &&
                 <h2 className="repair-list__sub-title">Зарегистрированы</h2>
             }
-            {repairList.filter(repair => repair.repair.stages === RepairStage.Register).map(repair => <BreakElement repair={repair} key={repair.repair.breakName}/>)}
-            {repairList.find(repair => repair.repair.stages === RepairStage.RepairSuccess) &&
+            {currentsBreaks.filter(el => el.stages === RepairStage.Register).map(el => <BreakElement repair={el} key={el.breakName}/>)}
+            {currentsBreaks.find(el => el.stages === RepairStage.RepairSuccess) &&
                 <h2 className="repair-list__sub-title">Поломка подтверждена</h2>
             }
-            {repairList.filter(repair => repair.repair.stages === RepairStage.RepairSuccess).map(repair => <BreakElement repair={repair} key={repair.repair.breakName}/>)}
-            {repairList.find(repair => repair.repair.stages === RepairStage.Repairing) &&
+            {currentsBreaks.filter(el => el.stages === RepairStage.RepairSuccess).map(el => <BreakElement repair={el} key={el.breakName}/>)}
+            {currentsBreaks.find(el => el.stages === RepairStage.Repairing) &&
                 <h2 className="repair-list__sub-title">Ремонтируются</h2>
             }
-            {repairList.filter(repair => repair.repair.stages === RepairStage.Repairing).map(repair => <BreakElement repair={repair} key={repair.repair.breakName}/>)}
-            {repairList.find(repair => repair.repair.stages === RepairStage.RepairCompleted) &&
+            {currentsBreaks.filter(el => el.stages === RepairStage.Repairing).map(el => <BreakElement repair={el} key={el.breakName}/>)}
+            {currentsBreaks.find(el => el.stages === RepairStage.RepairCompleted) &&
                 <h2 className="repair-list__sub-title">Ремонт завершен</h2>
             }
-            {repairList.filter(repair => repair.repair.stages === RepairStage.RepairCompleted).map(repair => <BreakElement repair={repair} key={repair.repair.breakName}/>)}
+            {currentsBreaks.filter(el => el.stages === RepairStage.RepairCompleted).map(el => <BreakElement repair={el} key={el.breakName}/>)}
         </section>
     );
 }

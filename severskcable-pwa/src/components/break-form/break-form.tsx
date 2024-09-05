@@ -6,16 +6,17 @@ import {AppRoutes, Priority, RepairStage} from "../../constants";
 import CreatableSelect from "react-select/creatable";
 import {setNewBreak, setNewRepairType} from "../../store/actions";
 import dayjs from "dayjs";
-import {nanoid} from "@reduxjs/toolkit";
 import {useNavigate} from "react-router-dom";
 import {getPriorityNumber} from "../../helpers/helpers";
+import {MachineType} from "../../types/initialState.type";
+import {createNewBreakAction, createNewBreakTypeAction, fetchBreakTypesByMachine} from "../../store/api-actions";
 
 function BreakForm() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const {machines, user} = useAppSelector(state => state);
-    const [currentMachine, setCurrentMachine] = useState('');
+    const {machines, user, breaksTypesByMachine} = useAppSelector(state => state);
+    const [currentMachine, setCurrentMachine] = useState<null | MachineType>(null);
     const [isMachineSelected, setIsMachineSelected] = useState(true);
     const [currentRepair, setCurrentRepair] = useState('');
     const [isRepairSelected, setIsRepairSelected] = useState(true);
@@ -28,7 +29,7 @@ function BreakForm() {
     machines.map(machine => machineList.push({label: machine.name, value: machine.name}));
 
     const getMachineValue = () => {
-        return currentMachine ? machineList.find(machine => machine.value === currentMachine) : '';
+        return currentMachine ? machineList.find(machine => machine.value === currentMachine.name) : '';
     }
 
     const getRepairValue = () => {
@@ -40,7 +41,11 @@ function BreakForm() {
     }
 
     const onChangeMachine = (newValue: any) => {
-        setCurrentMachine(newValue.value);
+        const machine = machines.find(machine => machine.name === newValue.value);
+        if (machine){
+            setCurrentMachine(machine);
+        }
+        dispatch(fetchBreakTypesByMachine())
         setCurrentRepair('');
         setCurrentPriority('');
         setIsOpenRepairList(false);
@@ -50,7 +55,7 @@ function BreakForm() {
         const findMachine = machines.find(machine => machine.name === newValue.value);
         if (findMachine) {
             const list: OptionTypes[] = [];
-           findMachine.repairTypes.map(type => list.push({value: type, label: type}));
+           breaksTypesByMachine.filter(type => type.machine.id === findMachine.id).map(type => list.push({value: type.description, label: type.description}));
            setRepairList(list);
            setIsMachineSelected(false);
            if (list.length > 0) {
@@ -81,7 +86,9 @@ function BreakForm() {
     }
 
     const onCreateRepair = (newRepair: string) => {
-        dispatch(setNewRepairType({machine: currentMachine, repair: newRepair}));
+        if (currentMachine) {
+            dispatch(createNewBreakTypeAction({machine: currentMachine.id, description: newRepair}));
+        }
         const newList = repairList;
         newList.push({value: newRepair, label: newRepair});
         setRepairList(newList);
@@ -95,19 +102,20 @@ function BreakForm() {
     }
 
     const onBreakSubmit = () => {
-        const data: NewBreakType = {
-            id: nanoid(),
-            machine: currentMachine,
-            breakName: currentRepair,
-            priority: getPriorityNumber(currentPriority),
-            operator: user.name,
-            breakDate: dayjs().format('YYYY-MM-DD HH:mm').toString(),
-            status: false,
-            stages: RepairStage.Register
-        }
+        if (currentMachine) {
+            const data: NewBreakType = {
+                machine: currentMachine.id,
+                breakName: currentRepair,
+                priority: getPriorityNumber(currentPriority),
+                registerPerson: user.id,
+                registerDate: dayjs().toString(),
+                status: false,
+                stages: RepairStage.Register
+            }
 
-        dispatch(setNewBreak(data));
-        navigate(AppRoutes.GoodSend);
+            dispatch(createNewBreakAction(data));
+            navigate(AppRoutes.GoodSend);
+        }
     };
 
     return(
@@ -158,10 +166,10 @@ function BreakForm() {
                 <span>Дата:</span>
                 <span className="break-form__data">{dayjs().format("DD.MM.YYYY HH:mm").toString()}</span>
             </div>
-            {currentMachine.length > 0 &&
+            {currentMachine &&
                 <div className="break-form__result">
                     <span>Оборудование:</span>
-                    <span className="break-form__data">{currentMachine}</span>
+                    <span className="break-form__data">{currentMachine.name}</span>
                 </div>
             }
             {currentRepair.length > 0 &&

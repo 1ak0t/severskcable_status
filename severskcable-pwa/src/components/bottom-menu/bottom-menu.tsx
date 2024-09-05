@@ -1,21 +1,33 @@
 import {Link} from "react-router-dom";
 import {AppRoutes, RepairStage, UserRoles} from "../../constants";
 import {useAppSelector} from "../../hooks";
-import {RepairElementType} from "../../types/types";
 
 function BottomMenu () {
-    const {user, machines} = useAppSelector(state => state);
-    const repairList: RepairElementType[] = [];
-    machines.forEach(machine => {
-        if (machine.repairs.length > 0) {
-            machine.repairs.filter(repair => !repair.status).map(repair => repairList.push({machine: machine.name, machineStatus: machine.status, repair: repair}));
-        }
-    });
+    const {user, breaks} = useAppSelector(state => state);
+    const currentBreaks = breaks.filter(el => !el.status);
 
-    const repairsRegister = repairList.filter(repair => repair.repair.stages === RepairStage.Register);
-    const repairsSuccess = repairList.filter(repair => repair.repair.stages === RepairStage.RepairSuccess);
-    const repairsRepairing = repairList.filter(repair => repair.repair.stages === RepairStage.Repairing);
-    const repairsCompleted = repairList.filter(repair => repair.repair.stages === RepairStage.RepairCompleted);
+    const repairsRegister = currentBreaks.filter(repair => repair.stages === RepairStage.Register);
+    const repairsSuccess = currentBreaks.filter(repair => repair.stages === RepairStage.RepairSuccess);
+    const repairsRepairing = currentBreaks.filter(repair => repair.stages === RepairStage.Repairing);
+    const repairsCompleted = currentBreaks.filter(repair => repair.stages === RepairStage.RepairCompleted);
+
+    function getAgreementCount() {
+        let count = 0;
+
+        if (user.role.filter(role => role === UserRoles.ITR) || user.role.filter(role => role === UserRoles.CEO) || user.role.filter(role => role === UserRoles.Admin)) {
+            count+=repairsRegister.length + repairsCompleted.length;
+        }
+
+        if (user.role.filter(role => role === UserRoles.HeadEngineer)) {
+            count+=repairsRepairing.length;
+        }
+
+        if (user.role.filter(role => role === UserRoles.Engineers)) {
+            count+=repairsSuccess.length;
+        }
+
+        return count;
+    }
 
     return(
         <>
@@ -25,26 +37,18 @@ function BottomMenu () {
                     Статусы<br></br>оборудования
                 </Link>
                 <Link to={AppRoutes.BreaksList} className="bottom-menu__button">
-                    {repairList.length > 0 &&
-                        <span className="bottom-menu__breaks-counter">{repairList.length}</span>
+                    {currentBreaks.length > 0 &&
+                        <span className="bottom-menu__breaks-counter">{currentBreaks.length}</span>
                     }
                     <img src="/icons/menu-icon/menu-breaks-icon.svg" alt=""/>
                     Текущие<br></br>поломки
                 </Link>
-                {((user.role as UserRoles) === UserRoles.Admin || (user.role as UserRoles) === UserRoles.CEO) && <Link to={AppRoutes.Root} className="bottom-menu__button">
+                {(user.role.filter(role => role === UserRoles.Admin)  || user.role.filter(role => role === UserRoles.CEO)) && <Link to={AppRoutes.Root} className="bottom-menu__button">
                     <img src="/icons/menu-icon/menu-analitics-icon.svg" alt=""/>
                     Статистика<br></br>поломок
                 </Link>}
-                {((user.role as UserRoles) !== UserRoles.Operator) && <Link to={AppRoutes.Agreement} className="bottom-menu__button">
-                    {(((user.role === UserRoles.ITR) || (user.role === UserRoles.CEO) || (user.role === UserRoles.Admin)) && (repairsRegister.length > 0 || repairsCompleted.length > 0)) &&
-                        <span className="bottom-menu__breaks-counter">{repairsRegister.length + repairsCompleted.length}</span>
-                    }
-                    {((user.role === UserRoles.HeadEngineer) && repairsRepairing.length > 0) &&
-                        <span className="bottom-menu__breaks-counter">{repairsRepairing.length}</span>
-                    }
-                    {((user.role === UserRoles.Engineers) && repairsSuccess.length > 0) &&
-                        <span className="bottom-menu__breaks-counter">{repairsSuccess.length}</span>
-                    }
+                {(user.role.filter(role => role === UserRoles.Operator)) && <Link to={AppRoutes.Agreement} className="bottom-menu__button">
+                    {getAgreementCount() > 0 && <span className="bottom-menu__breaks-counter">{getAgreementCount()}</span>}
                     <img src="/icons/menu-icon/menu-success-icon.svg" alt=""/>
                     Требуют<br></br>подтверждения
                 </Link>}
