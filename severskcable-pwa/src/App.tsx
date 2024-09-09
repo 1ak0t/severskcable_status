@@ -1,5 +1,5 @@
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
-import {AppRoutes, AuthorizationStatus} from "./constants";
+import {Route, Routes} from 'react-router-dom';
+import {AppRoutes} from "./constants";
 import AuthorizationPage from "./pages/authorization-page/authorization-page";
 import StatusPage from "./pages/status-page/status-page";
 import NotFoundPage from "./pages/not-found-page/not-found-page";
@@ -9,18 +9,23 @@ import {HelmetProvider} from "react-helmet-async";
 import BreaksListPage from "./pages/breaks-list-page/breaks-list-page";
 import GoodSend from "./pages/good-send/good-send";
 import MachineBreaksPage from "./pages/machine-breaks-page/machine-breaks-page";
-import RepairRegisterPage from "./pages/repair-register-page/repair-register-page";
 import AgreementPage from "./pages/agreement-page/agreement-page";
+import {useAppSelector} from "./hooks";
+import HistoryRouter from "./components/history-route/history-route";
+import browserHistory from "./browser-history";
+
 
 function App () {
+    const authorizationStatus = useAppSelector(state => state.authorizationStatus);
+
     return(
         <HelmetProvider>
-            <BrowserRouter>
+            <HistoryRouter history={browserHistory}>
                 <Routes>
                     <Route
                         path={AppRoutes.Root}
                         element={
-                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                            <PrivateRoute authorizationStatus={authorizationStatus}>
                                 <StatusPage />
                             </PrivateRoute>
                         }
@@ -32,7 +37,7 @@ function App () {
                     <Route
                         path={AppRoutes.BreakRegistration}
                         element={
-                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                            <PrivateRoute authorizationStatus={authorizationStatus}>
                                 <BreakRegisterPage />
                             </PrivateRoute>
                         }
@@ -40,7 +45,7 @@ function App () {
                     <Route
                         path={AppRoutes.BreaksList}
                         element={
-                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                            <PrivateRoute authorizationStatus={authorizationStatus}>
                                 <BreaksListPage />
                             </PrivateRoute>
                         }
@@ -48,27 +53,21 @@ function App () {
                     <Route
                         path={AppRoutes.Agreement}
                         element={
-                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                            <PrivateRoute authorizationStatus={authorizationStatus}>
                                 <AgreementPage />
                             </PrivateRoute>
                         }
                     />
                     <Route path={AppRoutes.MachineBreaks}>
                         <Route path=":machineId" element={
-                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                            <PrivateRoute authorizationStatus={authorizationStatus}>
                                 <MachineBreaksPage />
-                            </PrivateRoute>} />
-                    </Route>
-                    <Route path={AppRoutes.RepairRegistration}>
-                        <Route path=":repairId" element={
-                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
-                                <RepairRegisterPage />
                             </PrivateRoute>} />
                     </Route>
                     <Route
                         path={AppRoutes.GoodSend}
                         element={
-                            <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                            <PrivateRoute authorizationStatus={authorizationStatus}>
                                 <GoodSend />
                             </PrivateRoute>
                         }
@@ -78,7 +77,7 @@ function App () {
                         element={<NotFoundPage />}
                     />
                 </Routes>
-            </BrowserRouter>
+            </HistoryRouter>
         </HelmetProvider>
     );
 }

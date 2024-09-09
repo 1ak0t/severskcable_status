@@ -1,103 +1,123 @@
-import {RepairElementType} from "../../types/types";
 import classNames from "classnames";
 import {MachinesStatus, RepairStage} from "../../constants";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {deleteRepair, setRepair, setRepairStage} from "../../store/actions";
+import {deleteRepair, setRepair} from "../../store/actions";
 import {useState} from "react";
-import {Repair} from "../../types/initialState.type";
+import {Break} from "../../types/initialState.type";
 import dayjs from "dayjs";
 import {getDurationString} from "../../helpers/helpers";
+import {RepairCompletedType} from "../../types/types";
+import {deleteBreakAction, updateBreakStageAction} from "../../store/api-actions";
 
 type RepairElementProps = {
-    repair: RepairElementType,
+    repair: Break,
     agreement?: boolean,
 }
 
 function BreakElement({repair, agreement}: RepairElementProps) {
     const dispatch = useAppDispatch();
-    const currentUser = useAppSelector(state => state.user.name);
+    const currentUser = useAppSelector(state => state.user);
     const [comment, setComment] = useState('');
-    const currentTime = dayjs();
 
     const onCommentChange = (com: any) => {
         setComment(com.target.value);
     };
 
     const onSubmitHeadEngineer = () => {
-        const newRepair: Repair = {
-            id: repair.repair.id,
-            breakName: repair.repair.breakName,
-            registerPerson: repair.repair.registerPerson,
-            registerDate: repair.repair.registerDate,
-            repairEndPerson: currentUser,
-            repairEndDate: currentTime.format('YYYY-MM-DD HH:MM'),
+        const newRepair: RepairCompletedType = {
+            id: repair.id,
+            repairCompletedPerson: currentUser,
+            repairCompletedDate: dayjs().toString(),
             comment: comment,
-            priority: repair.repair.priority,
-            status: false,
-            stages: null
+            stages: RepairStage.RepairCompleted,
+            machine: repair.machine
         }
 
         dispatch(setRepair(newRepair));
-        dispatch(setRepairStage({repair: repair.repair.id, stage: RepairStage.RepairCompleted, user: currentUser, date: dayjs().toString()}));
+        dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.RepairCompleted, repairCompletedPerson: currentUser.id, repairCompletedDate: dayjs().toString(), comment: comment}));
     }
 
     return(
         <div className={classNames(
             'repair-element',
-            {'repair-element--medium-priority': repair.machineStatus === MachinesStatus.Warning},
-            {'repair-element--low-priority': repair.machineStatus === MachinesStatus.Inspection}
+            {'repair-element--medium-priority': repair.machine.status === MachinesStatus.Warning},
+            {'repair-element--low-priority': repair.machine.status === MachinesStatus.Inspection}
         )}>
-            <h2 className="repair-element__title">{repair.machine}</h2>
+            <h2 className="repair-element__title">{repair.machine.name}</h2>
             <div className="repair-element__row">
                 <span>Поломка:</span>
-                <span>{repair.repair.breakName}</span>
+                <span>{repair.breakName}</span>
             </div>
-            {repair.repair.stages !== null &&
+            {repair.stages &&
                 <div className="repair-element__row">
                     <span>Этап ремонта:</span>
-                    <span>{repair.repair.stages}</span>
+                    <span>{repair.stages}</span>
                 </div>
             }
             <div className="repair-element__row">
                 <span>Зарегистрировал:</span>
-                <span>{repair.repair.registerPerson}</span>
+                <span>{repair.registerPerson.name} {repair.registerPerson.surname}</span>
             </div>
             <div className="repair-element__row">
-                <span>Дата:</span>
-                <span>{repair.repair.registerDate}</span>
+                <span>Дата регистрации:</span>
+                <span>{dayjs(repair.registerDate).format('H:mm DD-MM-YYYY')}</span>
             </div>
-            {repair.repair.status &&
+            {(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
                 <>
                     <div className="repair-element__row">
-                        <span>Выполнил ремонт:</span>
-                        <span>{repair.repair.repairingPerson}</span>
+                        <span>Согласовал:</span>
+                        <span>{repair.successPerson?.name} {repair.successPerson?.surname}</span>
                     </div>
                     <div className="repair-element__row">
-                        <span>Дата завершения ремонта:</span>
-                        <span>{repair.repair.repairEndDate}</span>
-                    </div>
-                    <div className="repair-element__row">
-                        <span>Длительность ремонта:</span>
-                        <span>{getDurationString(dayjs(repair.repair.registerDate), dayjs(repair.repair.repairEndDate))}</span>
-                    </div>
-                    <div className="repair-element__row">
-                        <span>Что проделано:</span>
-                        <span>{repair.repair.comment}</span>
+                        <span>Дата согласования:</span>
+                        <span>{dayjs(repair.successDate).format('H:mm DD-MM-YYYY')}</span>
                     </div>
                 </>
             }
-            {(agreement && repair.repair.stages === RepairStage.Register) &&
+            {(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                <>
+                    <div className="repair-element__row">
+                        <span>Приступил к ремонту:</span>
+                        <span>{repair.repairingPerson?.name} {repair.repairingPerson?.surname}</span>
+                    </div>
+                    <div className="repair-element__row">
+                        <span>Дата начала ремонта:</span>
+                        <span>{dayjs(repair.repairingDate).format('H:mm DD-MM-YYYY')}</span>
+                    </div>
+                </>
+            }
+            {(repair.stages === null ||repair.status || repair.stages === RepairStage.RepairCompleted) &&
+                <>
+                    <div className="repair-element__row">
+                        <span>Выполнил ремонт:</span>
+                        <span>{repair.repairCompletedPerson?.name} {repair.repairingPerson?.surname}</span>
+                    </div>
+                    <div className="repair-element__row">
+                        <span>Дата завершения ремонта:</span>
+                        <span>{dayjs(repair.repairCompletedDate).format('H:mm DD-MM-YYYY')}</span>
+                    </div>
+                    <div className="repair-element__row">
+                        <span>Длительность ремонта:</span>
+                        <span>{getDurationString(dayjs(repair.repairingDate), dayjs(repair.repairCompletedDate))}</span>
+                    </div>
+                    <div className="repair-element__row">
+                        <span>Что проделано:</span>
+                        <span>{repair.comment}</span>
+                    </div>
+                </>
+            }
+            {(agreement && repair.stages === RepairStage.Register) &&
                 <div className="repair-element__button-wrapper">
-                    <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(setRepairStage({repair: repair.repair.id, stage: RepairStage.RepairSuccess, user: currentUser, date: dayjs().toString()}))}>Подтвердить</button>
-                    <button className="repair-element__button repair-element__button--reject" onClick={() => dispatch(deleteRepair(repair.repair.id))}>Отклонить</button>
+                <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.RepairSuccess, successPerson: currentUser.id, successDate: dayjs().toString()}))}>Подтвердить</button>
+                    <button className="repair-element__button repair-element__button--reject" onClick={() => dispatch(deleteBreakAction(repair.id))}>Отклонить</button>
                 </div>
             }
-            {(agreement && repair.repair.stages === RepairStage.RepairSuccess) &&
+            {(agreement && repair.stages === RepairStage.RepairSuccess) &&
                 <div className="repair-element__button-wrapper">
-                    <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(setRepairStage({repair: repair.repair.id, stage: RepairStage.Repairing, user: currentUser, date: dayjs().toString()}))}>Начать ремонт</button>
+                    <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.Repairing, repairingPerson: currentUser.id, repairingDate: dayjs().toString()}))}>Начать ремонт</button>
                 </div>
             }
-            {(agreement && repair.repair.stages === RepairStage.Repairing) &&
+            {(agreement && repair.stages === RepairStage.Repairing) &&
                 <div className="repair-element__button-wrapper">
                     <textarea onChange={onCommentChange} cols={30} rows={10} placeholder="Комментарий о проделанной работе (мин 20 символов)" required={true}></textarea>
                     <button disabled={comment.length < 20} className={classNames(
@@ -106,10 +126,10 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                     )} onClick={onSubmitHeadEngineer}>Завершить ремонт</button>
                 </div>
             }
-            {(agreement && repair.repair.stages === RepairStage.RepairCompleted) &&
+            {(agreement && repair.stages === RepairStage.RepairCompleted) &&
                 <div className="repair-element__button-wrapper">
-                    <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(setRepairStage({repair: repair.repair.id, stage: null, user: currentUser, date: dayjs().toString()}))}>Подтвердить</button>
-                    <button className="repair-element__button repair-element__button--reject" onClick={() => dispatch(setRepairStage({repair: repair.repair.id, stage: RepairStage.RepairSuccess, user: currentUser, date: dayjs().toString()}))}>Отклонить</button>
+                    <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: null, status: true, repairEndPerson: currentUser.id, repairEndDate: dayjs().toString()}))}>Подтвердить</button>
+                    <button className="repair-element__button repair-element__button--reject" onClick={() => dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.RepairSuccess, repairingPerson: repair.repairingPerson?.id, repairingDate: repair.repairingDate}))}>Отклонить</button>
                 </div>
             }
         </div>

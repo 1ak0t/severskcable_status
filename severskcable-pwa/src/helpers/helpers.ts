@@ -1,4 +1,4 @@
-import {RepairPriority} from "../constants";
+import {MachinesStatus, RepairPriority} from "../constants";
 import dayjs from "dayjs";
 
 export const getPriorityNumber = (name: string) => {
@@ -21,4 +21,23 @@ export const getDurationString = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) 
         return `${days.toFixed()} д. ${Math.floor(durationMinutes/60) - days*24} ч. ${durationMinutes % 24} мин.`;
     }
     return `${Math.floor(durationMinutes/60)} ч. ${durationMinutes % 24} мин.`;
+}
+
+export const getMachineStatusByPriority = (priority: number) => {
+    let machineStatus: MachinesStatus = MachinesStatus.Work;
+
+    switch (priority) {
+        case 1:
+            machineStatus = MachinesStatus.Wrong;
+            break;
+        case 2:
+            machineStatus = MachinesStatus.Warning;
+            break;
+        case 3:
+            machineStatus = MachinesStatus.Inspection;
+            break;
+
+    }
+
+    return machineStatus;
 }

@@ -1,5 +1,5 @@
 import {AppRoutes, MachinesStatus, RepairStage} from "../../constants";
-import {Repair} from "../../types/initialState.type";
+import {Break} from "../../types/initialState.type";
 import dayjs from "dayjs";
 import {Link} from "react-router-dom";
 import classNames from "classnames";
@@ -8,7 +8,7 @@ import {getDurationString} from "../../helpers/helpers";
 type MachinePropsType = {
     name: string,
     status: string,
-    currentRepairs?: Repair[],
+    currentRepairs?: Break[],
     id: string
 }
 
@@ -40,7 +40,7 @@ function Machine({name, status, currentRepairs, id} : MachinePropsType) {
             )}></span>
             <div className="machine__name-wrapper">
                 <span className="machine__name">{name}</span>
-                <span className="machine__status">{repairStage}</span>
+                <span className="machine__status">{status}</span>
             </div>
             {(!(repairStage === null) && !(repairStage === "Работает")) &&
                 <div className="machine__progress-bar progress-bar">

@@ -1,3 +1,5 @@
+export const TIMEOUT_SHOW_ERROR = 2000;
+
 export enum AppRoutes {
     Login = '/login',
     Root = '/',
@@ -46,3 +48,10 @@ export enum UserRoles {
 }
 
 export const Priority = ['Высокий - Неработает', 'Средний - Работает нештатно','Низкий - Требует внимания'];
+
+export enum APIRoute{
+    Machines = '/machines',
+    Breaks = '/breaks',
+    BreaksTypeByMachine = '/break-types-by-machine',
+    Login = '/users/login'
+}

@@ -1,36 +1,52 @@
-import {MachinesStatus, RepairStage, UserRoles} from "../constants";
+import {AuthorizationStatus, MachinesStatus, RepairStage, UserRoles} from "../constants";
 
-export type Repair = {
+export type Break = {
     id: string
     breakName: string,
-    registerPerson: string,
+    registerPerson: UserType,
     registerDate: string,
-    successPerson?: string,
+    successPerson?: UserType,
     successDate?: string,
-    repairingPerson?: string,
+    repairingPerson?: UserType,
     repairingDate?: string,
-    repairCompletedPerson?: string,
+    repairCompletedPerson?: UserType,
     repairCompletedDate?: string,
-    repairEndPerson?: string,
+    repairEndPerson?: UserType,
     repairEndDate?: string,
     comment?: string,
     priority: number,
     status: boolean,
-    stages: null | `${RepairStage}`,
+    stages: RepairStage | null,
+    machine: MachineType
 }
 
-export type Machine = {
+export type MachineType = {
     id: string,
     name: string,
-    status: `${MachinesStatus}`,
-    repairs: Repair[],
-    repairTypes: string[]
+    status: MachinesStatus,
+}
+
+export type BreaksTypeByMachine = {
+    id: string,
+    description: string,
+    machine: MachineType
+}
+
+export type UserType = {
+    id: string,
+    surname: string,
+    name: string,
+    middleName: string,
+    email: string,
+    role: UserRoles[]
 }
 
 export type InitialStateType = {
-    user: {
-    name: string,
-    role: `${UserRoles}`
-    }
-    machines: Machine[]
+    isLoading: boolean,
+    authorizationStatus: AuthorizationStatus,
+    error: string | null,
+    user: UserType,
+    machines: MachineType[],
+    breaksTypesByMachine: BreaksTypeByMachine[],
+    breaks: Break[]
 }

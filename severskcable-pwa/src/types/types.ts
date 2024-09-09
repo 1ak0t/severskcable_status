@@ -1,41 +1,72 @@
-import {Repair} from "./initialState.type";
+import {Break, MachineType, UserType} from "./initialState.type";
 import {MachinesStatus, RepairStage} from "../constants";
 
 export interface OptionTypes {
     value: string;
     label: string;
-};
+}
 
 export type CreateRepairType = {
+    description: string,
     machine: string,
-    repair: string
 }
 
 export type RepairElementType = {
-    machine: string,
-    machineStatus: `${MachinesStatus}`
-    repair: Repair,
+    machine: MachineType,
+    machineStatus: MachinesStatus
+    repair: Break,
 }
 
 export type NewBreakType = {
-    id: string,
-    machine: string,
     breakName: string,
+    registerPerson: string,
+    registerDate: string,
     priority: number,
-    operator: string,
-    breakDate: string,
     status: boolean,
-    stages: null | `${RepairStage}`,
+    stages: RepairStage | null,
+    machine: string
 }
 
 export type SetMachineStatusActionType = {
-    machine: string,
-    status: `${MachinesStatus}`
+    id: string,
+    name: string,
+    status: MachinesStatus
 }
 
 export type SetRepairStageType = {
-    repair: string,
-    user: string,
+    breakId: string,
+    machineId: string,
+    user: UserType,
     date: string,
-    stage: null | `${RepairStage}`
+    stage: null | RepairStage
+}
+
+export type RepairCompletedType = {
+    id: string,
+    repairCompletedPerson: UserType,
+    repairCompletedDate: string,
+    comment: string,
+    stages: RepairStage | null,
+    machine: MachineType
+}
+
+export type UpdateMachineStatusType = {
+    id: string,
+    status: MachinesStatus
+}
+
+export type UpdateBreakStageType = {
+    id: string,
+    successPerson?: string,
+    successDate?: string,
+    repairingPerson?: string,
+    repairingDate?: string,
+    repairCompletedPerson?: string,
+    repairCompletedDate?: string,
+    repairEndPerson?: string,
+    repairEndDate?: string,
+    comment?: string,
+    status?: boolean,
+    stages: RepairStage | null,
+    machine: string
 }

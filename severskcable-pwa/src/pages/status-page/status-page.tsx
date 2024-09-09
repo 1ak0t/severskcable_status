@@ -8,12 +8,8 @@ import {Link} from "react-router-dom";
 
 function StatusPage () {
     const machines = useAppSelector(state => state.machines);
-    const sortedMachines = [...machines].sort((machineA) => {
-        if (machineA.repairs.find(repair => !repair.status)) {
-            return -1;
-        }
-        return 0;
-    }).sort((machineA, machineB) => {
+    const breaks = useAppSelector(state => state.breaks);
+    const sortedMachines = [...machines].sort((machineA, machineB) => {
         if (machineA.status === MachinesStatus.Wrong) {
             return -1;
         }
@@ -31,8 +27,9 @@ function StatusPage () {
             <h1 className="status-page__title">Статусы оборудования</h1>
             <section className="status-page__machines">
                 {sortedMachines.map(machine => {
-                    if(machine.repairs.length > 0 && machine.repairs.find(repair => !repair.status)) {
-                        return <Machine name={machine.name} status={machine.status} currentRepairs={machine.repairs} id={machine.id} key={machine.id}/>;
+                    const breaksByMachine = breaks.filter(el => el.machine.id === machine.id);
+                    if(breaksByMachine.length > 0 && breaksByMachine.find(el => !el.status)) {
+                        return <Machine name={machine.name} status={machine.status} currentRepairs={breaksByMachine} id={machine.id} key={machine.id}/>;
                     } else {
                         return <Machine name={machine.name} status={machine.status} id={machine.id} key={machine.id}/>;
                     }
