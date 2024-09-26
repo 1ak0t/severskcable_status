@@ -1,9 +1,23 @@
-import axios, {AxiosInstance} from "axios";
+import axios, {AxiosError, AxiosInstance, AxiosResponse} from "axios";
 import {getToken} from "./token";
-import {toast} from "react-toastify";
+import {StatusCodes} from 'http-status-codes';
+import {processErrorHandle} from "./process-error-handle";
 
-export const BACKEND_URL = 'http://192.168.23.50:5000';
+const BACKEND_URL = 'https://corp.severskcable.ru:4875';
 const REQUEST_TIMEOUT = 5000;
+
+type DetailMessageType = {
+    type: string;
+    message: string;
+}
+
+const StatusCodeMapping: Record<number, boolean> = {
+    [StatusCodes.BAD_REQUEST]: true,
+    [StatusCodes.UNAUTHORIZED]: true,
+    [StatusCodes.NOT_FOUND]: true
+};
+
+const shouldDisplayError = (response: AxiosResponse) => !!StatusCodeMapping[response.status];
 
 export const createAPI = (): AxiosInstance => {
     const api = axios.create({
@@ -25,11 +39,10 @@ export const createAPI = (): AxiosInstance => {
 
     api.interceptors.response.use(
         (response) => response,
-        (error) => {
-            if (error.response) {
+        (error: AxiosError<DetailMessageType>) => {
+            if (error.response && shouldDisplayError(error.response)) {
                 const detailMessage = (error.response.data);
-
-                toast.warn(detailMessage.error);
+                processErrorHandle(detailMessage.message);
             }
 
             throw error;

@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/letsencrypt:/etc/letsencrypt/
+      - ./build:/usr/share/nginx/html
+    ports:
+      - "5477:5477"
+      - "5478:5478"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
