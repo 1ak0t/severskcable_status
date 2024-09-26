@@ -1,13 +1,16 @@
 import classNames from "classnames";
-import {MachinesStatus, RepairStage} from "../../constants";
+import {CommentType, MachinesStatus, RepairStage} from "../../constants";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {deleteRepair, setRepair} from "../../store/actions";
 import {useState} from "react";
 import {Break} from "../../types/initialState.type";
 import dayjs from "dayjs";
-import {getDurationString} from "../../helpers/helpers";
-import {RepairCompletedType} from "../../types/types";
-import {deleteBreakAction, updateBreakStageAction} from "../../store/api-actions";
+import {fetchImage, getDurationString, handleImageUpload} from "../../helpers/helpers";
+import {
+    updateBreakStageAction,
+    updateRepairCompletedImageAction,
+    updateRepairingImageAction,
+    updateSuccessImageAction
+} from "../../store/api-actions";
 
 type RepairElementProps = {
     repair: Break,
@@ -17,25 +20,39 @@ type RepairElementProps = {
 function BreakElement({repair, agreement}: RepairElementProps) {
     const dispatch = useAppDispatch();
     const currentUser = useAppSelector(state => state.user);
-    const [comment, setComment] = useState('');
+    const [successComment, setSuccessComment] = useState('');
+    const [successImage, setSuccessImage] = useState<File>();
+    const [successImageURL, setSuccessImageURL] = useState<string>();
+    const [successImageVisible, setSuccessImageVisible] = useState<boolean>(false);
+    const [registerImageURL, setRegisterImageURL] = useState<string>();
+    const [registerImageVisible, setRegisterImageVisible] = useState<boolean>(false);
+    const [repairingImage, setRepairingImage] = useState<File>();
+    const [repairingImageURL, setRepairingImageURL] = useState<string>();
+    const [repairingImageVisible, setRepairingImageVisible] = useState<boolean>(false);
+    const [repairCompletedImage, setRepairCompletedImage] = useState<File>();
+    const [repairCompletedImageURL, setRepairCompletedImageURL] = useState<string>();
+    const [repairCompletedImageVisible, setRepairCompletedImageVisible] = useState<boolean>(false);
+    const [repairingComment, setRepairingComment] = useState('');
+    const [repairCompletedComment, setRepairCompletedComment] = useState('');
+    const [repairEndComment, setRepairEndComment] = useState('');
 
-    const onCommentChange = (com: any) => {
-        setComment(com.target.value);
+    const onCommentChange = (com: any, type: CommentType) => {
+        switch (type) {
+            case CommentType.SuccessComment:
+                setSuccessComment(com.target.value);
+                break;
+            case CommentType.RepairingComment:
+                setRepairingComment(com.target.value);
+                break;
+            case CommentType.RepairCompletedComment:
+                setRepairCompletedComment(com.target.value);
+                break;
+            case CommentType.RepairEndComment:
+                setRepairEndComment(com.target.value);
+                break;
+        }
     };
 
-    const onSubmitHeadEngineer = () => {
-        const newRepair: RepairCompletedType = {
-            id: repair.id,
-            repairCompletedPerson: currentUser,
-            repairCompletedDate: dayjs().toString(),
-            comment: comment,
-            stages: RepairStage.RepairCompleted,
-            machine: repair.machine
-        }
-
-        dispatch(setRepair(newRepair));
-        dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.RepairCompleted, repairCompletedPerson: currentUser.id, repairCompletedDate: dayjs().toString(), comment: comment}));
-    }
 
     return(
         <div className={classNames(
@@ -62,16 +79,50 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                 <span>Дата регистрации:</span>
                 <span>{dayjs(repair.registerDate).format('H:mm DD-MM-YYYY')}</span>
             </div>
+            {repair.registerComment &&
+                <div className="repair-element__row">
+                    <span>Комментарий регистратора:</span>
+                    <span>{repair.registerComment}</span>
+                </div>
+            }
+            {repair.registerImage &&
+                <div className="repair-element__row">
+                    <span>Фото зарегистрировавшего:</span>
+                    <span onClick={() => fetchImage(repair.registerImage, setRegisterImageURL, registerImageURL, setRegisterImageVisible, registerImageVisible)}>Показать</span>
+                </div>
+            }
+            {registerImageURL && registerImageVisible && repair.registerImage &&
+                <div className="repair-element__row">
+                    <img src={registerImageURL} alt=""/>
+                </div>
+            }
             {(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
                 <>
-                    <div className="repair-element__row">
+                    {repair.successPerson && <div className="repair-element__row">
                         <span>Согласовал:</span>
                         <span>{repair.successPerson?.name} {repair.successPerson?.surname}</span>
-                    </div>
-                    <div className="repair-element__row">
+                    </div>}
+                    {repair.successDate && <div className="repair-element__row">
                         <span>Дата согласования:</span>
                         <span>{dayjs(repair.successDate).format('H:mm DD-MM-YYYY')}</span>
-                    </div>
+                    </div>}
+                    {repair.successComment &&
+                        <div className="repair-element__row">
+                            <span>Комментарий согласовавшего:</span>
+                            <span>{repair.successComment}</span>
+                        </div>
+                    }
+                    {repair.successImage &&
+                        <div className="repair-element__row">
+                            <span>Фото согласовавшего:</span>
+                            <span onClick={() => fetchImage(repair.successImage, setSuccessImageURL, successImageURL, setSuccessImageVisible, successImageVisible)}>Показать</span>
+                        </div>
+                    }
+                    {successImageURL && successImageVisible && repair.successImage &&
+                        <div className="repair-element__row">
+                            <img src={successImageURL} alt=""/>
+                        </div>
+                    }
                 </>
             }
             {(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
@@ -84,6 +135,23 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                         <span>Дата начала ремонта:</span>
                         <span>{dayjs(repair.repairingDate).format('H:mm DD-MM-YYYY')}</span>
                     </div>
+                    {repair.repairingComment &&
+                        <div className="repair-element__row">
+                            <span>Комментарий ремонтирующего:</span>
+                            <span>{repair.repairingComment}</span>
+                        </div>
+                    }
+                    {repair.repairingImage &&
+                        <div className="repair-element__row">
+                            <span>Фото до ремонта:</span>
+                            <span onClick={() => fetchImage(repair.repairingImage, setRepairingImageURL, repairingImageURL, setRepairingImageVisible, repairingImageVisible)}>Показать</span>
+                        </div>
+                    }
+                    {repairingImageURL && repairingImageVisible && repair.repairingImage &&
+                        <div className="repair-element__row">
+                            <img src={repairingImageURL} alt=""/>
+                        </div>
+                    }
                 </>
             }
             {(repair.stages === null ||repair.status || repair.stages === RepairStage.RepairCompleted) &&
@@ -102,34 +170,120 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                     </div>
                     <div className="repair-element__row">
                         <span>Что проделано:</span>
-                        <span>{repair.comment}</span>
+                        <span>{repair.repairCompletedComment}</span>
                     </div>
+                    {repair.repairEndComment &&
+                        <div className="repair-element__row">
+                            <span>Комментарий завершившего:</span>
+                            <span>{repair.repairEndComment}</span>
+                        </div>
+                    }
+                    {repair.repairCompletedImage &&
+                        <div className="repair-element__row">
+                            <span>Фото до после:</span>
+                            <span onClick={() => fetchImage(repair.repairCompletedImage, setRepairCompletedImageURL, repairCompletedImageURL, setRepairCompletedImageVisible, repairCompletedImageVisible)}>Показать</span>
+                        </div>
+                    }
+                    {repairCompletedImageURL && repairCompletedImageVisible && repair.repairCompletedImage &&
+                        <div className="repair-element__row">
+                            <img src={repairCompletedImageURL} alt=""/>
+                        </div>
+                    }
                 </>
             }
             {(agreement && repair.stages === RepairStage.Register) &&
                 <div className="repair-element__button-wrapper">
-                <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.RepairSuccess, successPerson: currentUser.id, successDate: dayjs().toString()}))}>Подтвердить</button>
-                    <button className="repair-element__button repair-element__button--reject" onClick={() => dispatch(deleteBreakAction(repair.id))}>Отклонить</button>
+                    <textarea onChange={(event) => onCommentChange(event, CommentType.SuccessComment)} cols={30}
+                              rows={10} placeholder="Комментарий к согласованию"></textarea>
+                    <input type="file" accept="image/png, image/jpeg" onChange={(evt) => handleImageUpload(evt, setSuccessImage)} />
+                    {successImage && <img src={URL.createObjectURL(successImage)} alt=""/>}
+                    <button className="repair-element__button repair-element__button--success"
+                            onClick={() => {
+                                dispatch(updateBreakStageAction({
+                                    id: repair.id,
+                                    machine: repair.machine.id,
+                                    stages: RepairStage.RepairSuccess,
+                                    successPerson: currentUser.id,
+                                    successDate: dayjs().toString(),
+                                    successComment: successComment,
+                                }));
+                                if (successImage) {
+                                    dispatch(updateSuccessImageAction({file: successImage, id: repair.id}));
+                                }
+                            }}>Подтвердить
+                    </button>
+                    <button className="repair-element__button repair-element__button--reject"
+                            onClick={() => {
+                                dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: null, status: true, successPerson: currentUser.id, successDate: dayjs().toString(), successComment: successComment}))
+                            }
+                    }>Отклонить
+                    </button>
                 </div>
             }
             {(agreement && repair.stages === RepairStage.RepairSuccess) &&
                 <div className="repair-element__button-wrapper">
-                    <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.Repairing, repairingPerson: currentUser.id, repairingDate: dayjs().toString()}))}>Начать ремонт</button>
+                    <textarea onChange={(event) => onCommentChange(event, CommentType.RepairingComment)} cols={30}
+                              rows={10} placeholder="Комментарий ремонту"></textarea>
+                    <input type="file" accept="image/png, image/jpeg" onChange={(evt) => handleImageUpload(evt, setRepairingImage)} />
+                    {repairingImage && <img src={URL.createObjectURL(repairingImage)} alt=""/>}
+                    <button className="repair-element__button repair-element__button--success"
+                            onClick={() => {
+                                dispatch(updateBreakStageAction({
+                                    id: repair.id,
+                                    machine: repair.machine.id,
+                                    stages: RepairStage.Repairing,
+                                    repairingPerson: currentUser.id,
+                                    repairingDate: dayjs().toString(),
+                                    repairingComment: repairingComment
+                                }));
+                                if (repairingImage) {
+                                    dispatch(updateRepairingImageAction({file: repairingImage, id: repair.id}));
+                                }
+                            }}>Начать ремонт
+                    </button>
                 </div>
             }
             {(agreement && repair.stages === RepairStage.Repairing) &&
                 <div className="repair-element__button-wrapper">
-                    <textarea onChange={onCommentChange} cols={30} rows={10} placeholder="Комментарий о проделанной работе (мин 20 символов)" required={true}></textarea>
-                    <button disabled={comment.length < 20} className={classNames(
+                    <textarea onChange={(event) => onCommentChange(event, CommentType.RepairCompletedComment)} cols={30} rows={10} placeholder="Комментарий о проделанной работе (мин 20 символов)" required={true}></textarea>
+                    <input type="file" accept="image/png, image/jpeg" onChange={(evt) => handleImageUpload(evt, setRepairCompletedImage)} />
+                    {repairCompletedImage && <img src={URL.createObjectURL(repairCompletedImage)} alt=""/>}
+                    <button disabled={repairCompletedComment.length < 20} className={classNames(
                         'repair-element__button repair-element__button--success',
-                        {'repair-element__button--inactive': comment.length < 20}
-                    )} onClick={onSubmitHeadEngineer}>Завершить ремонт</button>
+                        {'repair-element__button--inactive': repairCompletedComment.length < 20}
+                    )} onClick={() =>{
+                        dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.RepairCompleted, repairCompletedPerson: currentUser.id, repairCompletedDate: dayjs().toString(), repairCompletedComment: repairCompletedComment}));
+                        if (repairCompletedImage) {
+                            dispatch(updateRepairCompletedImageAction({file: repairCompletedImage, id: repair.id}));
+                        }
+                    }}>Завершить ремонт</button>
                 </div>
             }
             {(agreement && repair.stages === RepairStage.RepairCompleted) &&
                 <div className="repair-element__button-wrapper">
-                    <button className="repair-element__button repair-element__button--success" onClick={() => dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: null, status: true, repairEndPerson: currentUser.id, repairEndDate: dayjs().toString()}))}>Подтвердить</button>
-                    <button className="repair-element__button repair-element__button--reject" onClick={() => dispatch(updateBreakStageAction({id: repair.id, machine: repair.machine.id, stages: RepairStage.RepairSuccess, repairingPerson: repair.repairingPerson?.id, repairingDate: repair.repairingDate}))}>Отклонить</button>
+                    <textarea onChange={(event) => onCommentChange(event, CommentType.RepairEndComment)} cols={30}
+                              rows={10} placeholder="Комментарий по завершению ремонта"></textarea>
+                    <button className="repair-element__button repair-element__button--success"
+                            onClick={() => dispatch(updateBreakStageAction({
+                                id: repair.id,
+                                machine: repair.machine.id,
+                                stages: null,
+                                status: true,
+                                repairEndPerson: currentUser.id,
+                                repairEndDate: dayjs().toString(),
+                                repairEndComment: repairEndComment
+                            }))}>Подтвердить
+                    </button>
+                    <button className="repair-element__button repair-element__button--reject"
+                            onClick={() => dispatch(updateBreakStageAction({
+                                id: repair.id,
+                                machine: repair.machine.id,
+                                stages: RepairStage.RepairSuccess,
+                                repairingPerson: repair.repairingPerson?.id,
+                                repairingDate: repair.repairingDate,
+                                repairEndComment: repairEndComment
+                            }))}>Отклонить
+                    </button>
                 </div>
             }
         </div>

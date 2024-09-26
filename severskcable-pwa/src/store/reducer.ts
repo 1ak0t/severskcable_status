@@ -1,22 +1,20 @@
-import {Break, InitialStateType} from "../types/initialState.type";
+import {InitialStateType} from "../types/initialState.type";
 import {createReducer} from "@reduxjs/toolkit";
 import {
     deleteRepair,
     loadBreaks,
     loadBreaksTypeByMachine,
-    loadMachines, loadUser, requireAuthorization, setError,
+    loadMachines, loadUser, requireAuthorization,
     setMachineStatus,
     setNewBreak,
-    setNewRepairType,
-    setRepair,
-    setRepairStage
+    setNewRepairType, setRegisterImage, setRepairCompletedImage, setRepairingImage,
+    setRepairStage, setSuccessImage
 } from "./actions";
-import {AuthorizationStatus, MachinesStatus, RepairStage, UserRoles} from "../constants";
+import {AuthorizationStatus, MachinesStatus, RepairStage} from "../constants";
 
 const initialState: InitialStateType = {
     isLoading: false,
     authorizationStatus: AuthorizationStatus.Auth,
-    error: null,
     user: {
         id: '',
         surname: '',
@@ -47,9 +45,6 @@ const reducer = createReducer(initialState, builder => {
         .addCase(requireAuthorization, (state, action) => {
             state.authorizationStatus = action.payload;
         })
-        .addCase(setError, (state, action) => {
-            state.error = action.payload;
-        })
         .addCase(setNewRepairType, (state, action) => {
             state.breaksTypesByMachine = state.breaksTypesByMachine.concat(action.payload);
         })
@@ -78,21 +73,10 @@ const reducer = createReducer(initialState, builder => {
                     break;
 
             }
-            state.breaks.find(el => el.machine.id === action.payload.machine.id)
         })
         .addCase(setMachineStatus, (state, action) => {
             const currentMachineIndex = state.machines.findIndex(machine => machine.id === action.payload.id);
             state.machines[currentMachineIndex].status = action.payload.status;
-        })
-        .addCase(setRepair, (state, action) => {
-            const currentMachineIndex = state.machines.findIndex(machine => machine.id === action.payload.machine.id);
-            const currentBreakIndex  = state.breaks.findIndex(breaks => breaks.id === action.payload.id);
-            state.breaks[currentBreakIndex].comment = action.payload.comment;
-            state.breaks[currentBreakIndex].repairCompletedDate = action.payload.repairCompletedDate;
-            state.breaks[currentBreakIndex].repairCompletedPerson = action.payload.repairCompletedPerson;
-            if (state.breaks[currentBreakIndex].status === true) {
-                state.machines[currentMachineIndex].status = MachinesStatus.Work;
-            }
         })
         .addCase(setRepairStage, (state, action) => {
             const currentBreakIndex = state.breaks.findIndex(el => el.id === action.payload.id);
@@ -103,23 +87,26 @@ const reducer = createReducer(initialState, builder => {
                 case RepairStage.RepairSuccess: {
                     state.breaks[currentBreakIndex].successPerson = action.payload.successPerson;
                     state.breaks[currentBreakIndex].successDate = action.payload.successDate;
+                    state.breaks[currentBreakIndex].successComment = action.payload.successComment;
                     break;
                 }
                 case RepairStage.Repairing: {
                     state.breaks[currentBreakIndex].repairingPerson = action.payload.repairingPerson;
                     state.breaks[currentBreakIndex].repairingDate = action.payload.repairingDate;
+                    state.breaks[currentBreakIndex].repairingComment = action.payload.repairingComment;
                     break;
                 }
                 case RepairStage.RepairCompleted: {
                     state.breaks[currentBreakIndex].repairCompletedPerson = action.payload.repairCompletedPerson;
                     state.breaks[currentBreakIndex].repairCompletedDate = action.payload.repairCompletedDate;
+                    state.breaks[currentBreakIndex].repairCompletedComment = action.payload.repairCompletedComment;
                     break;
                 }
             }
 
             if (action.payload.stages === null) {
                 state.breaks[currentBreakIndex].status = true;
-                if (!(state.breaks.filter(el => el.machine.id === state.machines[currentMachineIndex].id))) {
+                if (!(state.breaks.find(el => el.machine.id === state.machines[currentMachineIndex].id))) {
                     state.machines[currentMachineIndex].status = MachinesStatus.Work;
                 }
             }
@@ -132,6 +119,22 @@ const reducer = createReducer(initialState, builder => {
             if (state.machines[currentMachineIndex].status !== MachinesStatus.Work) {
                 state.machines[currentMachineIndex].status = MachinesStatus.Work;
             }
+        })
+        .addCase(setSuccessImage, (state, action) => {
+            const currentBreakIndex = state.breaks.findIndex(el => el.id === action.payload.breakId);
+            state.breaks[currentBreakIndex].successImage = action.payload.successImage;
+        })
+        .addCase(setRegisterImage, (state, action) => {
+            const currentBreakIndex = state.breaks.findIndex(el => el.id === action.payload.breakId);
+            state.breaks[currentBreakIndex].registerImage = action.payload.registerImage;
+        })
+        .addCase(setRepairingImage, (state, action) => {
+            const currentBreakIndex = state.breaks.findIndex(el => el.id === action.payload.breakId);
+            state.breaks[currentBreakIndex].repairingImage = action.payload.repairingImage;
+        })
+        .addCase(setRepairCompletedImage, (state, action) => {
+            const currentBreakIndex = state.breaks.findIndex(el => el.id === action.payload.breakId);
+            state.breaks[currentBreakIndex].repairCompletedImage = action.payload.repairCompletedImage;
         })
 })
 

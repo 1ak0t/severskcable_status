@@ -2,16 +2,23 @@ import {createAsyncThunk} from "@reduxjs/toolkit";
 import {AppDispatch, State} from "../types/state.type";
 import {AxiosInstance} from "axios";
 import {Break, BreaksTypeByMachine, MachineType} from "../types/initialState.type";
-import {APIRoute, AppRoutes, AuthorizationStatus, MachinesStatus, TIMEOUT_SHOW_ERROR} from "../constants";
+import {APIRoute, AppRoutes, AuthorizationStatus, MachinesStatus} from "../constants";
 import {
     deleteRepair,
     isLoadingAction,
     loadBreaks,
     loadBreaksTypeByMachine,
-    loadMachines, loadUser,
+    loadMachines,
+    loadUser,
     redirectToRoute,
     requireAuthorization,
-    setError, setMachineStatus, setNewBreak, setNewRepairType, setRepairStage
+    setMachineStatus,
+    setNewBreak,
+    setNewRepairType,
+    setRegisterImage, setRepairCompletedImage,
+    setRepairingImage,
+    setRepairStage,
+    setSuccessImage
 } from "./actions";
 import {AuthDataType} from "../types/auth-data.type";
 import {UserLoggedDataType} from "../types/user-data.type";
@@ -19,16 +26,13 @@ import {dropToken, saveToken} from "../services/token";
 import {store} from "./index";
 import {CreateRepairType, NewBreakType, UpdateBreakStageType, UpdateMachineStatusType} from "../types/types";
 import {getMachineStatusByPriority} from "../helpers/helpers";
+import {
+    registerImageActionType,
+    repairCompletedImageActionType,
+    repairingImageActionType,
+    successImageResponse
+} from "../types/image-response";
 
-export const clearErrorAction = createAsyncThunk(
-    'clearErrorAction',
-    () => {
-        setTimeout(
-            () => store.dispatch(setError(null)),
-            TIMEOUT_SHOW_ERROR,
-        );
-    },
-);
 
 export const fetchAllData = createAsyncThunk<void, undefined, {
     dispatch: AppDispatch;
@@ -144,9 +148,17 @@ export const createNewBreakAction = createAsyncThunk<void, NewBreakType, {
 }>(
     'createNewBreakAction',
     async (arg, {dispatch, extra: api}) => {
+        let registerImg = null;
+        if (arg.registerImage) {
+            registerImg = arg.registerImage;
+            delete arg.registerImage;
+        }
         const {data} = await api.post<Break>(APIRoute.Breaks, arg);
         dispatch(updateMachineStatusAction({id: data.machine.id, status: getMachineStatusByPriority(data.priority)}));
         dispatch(setNewBreak(data));
+        if (registerImg && data.id) {
+            dispatch(updateRegisterImageAction({file: registerImg, id: data.id}));
+        }
     },
 );
 
@@ -191,5 +203,73 @@ export const deleteBreakAction = createAsyncThunk<void, string, {
         if (machine && (find === undefined)) {
             dispatch(updateMachineStatusAction({status: MachinesStatus.Work, id: machine}));
         }
+    },
+);
+
+export const updateSuccessImageAction = createAsyncThunk<void, {file: File, id: string}, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'updateSuccessImageAction',
+    async (arg, {dispatch, extra: api}) => {
+        const updateUrl = APIRoute.Breaks + `/${arg.id}/success-image`;
+        const formData = new FormData();
+        formData.set('image', arg.file);
+        const { data } = await api.post<successImageResponse>(updateUrl, formData, {
+            headers: {'Content-Type': 'multipart/form-data'},
+        });
+        dispatch(setSuccessImage({breakId: arg.id, successImage: data.successImage}));
+    },
+);
+
+export const updateRegisterImageAction = createAsyncThunk<void, {file: File, id: string}, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'updateRegisterImageAction',
+    async (arg, {dispatch, extra: api}) => {
+        const updateUrl = APIRoute.Breaks + `/${arg.id}/register-image`;
+        const formData = new FormData();
+        formData.set('image', arg.file);
+        const { data } = await api.post<registerImageActionType>(updateUrl, formData, {
+            headers: {'Content-Type': 'multipart/form-data'},
+        });
+        dispatch(setRegisterImage({breakId: arg.id, registerImage: data.registerImage}));
+    },
+);
+
+export const updateRepairingImageAction = createAsyncThunk<void, {file: File, id: string}, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'updateRepairingImageAction',
+    async (arg, {dispatch, extra: api}) => {
+        const updateUrl = APIRoute.Breaks + `/${arg.id}/repairing-image`;
+        const formData = new FormData();
+        formData.set('image', arg.file);
+        const { data } = await api.post<repairingImageActionType>(updateUrl, formData, {
+            headers: {'Content-Type': 'multipart/form-data'},
+        });
+        dispatch(setRepairingImage({breakId: arg.id, repairingImage: data.repairingImage}));
+    },
+);
+
+export const updateRepairCompletedImageAction = createAsyncThunk<void, {file: File, id: string}, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'updateRepairCompletedImageAction',
+    async (arg, {dispatch, extra: api}) => {
+        const updateUrl = APIRoute.Breaks + `/${arg.id}/repair-completed-image`;
+        const formData = new FormData();
+        formData.set('image', arg.file);
+        const { data } = await api.post<repairCompletedImageActionType>(updateUrl, formData, {
+            headers: {'Content-Type': 'multipart/form-data'},
+        });
+        dispatch(setRepairCompletedImage({breakId: arg.id, repairCompletedImage: data.repairCompletedImage}));
     },
 );

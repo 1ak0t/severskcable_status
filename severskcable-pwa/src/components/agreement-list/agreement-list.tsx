@@ -7,24 +7,24 @@ function AgreementList() {
     const currentBreaks = breaks.filter(el => !el.status);
 
     function getITRAgreementList() {
-        if (user.role.filter(role => role === UserRoles.ITR) || user.role.filter(role => role === UserRoles.CEO) || user.role.filter(role => role === UserRoles.Admin)) {
+        if (user.role.find(role => role === UserRoles.ITR) || user.role.find(role => role === UserRoles.CEO) || user.role.find(role => role === UserRoles.Admin)) {
             return (
-               <>
-                   {currentBreaks.find(repair => repair.stages === RepairStage.Register) &&
-                       <h2 className="agreement-list__sub-title">Подтвердить поломку</h2>
-                   }
-                   {currentBreaks.filter(repair => repair.stages === RepairStage.Register).map(repair => <BreakElement repair={repair} agreement={true} key={repair.breakName}/>)}
-                   {currentBreaks.find(repair => repair.stages === RepairStage.RepairCompleted) &&
-                       <h2 className="agreement-list__sub-title">Принять ремонт</h2>
-                   }
-                   {currentBreaks.filter(repair => repair.stages === RepairStage.RepairCompleted).map(repair => <BreakElement repair={repair} agreement={true} key={repair.breakName}/>)}
-               </>
+                <>
+                    {currentBreaks.find(repair => repair.stages === RepairStage.Register) &&
+                        <h2 className="agreement-list__sub-title">Подтвердить поломку</h2>
+                    }
+                    {currentBreaks.filter(repair => repair.stages === RepairStage.Register).map(repair => <BreakElement repair={repair} agreement={true} key={repair.breakName}/>)}
+                    {currentBreaks.find(repair => repair.stages === RepairStage.RepairCompleted) &&
+                        <h2 className="agreement-list__sub-title">Принять ремонт</h2>
+                    }
+                    {currentBreaks.filter(repair => repair.stages === RepairStage.RepairCompleted).map(repair => <BreakElement repair={repair} agreement={true} key={repair.breakName}/>)}
+                </>
             );
         }
     }
 
     function getEngineerAgreementList() {
-        if (user.role.filter(role => role === UserRoles.Engineers)) {
+        if (user.role.find(role => role === UserRoles.Engineers) || user.role.find(role => role === UserRoles.HeadEngineer)) {
             return (
                 <>
                     {currentBreaks.find(repair => repair.stages === RepairStage.RepairSuccess) &&
@@ -37,7 +37,7 @@ function AgreementList() {
     }
 
     function getHeadEngineerAgreementList() {
-        if (user.role.filter(role => role === UserRoles.HeadEngineer)) {
+        if (user.role.find(role => role === UserRoles.HeadEngineer)) {
             return (
                 <>
                     {currentBreaks.find(repair => repair.stages === RepairStage.Repairing) &&

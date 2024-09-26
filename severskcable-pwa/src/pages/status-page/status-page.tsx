@@ -10,6 +10,22 @@ function StatusPage () {
     const machines = useAppSelector(state => state.machines);
     const breaks = useAppSelector(state => state.breaks);
     const sortedMachines = [...machines].sort((machineA, machineB) => {
+        if (machineA.status === MachinesStatus.Inspection) {
+            return -1;
+        }
+        if (machineB.status === MachinesStatus.Work) {
+            return 1;
+        }
+        return 0;
+    }).sort((machineA, machineB) => {
+        if (machineA.status === MachinesStatus.Warning) {
+            return -1;
+        }
+        if (machineB.status === MachinesStatus.Inspection) {
+            return 1;
+        }
+        return 0;
+    }).sort((machineA, machineB) => {
         if (machineA.status === MachinesStatus.Wrong) {
             return -1;
         }

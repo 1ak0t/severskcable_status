@@ -14,15 +14,15 @@ function BottomMenu () {
     function getAgreementCount() {
         let count = 0;
 
-        if (user.role.filter(role => role === UserRoles.ITR) || user.role.filter(role => role === UserRoles.CEO) || user.role.filter(role => role === UserRoles.Admin)) {
+        if (user.role.find(role => role === UserRoles.ITR) || user.role.find(role => role === UserRoles.CEO) || user.role.find(role => role === UserRoles.Admin)) {
             count+=repairsRegister.length + repairsCompleted.length;
         }
 
-        if (user.role.filter(role => role === UserRoles.HeadEngineer)) {
+        if (user.role.find(role => role === UserRoles.HeadEngineer)) {
             count+=repairsRepairing.length;
         }
 
-        if (user.role.filter(role => role === UserRoles.Engineers)) {
+        if (user.role.find(role => role === UserRoles.Engineers)) {
             count+=repairsSuccess.length;
         }
 
@@ -43,15 +43,15 @@ function BottomMenu () {
                     <img src="/icons/menu-icon/menu-breaks-icon.svg" alt=""/>
                     Текущие<br></br>поломки
                 </Link>
-                {(user.role.filter(role => role === UserRoles.Admin)  || user.role.filter(role => role === UserRoles.CEO)) && <Link to={AppRoutes.Root} className="bottom-menu__button">
+                {(user.role.find(role => role === UserRoles.Admin)  || user.role.find(role => role === UserRoles.CEO)) && <Link to={AppRoutes.Root} className="bottom-menu__button">
                     <img src="/icons/menu-icon/menu-analitics-icon.svg" alt=""/>
                     Статистика<br></br>поломок
                 </Link>}
-                {(user.role.filter(role => role === UserRoles.Operator)) && <Link to={AppRoutes.Agreement} className="bottom-menu__button">
+                <Link to={AppRoutes.Agreement} className="bottom-menu__button">
                     {getAgreementCount() > 0 && <span className="bottom-menu__breaks-counter">{getAgreementCount()}</span>}
                     <img src="/icons/menu-icon/menu-success-icon.svg" alt=""/>
                     Требуют<br></br>подтверждения
-                </Link>}
+                </Link>
                 <Link to={AppRoutes.Root} className="bottom-menu__button">
                     <img src="/icons/menu-icon/menu-notification-icon.svg" alt=""/>
                     Уведомления
