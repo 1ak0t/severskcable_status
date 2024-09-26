@@ -4,12 +4,15 @@ import Select from "react-select";
 import {useState} from "react";
 import {AppRoutes, Priority, RepairStage} from "../../constants";
 import CreatableSelect from "react-select/creatable";
-import {setNewBreak, setNewRepairType} from "../../store/actions";
 import dayjs from "dayjs";
 import {useNavigate} from "react-router-dom";
-import {getPriorityNumber} from "../../helpers/helpers";
+import {getPriorityNumber, handleImageUpload} from "../../helpers/helpers";
 import {MachineType} from "../../types/initialState.type";
-import {createNewBreakAction, createNewBreakTypeAction, fetchBreakTypesByMachine} from "../../store/api-actions";
+import {
+    createNewBreakAction,
+    createNewBreakTypeAction,
+    fetchBreakTypesByMachine
+} from "../../store/api-actions";
 
 function BreakForm() {
     const dispatch = useAppDispatch();
@@ -25,6 +28,7 @@ function BreakForm() {
     const [currentPriority, setCurrentPriority] = useState('');
     const [priorityList, setPriorityList] = useState<OptionTypes[]>([]);
     const [isOpenPriorityList, setIsOpenPriorityList] = useState(false);
+    const [registerImage, setRegisterImage] = useState<File>();
     let machineList: OptionTypes[] = [];
     machines.map(machine => machineList.push({label: machine.name, value: machine.name}));
 
@@ -103,7 +107,7 @@ function BreakForm() {
 
     const onBreakSubmit = () => {
         if (currentMachine) {
-            const data: NewBreakType = {
+            let data: NewBreakType = {
                 machine: currentMachine.id,
                 breakName: currentRepair,
                 priority: getPriorityNumber(currentPriority),
@@ -111,6 +115,10 @@ function BreakForm() {
                 registerDate: dayjs().toString(),
                 status: false,
                 stages: RepairStage.Register
+            }
+
+            if (registerImage) {
+                data = {...data, registerImage: registerImage};
             }
 
             dispatch(createNewBreakAction(data));
@@ -156,6 +164,9 @@ function BreakForm() {
                     required={true}
                     noOptionsMessage={() => 'Нет вариантов'}
                 />
+                <input type="file" accept="image/png, image/jpeg"
+                       onChange={(evt) => handleImageUpload(evt, setRegisterImage)}/>
+                {registerImage && <img src={URL.createObjectURL(registerImage)} alt=""/>}
                 <button className="break-form__submit" type="submit" onClick={onBreakSubmit}>Отправить</button>
             </div>
             <div className="break-form__result">

@@ -4,7 +4,6 @@ import {reducer} from "../reducer";
 import browserHistory from "../../browser-history";
 
 type Reducer = ReturnType<typeof reducer>;
-type actionType = {payload: string, type: string}
 
 
 export const redirect: Middleware<unknown, Reducer> =

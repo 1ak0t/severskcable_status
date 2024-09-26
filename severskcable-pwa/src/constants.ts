@@ -9,7 +9,7 @@ export enum AppRoutes {
     GoodSend = '/good-send',
     MachineBreaks = '/machine-breaks',
     NotFound = '*',
-    Agreement = '/agreement'
+    Agreement = '/agreement',
 }
 
 export enum MachinesStatus {
@@ -17,6 +17,13 @@ export enum MachinesStatus {
     Warning = "Работает нештатно",
     Inspection = "Требует внимания",
     Wrong = "Поломка"
+}
+
+export enum MachinesStatusPriority {
+    "Работает",
+    "Работает нештатно",
+    "Требует внимания",
+    "Поломка"
 }
 
 export enum AuthorizationStatus {
@@ -29,6 +36,14 @@ export enum RepairPriority {
     High = 1,
     Medium = 2,
     Low = 3
+}
+
+export enum CommentType {
+    RegisterComment ,
+    SuccessComment,
+    RepairingComment ,
+    RepairCompletedComment ,
+    RepairEndComment ,
 }
 
 export enum RepairStage {
@@ -53,5 +68,6 @@ export enum APIRoute{
     Machines = '/machines',
     Breaks = '/breaks',
     BreaksTypeByMachine = '/break-types-by-machine',
-    Login = '/users/login'
+    Login = '/users/login',
+    Images = '/upload/'
 }
