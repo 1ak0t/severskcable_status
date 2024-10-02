@@ -13,6 +13,19 @@ import 'react-toastify/dist/ReactToastify.css';
 store.dispatch(checkAuthAction());
 store.dispatch(fetchAllData());
 
+const messageChannel = new MessageChannel();
+
+if (navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({
+        type: 'INIT_PORT',
+    }, [messageChannel.port2]);
+}
+
+messageChannel.port1.onmessage = (event) => {
+    store.dispatch(fetchAllData());
+};
+
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

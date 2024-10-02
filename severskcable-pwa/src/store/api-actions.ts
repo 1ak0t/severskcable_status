@@ -98,6 +98,7 @@ export const checkAuthAction = createAsyncThunk<void, undefined, {
             dispatch(requireAuthorization(AuthorizationStatus.Auth));
         } catch {
             dispatch(requireAuthorization(AuthorizationStatus.NoAuth));
+            dropToken();
         }
     },
 );
