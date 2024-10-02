@@ -10,13 +10,77 @@ import BreaksListPage from "./pages/breaks-list-page/breaks-list-page";
 import GoodSend from "./pages/good-send/good-send";
 import MachineBreaksPage from "./pages/machine-breaks-page/machine-breaks-page";
 import AgreementPage from "./pages/agreement-page/agreement-page";
-import {useAppSelector} from "./hooks";
+import {useAppDispatch, useAppSelector} from "./hooks";
 import HistoryRouter from "./components/history-route/history-route";
 import browserHistory from "./browser-history";
+import {useEffect} from "react";
+import {fetchAllData} from "./store/api-actions";
+import {BroadcastChannel} from "node:worker_threads";
 
 
 function App () {
-    const authorizationStatus = useAppSelector(state => state.authorizationStatus);
+    const {authorizationStatus, user} = useAppSelector(state => state);
+    const dispatch = useAppDispatch();
+
+
+
+    const publicVapidKey = 'BG2M57wQ4s6MhyXhryYdfpmaPGUSWhZgbWGf7kHkNTfMaVbIC7HIRaeq5h4wr9BmREx_toP0DvJAkPTfuVBgTP8';
+
+    const urlBase64ToUint8Array = (base64String: string) => {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    };
+
+    const send = async () => {
+        const register = await navigator.serviceWorker.ready;
+
+        if (!register.pushManager) {
+            throw { errorCode: "PushManagerUnavailable" };
+        }
+
+        const existingSubscription = await register.pushManager.getSubscription();
+
+        if (existingSubscription) {
+            throw { errorCode: "ExistingSubscription" };
+        }
+
+
+        const subscription = await register.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+        });
+
+        if (user.id) {
+            await fetch(`http://localhost:5000/users/${user.id}/subscribe`, {
+                method: 'POST',
+                body: JSON.stringify(subscription),
+                headers: {
+                    'content-type': 'application/json'
+                }
+            });
+        }
+    };
+
+    useEffect(() => {
+
+        if ('serviceWorker' in navigator) {
+            send().catch(err => console.error(err));
+        }
+    }, [user]);
+
+    useEffect(() => {
+
+    }, []);
 
     return(
         <HelmetProvider>
