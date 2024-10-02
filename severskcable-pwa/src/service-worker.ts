@@ -12,7 +12,8 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import {StaleWhileRevalidate} from 'workbox-strategies';
+import {BroadcastChannel} from "node:worker_threads";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -71,10 +72,31 @@ registerRoute(
 
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
+let getVersionPort: any;
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+    if (event.data && event.data.type === 'INIT_PORT') {
+        getVersionPort = event.ports[0];
+    }
+});
+
+self.addEventListener('push', e => {
+
+
+    getVersionPort.postMessage({ payload: "Reload" });
+
+    if (e.data) {
+        const data = e.data.json();
+
+        e.waitUntil(
+            self.registration.showNotification(data.title, {
+                body: data.text,
+                icon: data.img
+            })
+        );
+    }
 });
 
 // Any other custom service worker logic can go here.
