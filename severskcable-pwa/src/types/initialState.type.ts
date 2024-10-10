@@ -28,6 +28,12 @@ export type Break = {
     machine: MachineType
 }
 
+export type NotificationType = {
+    title: string,
+    text: string,
+    createdAt: string
+}
+
 export type MachineType = {
     id: string,
     name: string,
@@ -46,11 +52,12 @@ export type UserType = {
     name: string,
     middleName: string,
     email: string,
-    role: UserRoles[]
+    role: UserRoles[],
+    notificationsCount: number
 }
 
 export type InitialStateType = {
-    isLoading: boolean,
+    isDataLoading: boolean,
     authorizationStatus: AuthorizationStatus,
     user: UserType,
     machines: MachineType[],

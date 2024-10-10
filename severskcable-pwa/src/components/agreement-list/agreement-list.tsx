@@ -1,10 +1,15 @@
 import {useAppSelector} from "../../hooks";
 import BreakElement from "../break-element/break-element";
 import {RepairStage, UserRoles} from "../../constants";
+import {getUser} from "../../store/user-process/selectors";
+import {getBreaks} from "../../store/data-process/selectors";
+import {useEffect, useState} from "react";
 
 function AgreementList() {
-    const { user,breaks} = useAppSelector(state => state);
+    const user = useAppSelector(getUser);
+    const breaks = useAppSelector(getBreaks);
     const currentBreaks = breaks.filter(el => !el.status);
+    const [delay, setDelay] = useState(true);
 
     function getITRAgreementList() {
         if (user.role.find(role => role === UserRoles.ITR) || user.role.find(role => role === UserRoles.CEO) || user.role.find(role => role === UserRoles.Admin)) {

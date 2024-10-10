@@ -1,9 +1,10 @@
 import {useAppSelector} from "../../hooks";
 import BreakElement from "../break-element/break-element";
 import {RepairStage} from "../../constants";
+import {getBreaks} from "../../store/data-process/selectors";
 
 function BreaksList() {
-    const {breaks} = useAppSelector(state => state);
+    const breaks = useAppSelector(getBreaks);
     const currentsBreaks = breaks.filter(el => !el.status);
 
     currentsBreaks.sort(function (a,b) {

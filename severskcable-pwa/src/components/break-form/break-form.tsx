@@ -13,12 +13,25 @@ import {
     createNewBreakTypeAction,
     fetchBreakTypesByMachine
 } from "../../store/api-actions";
+import {
+    getBreakCreatedStatus,
+    getBreakCreatingStatus,
+    getBreaksTypesByMachine,
+    getMachines
+} from "../../store/data-process/selectors";
+import {getUser} from "../../store/user-process/selectors";
+import SendingStatusPage from "../sending-status-page/sending-status-page";
+import {increaseNotificationCount} from "../../store/user-process/user-process";
 
 function BreakForm() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const {machines, user, breaksTypesByMachine} = useAppSelector(state => state);
+    const machines = useAppSelector(getMachines);
+    const user = useAppSelector(getUser);
+    const breaksTypesByMachine = useAppSelector(getBreaksTypesByMachine);
+    const isCreatingBreak = useAppSelector(getBreakCreatingStatus);
+    const isCreatedBreak = useAppSelector(getBreakCreatedStatus);
     const [currentMachine, setCurrentMachine] = useState<null | MachineType>(null);
     const [isMachineSelected, setIsMachineSelected] = useState(true);
     const [currentRepair, setCurrentRepair] = useState('');
@@ -49,7 +62,6 @@ function BreakForm() {
         if (machine){
             setCurrentMachine(machine);
         }
-        dispatch(fetchBreakTypesByMachine())
         setCurrentRepair('');
         setCurrentPriority('');
         setIsOpenRepairList(false);
@@ -122,9 +134,15 @@ function BreakForm() {
             }
 
             dispatch(createNewBreakAction(data));
-            navigate(AppRoutes.GoodSend);
+            dispatch(increaseNotificationCount())
         }
     };
+
+    if (isCreatingBreak || isCreatedBreak !== null) {
+        return (
+            <SendingStatusPage />
+        );
+    }
 
     return(
         <>

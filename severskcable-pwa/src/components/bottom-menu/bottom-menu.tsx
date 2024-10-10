@@ -1,10 +1,15 @@
 import {Link} from "react-router-dom";
 import {AppRoutes, RepairStage, UserRoles} from "../../constants";
-import {useAppSelector} from "../../hooks";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {getUser} from "../../store/user-process/selectors";
+import {getBreaks} from "../../store/data-process/selectors";
+import {fetchAllData, fetchNotifications, resetNotificationCountAction} from "../../store/api-actions";
 
 function BottomMenu () {
-    const {user, breaks} = useAppSelector(state => state);
+    const user = useAppSelector(getUser);
+    const breaks = useAppSelector(getBreaks);
     const currentBreaks = breaks.filter(el => !el.status);
+    const dispatch = useAppDispatch();
 
     const repairsRegister = currentBreaks.filter(repair => repair.stages === RepairStage.Register);
     const repairsSuccess = currentBreaks.filter(repair => repair.stages === RepairStage.RepairSuccess);
@@ -32,7 +37,7 @@ function BottomMenu () {
     return(
         <>
             <div className="bottom-menu">
-                <Link to={AppRoutes.Root} className="bottom-menu__button">
+                <Link to={AppRoutes.Root} className="bottom-menu__button" onClick={() => dispatch(fetchAllData())}>
                     <img src="/icons/menu-icon/menu-status-icon.svg" alt=""/>
                     Статусы<br></br>оборудования
                 </Link>
@@ -52,9 +57,10 @@ function BottomMenu () {
                     <img src="/icons/menu-icon/menu-success-icon.svg" alt=""/>
                     Требуют<br></br>подтверждения
                 </Link>
-                <Link to={AppRoutes.Root} className="bottom-menu__button">
+                <Link to={AppRoutes.Notifications} className="bottom-menu__button" onClick={() => dispatch(fetchNotifications())}>
+                    {user.notificationsCount > 0 && <span className="bottom-menu__breaks-counter">{user.notificationsCount}</span>}
                     <img src="/icons/menu-icon/menu-notification-icon.svg" alt=""/>
-                    Уведомления
+                    <br></br>Уведомления
                 </Link>
             </div>
         </>

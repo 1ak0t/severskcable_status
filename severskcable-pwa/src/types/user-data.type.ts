@@ -8,4 +8,5 @@ export type UserLoggedDataType = {
     name: string;
     middleName: string;
     role: UserRoles[];
+    notificationsCount: number;
 };

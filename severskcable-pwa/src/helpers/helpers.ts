@@ -52,7 +52,7 @@ export const handleImageUpload = (evt: ChangeEvent<HTMLInputElement>, setImageTy
     setImageType(file);
 };
 
-export const fetchImage = async (imageName: string | undefined, setImg: any, imgURL: string | undefined, setImgVisible: any, imgVisible: boolean) => {
+export const fetchImageTest = async (imageName: string | undefined, setImg: any, imgURL: string | undefined, setImgVisible: any, imgVisible: boolean) => {
     if(!imgURL) {
         const imageUrl = BACKEND_URL + APIRoute.Images + imageName;
         const res = await fetch(imageUrl);
@@ -62,3 +62,4 @@ export const fetchImage = async (imageName: string | undefined, setImg: any, img
     }
     setImgVisible(!imgVisible);
 };
+//"blob:http://localhost:3000/5e080c48-e9c5-40c4-b7c0-e7eff65fc1bf"
