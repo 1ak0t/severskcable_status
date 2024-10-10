@@ -3,11 +3,12 @@ import {useAppSelector} from "../../hooks";
 import {AppRoutes} from "../../constants";
 import BreakElement from "../../components/break-element/break-element";
 import BottomMenu from "../../components/bottom-menu/bottom-menu";
+import {getBreaks, getMachines} from "../../store/data-process/selectors";
 
 function MachineBreaksPage() {
     const {machineId} = useParams();
-    const machines = useAppSelector(state => state.machines);
-    const breaks = useAppSelector(state => state.breaks);
+    const machines = useAppSelector(getMachines);
+    const breaks = useAppSelector(getBreaks);
     const currentMachine = machines.find(machine => machine.id === machineId);
 
     if (currentMachine) {

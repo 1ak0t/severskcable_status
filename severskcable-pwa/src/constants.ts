@@ -10,6 +10,7 @@ export enum AppRoutes {
     MachineBreaks = '/machine-breaks',
     NotFound = '*',
     Agreement = '/agreement',
+    Notifications = '/notifications'
 }
 
 export enum MachinesStatus {
@@ -69,5 +70,13 @@ export enum APIRoute{
     Breaks = '/breaks',
     BreaksTypeByMachine = '/break-types-by-machine',
     Login = '/users/login',
-    Images = '/upload/'
+    Images = '/upload/',
+    Logout = '/logout',
+    Notifications = '/notifications',
+    Users = '/users'
+}
+
+export enum NameSpace {
+    Data = 'DATA',
+    User = 'USER',
 }

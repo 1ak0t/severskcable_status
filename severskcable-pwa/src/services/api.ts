@@ -2,7 +2,7 @@ import axios, {AxiosInstance} from "axios";
 import {getToken} from "./token";
 import {toast} from "react-toastify";
 
-export const BACKEND_URL = 'https://corp.severskcable.ru:4875';
+export const BACKEND_URL = 'http://localhost:5000';
 const REQUEST_TIMEOUT = 5000;
 
 export const createAPI = (): AxiosInstance => {

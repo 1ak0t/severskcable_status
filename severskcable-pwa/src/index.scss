@@ -1,4 +1,5 @@
 @import "variables.scss";
+@import "App";
 @import "pages/authorization-page/authorization-page.scss";
 @import "components/auth-form/auth-form.scss";
 @import "components/bottom-menu/bottom-menu.scss";
@@ -8,10 +9,12 @@
 @import "pages/breaks-list-page/breaks-list-page";
 @import "components/breaks-list/breaks-list";
 @import "components/break-element/break-element";
-@import "pages/good-send/good-send.scss";
+@import "components/sending-status-page/sending-status-page";
 @import "pages/machine-breaks-page/machine-breaks-page.scss";
 @import "pages/agreement-page/agreement-page.scss";
 @import "components/agreement-list/agreement-list.scss";
+@import "pages/notification-page/notification-page";
+@import "components/notification/notification";
 
 *,
 *::before,
