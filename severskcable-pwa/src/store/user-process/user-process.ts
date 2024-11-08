@@ -1,7 +1,13 @@
 import {UserProcess} from "../../types/state.type";
 import {AuthorizationStatus, NameSpace} from "../../constants";
 import {createSlice} from "@reduxjs/toolkit";
-import {checkAuthAction, loginAction, logoutAction, resetNotificationCountAction} from "../api-actions";
+import {
+    checkAuthAction,
+    fetchUserNotificationCount,
+    loginAction,
+    logoutAction,
+    resetNotificationCountAction
+} from "../api-actions";
 
 const initialState: UserProcess = {
     authorizationStatus: AuthorizationStatus.Unknown,
@@ -45,7 +51,11 @@ export const userProcess = createSlice({
             })
             .addCase(resetNotificationCountAction.fulfilled, (state) => {
                 state.user.notificationsCount = 0;
-            });
+            })
+            .addCase(fetchUserNotificationCount.fulfilled, (state, action) => {
+                state.user.notificationsCount = action.payload;
+            })
+
     }
 })
 

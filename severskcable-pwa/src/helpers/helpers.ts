@@ -62,4 +62,18 @@ export const fetchImageTest = async (imageName: string | undefined, setImg: any,
     }
     setImgVisible(!imgVisible);
 };
-//"blob:http://localhost:3000/5e080c48-e9c5-40c4-b7c0-e7eff65fc1bf"
+
+export const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+};

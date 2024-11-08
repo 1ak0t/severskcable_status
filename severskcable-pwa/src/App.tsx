@@ -10,7 +10,7 @@ import BreaksListPage from "./pages/breaks-list-page/breaks-list-page";
 import SendingStatusPage from "./components/sending-status-page/sending-status-page";
 import MachineBreaksPage from "./pages/machine-breaks-page/machine-breaks-page";
 import AgreementPage from "./pages/agreement-page/agreement-page";
-import {useAppSelector} from "./hooks";
+import {useAppDispatch, useAppSelector} from "./hooks";
 import {SyncLoader} from "react-spinners";
 import {getAuthCheckedStatus, getAuthorizationStatus, getUser} from "./store/user-process/selectors";
 import {getDataLoadingStatus, getErrorStatus} from "./store/data-process/selectors";
@@ -18,6 +18,7 @@ import {CSSProperties, useEffect} from "react";
 import companyLogo from './imgs/logo-main.svg';
 import NetworkErrorPage from "./pages/network-error-page/network-error-page";
 import NotificationPage from "./pages/notification-page/notification-page";
+import {fetchAllData} from "./store/api-actions";
 
 const override: CSSProperties = {
     display: "block",
@@ -35,13 +36,23 @@ function App () {
     const isAuthChecked = useAppSelector(getAuthCheckedStatus);
     const hasError = useAppSelector(getErrorStatus);
     const user = useAppSelector(getUser);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if ('serviceWorker' in navigator) {
-            // @ts-ignore
+            //@ts-ignore
             navigator.setAppBadge(user.notificationsCount);
         }
-    },[user]);
+        subscribe();
+    },[]);
+
+    const subscribe = async () => {
+        const eventSource = new EventSource(`https://corp.severskcable.ru:4875/connect`)
+        eventSource.onmessage = function (event) {
+            const message = JSON.parse(event.data);
+            dispatch(fetchAllData());
+        }
+    }
 
     if (!isAuthChecked || isLoading) {
         return (

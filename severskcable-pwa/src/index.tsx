@@ -14,20 +14,6 @@ import HistoryRouter from "./components/history-route/history-route";
 
 
 store.dispatch(checkAuthAction());
-store.dispatch(checkAuthAction());
-
-const messageChannel = new MessageChannel();
-
-if (navigator.serviceWorker.controller){
-    navigator.serviceWorker.controller.postMessage({
-        type: 'INIT_PORT',
-    }, [messageChannel.port2]);
-}
-
-messageChannel.port1.onmessage = (event) => {
-    store.dispatch(fetchAllData());
-};
-
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

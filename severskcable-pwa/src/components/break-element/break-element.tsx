@@ -315,20 +315,31 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                         {successImage && <img src={URL.createObjectURL(successImage)} alt=""/>}
                         <button className="repair-element__button repair-element__button--success"
                                 onClick={() => {
-                                    dispatch(updateBreakStageAction({
-                                        id: repair.id,
-                                        machine: repair.machine.id,
-                                        stages: RepairStage.RepairSuccess,
-                                        successPerson: currentUser.id,
-                                        successDate: dayjs().toString(),
-                                        successComment: successComment,
-                                    }));
                                     if (successImage) {
-                                        dispatch(updateSuccessImageAction({file: successImage, id: repair.id}));
+                                        dispatch(updateSuccessImageAction({file: successImage, id: repair.id})).then(() => {
+                                            dispatch(updateBreakStageAction({
+                                            id: repair.id,
+                                            machine: repair.machine.id,
+                                            stages: RepairStage.RepairSuccess,
+                                            successPerson: currentUser.id,
+                                            successDate: dayjs().toString(),
+                                            successComment: successComment,
+                                        }));
+                                            setIsAgreementChange(true);
+                                            dispatch(increaseNotificationCount());
+                                        });
+                                    } else {
+                                        dispatch(updateBreakStageAction({
+                                            id: repair.id,
+                                            machine: repair.machine.id,
+                                            stages: RepairStage.RepairSuccess,
+                                            successPerson: currentUser.id,
+                                            successDate: dayjs().toString(),
+                                            successComment: successComment,
+                                        }));
+                                        setIsAgreementChange(true);
+                                        dispatch(increaseNotificationCount());
                                     }
-
-                                    setIsAgreementChange(true);
-                                    dispatch(increaseNotificationCount());
                                 }}>Подтвердить
                         </button>
                         <button className="repair-element__button repair-element__button--reject"

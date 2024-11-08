@@ -1,4 +1,5 @@
 export const TIMEOUT_SHOW_ERROR = 2000;
+export const publicVapidKey = 'BG2M57wQ4s6MhyXhryYdfpmaPGUSWhZgbWGf7kHkNTfMaVbIC7HIRaeq5h4wr9BmREx_toP0DvJAkPTfuVBgTP8';
 
 export enum AppRoutes {
     Login = '/login',

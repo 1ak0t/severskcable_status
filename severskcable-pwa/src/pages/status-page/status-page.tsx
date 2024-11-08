@@ -3,12 +3,13 @@ import BottomMenu from "../../components/bottom-menu/bottom-menu";
 import Machine from "../../components/machine/machine";
 import {Helmet} from "react-helmet-async";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {AppRoutes, MachinesStatus} from "../../constants";
+import {AppRoutes, MachinesStatus, publicVapidKey} from "../../constants";
 import {Link} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {getBreaks, getMachines} from "../../store/data-process/selectors";
 import {getUser} from "../../store/user-process/selectors";
 import {setNewBreakFinished} from "../../store/data-process/data-process";
+import {urlBase64ToUint8Array} from "../../helpers/helpers";
 
 function StatusPage () {
     const [isSubscription, setIsSubscription] = useState(false);
@@ -41,23 +42,6 @@ function StatusPage () {
         }
         return 0;
     });
-
-    const publicVapidKey = 'BG2M57wQ4s6MhyXhryYdfpmaPGUSWhZgbWGf7kHkNTfMaVbIC7HIRaeq5h4wr9BmREx_toP0DvJAkPTfuVBgTP8';
-
-    const urlBase64ToUint8Array = (base64String: string) => {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding)
-            .replace(/\-/g, '+')
-            .replace(/_/g, '/');
-
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-    };
 
     const send = async () => {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
@@ -111,7 +95,7 @@ function StatusPage () {
         if ('serviceWorker' in navigator) {
             checkSubscription().catch(err => console.error(err));
             // @ts-ignore
-            navigator.setAppBadge(3);
+            navigator.setAppBadge(user.notificationsCount);
         }
     },[]);
 

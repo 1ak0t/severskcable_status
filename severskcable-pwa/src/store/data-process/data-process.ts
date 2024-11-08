@@ -199,12 +199,17 @@ export const dataProcess = createSlice({
                 state.isDataLoading = false;
             })
             .addCase(updateSuccessImageAction.pending, (state, action) => {
-                state.isDataLoading = true;
+                state.isChangingStage = true;
             })
             .addCase(updateSuccessImageAction.fulfilled, (state, action) => {
                 const currentBreakIndex = state.breaks.findIndex(el => el.id === action.payload.breakId);
                 state.breaks[currentBreakIndex].successImage = action.payload.successImage;
-                state.isDataLoading = false;
+                state.isChangingStage = false;
+                state.isChangedStage = true;
+            })
+            .addCase(updateSuccessImageAction.rejected, (state, action) => {
+                state.isChangedStage = false;
+                state.isChangingStage = false;
             })
             .addCase(updateRegisterImageAction.pending, (state, action) => {
                 state.isDataLoading = true;

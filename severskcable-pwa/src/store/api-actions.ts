@@ -30,6 +30,9 @@ export const fetchAllData = createAsyncThunk<void, undefined, {
         dispatch(fetchBreaks());
         dispatch(fetchBreakTypesByMachine());
         dispatch(fetchNotifications());
+        dispatch(fetchUserNotificationCount(<string>store.getState().USER?.user.id))
+        //@ts-ignore
+        navigator.setAppBadge(store.getState().USER?.user.notificationsCount);
     }
 );
 
@@ -69,6 +72,23 @@ export const fetchBreakTypesByMachine = createAsyncThunk<BreaksTypeByMachine[], 
     }
 );
 
+export const fetchUserNotificationCount = createAsyncThunk<number, string, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'fetchUserNotificationCount',
+    async (arg, {extra: api}) => {
+        const userUrl = APIRoute.Users + `/${arg}/info`;
+        const {data} = await api.get<number>(userUrl);
+        if ('serviceWorker' in navigator) {
+            //@ts-ignore
+            navigator.setAppBadge(data);
+        }
+        return data;
+    }
+);
+
 export const fetchNotifications = createAsyncThunk<NotificationType[], undefined, {
     dispatch: AppDispatch;
     state: State;
@@ -89,7 +109,10 @@ export const checkAuthAction = createAsyncThunk<UserLoggedDataType, undefined, {
     'checkAuthAction',
     async (_arg, {dispatch, extra: api}) => {
         const {data} = await api.get<UserLoggedDataType>(APIRoute.Login);
-        dispatch(fetchAllData());
+        dispatch(fetchMachines());
+        dispatch(fetchBreaks());
+        dispatch(fetchBreakTypesByMachine());
+        dispatch(fetchNotifications());
         return data;
     }
 );
@@ -101,9 +124,13 @@ export const loginAction = createAsyncThunk<UserLoggedDataType, AuthDataType, {
 }>(
     'loginAction',
     async ({ email, password}, {dispatch, extra: api}) => {
+        dropToken();
         const {data} = await api.post<UserLoggedDataType>(APIRoute.Login, {email, password});
         saveToken(data.token);
-        dispatch(fetchAllData());
+        dispatch(fetchMachines());
+        dispatch(fetchBreaks());
+        dispatch(fetchBreakTypesByMachine());
+        dispatch(fetchNotifications());
         dispatch(redirectToRoute(AppRoutes.Root));
         return data;
     },

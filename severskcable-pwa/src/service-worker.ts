@@ -72,20 +72,13 @@ registerRoute(
 
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
-let getVersionPort: any;
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
-    if (event.data && event.data.type === 'INIT_PORT') {
-        getVersionPort = event.ports[0];
-    }
 });
 
 self.addEventListener('push', e => {
-
-
-    getVersionPort.postMessage({ payload: "Reload" });
 
     if (e.data) {
         const data = e.data.json();
@@ -98,5 +91,27 @@ self.addEventListener('push', e => {
         );
     }
 });
+
+// function resubscribeToPush() {
+//     return self.registration.pushManager.getSubscription()
+//         .then(function(subscription) {
+//             if (subscription) {
+//                 return subscription.unsubscribe();
+//             }
+//         })
+//         .then(function() {
+//             return self.registration.pushManager.subscribe({
+//                 userVisibleOnly: true,
+//                 applicationServerKey: urlBase64ToUint8Array('YOUR_PUBLIC_VAPID_KEY_HERE')
+//             });
+//         })
+//         .then(function(subscription) {
+//             console.log('Resubscribed to push notifications:', subscription);
+//             // Optionally, send new subscription details to your server
+//         })
+//         .catch(function(error) {
+//             console.error('Failed to resubscribe:', error);
+//         });
+// }
 
 // Any other custom service worker logic can go here.
