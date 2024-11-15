@@ -21,9 +21,9 @@ function MachineBreaksPage() {
                 <h1 className="machine-breaks-page__title">{currentMachine.name}</h1>
                 {currentMachineBreaks.length === 0 && <h3>Не было ремонтов</h3>}
                 {breaksInProgress.length > 0 && <h3>Ожидают ремонта</h3>}
-                {breaksInProgress.map(el => <BreakElement repair={el} />)}
+                {breaksInProgress.map(el => <BreakElement repair={el} key={el.id}/>)}
                 {breaksCompleted.length > 0 && <h3>Выполненные ремонты</h3>}
-                {breaksCompleted.map(el => <BreakElement repair={el} />)}
+                {breaksCompleted.map(el => <BreakElement repair={el} key={el.id}/>)}
                 <BottomMenu />
             </div>
         );

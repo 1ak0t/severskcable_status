@@ -18,7 +18,7 @@ export enum MachinesStatus {
     Work = "Работает",
     Warning = "Работает нештатно",
     Inspection = "Требует внимания",
-    Wrong = "Поломка"
+    Wrong = "Линия стоит"
 }
 
 export enum MachinesStatusPriority {

@@ -51,6 +51,7 @@ function BreakElement({repair, agreement}: RepairElementProps) {
     const [repairEndComment, setRepairEndComment] = useState('');
     const [isPhotoGet, setIsPhotoGet] = useState(false);
     const [isAgreementChange, setIsAgreementChange] = useState(true);
+    const [isOpened, setIsOpened] = useState(false);
 
     const onCommentChange = (com: any, type: CommentType) => {
         switch (type) {
@@ -79,12 +80,7 @@ function BreakElement({repair, agreement}: RepairElementProps) {
 
     return (
         <>
-            <div className={classNames(
-                'repair-element',
-                {'repair-element--high-priority': repair.machine.status === MachinesStatus.Wrong},
-                {'repair-element--medium-priority': repair.machine.status === MachinesStatus.Warning},
-                {'repair-element--low-priority': repair.machine.status === MachinesStatus.Inspection}
-            )}>
+            <div className='repair-element'>
                 {isChangingStage && isAgreementChange &&
                     <div className="repair-element__blur-wrapper">
                         <SyncLoader
@@ -106,90 +102,97 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                         <h3>Не удалось отправить, попробуйте еще раз</h3>
                     </div>
                 }
-                <h2 className="repair-element__title">{repair.machine.name}</h2>
-                <div className="repair-element__row">
-                    <span>Поломка:</span>
-                    <span>{repair.breakName}</span>
+                <div className={classNames(
+                    'repair-element__header',
+                    {'repair-element__header--not-complete': repair.status === false}
+                )} onClick={() => {
+                        setIsOpened(!isOpened);
+                }}>
+                     <span className={classNames(
+                         'repair-element__icon',
+                         {'repair-element__icon--warning': repair.machine.status === MachinesStatus.Warning},
+                         {'repair-element__icon--wrong': repair.machine.status === MachinesStatus.Wrong},
+                         {'repair-element__icon--inspection': repair.machine.status === MachinesStatus.Inspection}
+                     )}></span>
+                    <div className='repair-element__machine-wrapper'>
+                        <span className="repair-element__title">{repair.machine.name}</span>
+                        <span className="repair-element__machine-status">{repair.machine.status}</span>
+                    </div>
+                    {repair.status === true &&
+                        <div className="repair-element__header-complete-wrapper">
+                            <span><b>Поломка: </b>{repair.breakName}</span>
+                            <span><b>Длительность: </b>{getDurationString(dayjs(repair.registerDate), dayjs(repair.repairEndDate))}</span>
+                            <span><b>Завершена: </b>{dayjs(repair.repairEndDate).format('DD-MM-YYYY')}</span>
+                        </div>
+                    }
+                    {(!(repair.stages === null)) &&
+                        <div className="machine__progress-bar progress-bar">
+                            <div className="progress-bar__time">{getDurationString(dayjs(repair.registerDate), dayjs())}</div>
+                            <span className="progress-bar__dot progress-bar__dot--register"></span>
+                            <span className={classNames(
+                                "progress-bar__dot",
+                                {"progress-bar__dot--repair-success": repair.stages === (RepairStage.RepairSuccess) || (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.RepairCompleted)},
+                                {"progress-bar__dot--repair-success": repair.stages === (RepairStage.RepairSuccess) || (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.RepairCompleted)}
+                            )}></span>
+                            <span className={classNames(
+                                "progress-bar__dot",
+                                {"progress-bar__dot--repairing": (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.RepairCompleted)}
+                            )}></span>
+                            <span className={classNames(
+                                "progress-bar__dot",
+                                {"progress-bar__dot--repair-completed": repair.stages === RepairStage.RepairCompleted}
+                            )}></span>
+                        </div>
+                    }
                 </div>
-                {repair.stages &&
-                    <div className="repair-element__row">
-                        <span>Этап ремонта:</span>
-                        <span>{repair.stages}</span>
-                    </div>
-                }
-                <div className="repair-element__row">
-                    <span>Зарегистрировал:</span>
-                    <span>{repair.registerPerson.name} {repair.registerPerson.surname}</span>
-                </div>
-                <div className="repair-element__row">
-                    <span>Дата регистрации:</span>
-                    <span>{dayjs(repair.registerDate).format('H:mm DD-MM-YYYY')}</span>
-                </div>
-                {repair.registerComment &&
-                    <div className="repair-element__row">
-                        <span>Комментарий регистратора:</span>
-                        <span>{repair.registerComment}</span>
-                    </div>
-                }
-                {repair.registerImage &&
-                    <div className="repair-element__row">
-                        <span>Фото зарегистрировавшего:</span>
-                        {!photoDownloadingStatus && <span className="repair-element__photo-button" onClick={() => {
-                            setIsPhotoGet(true);
-                            dispatch(fetchImage({
-                                imageName: repair.registerImage,
-                                setImg: setRegisterImageURL,
-                                imgURL: registerImageURL,
-                                setImgVisible: setRegisterImageVisible,
-                                imgVisible: registerImageVisible
-                            }));
-                        }
-                        }>{registerImageVisible ? 'Скрыть' : 'Показать'}</span>}
-                        {isPhotoGet && photoDownloadingStatus && !registerImageURL &&
-                            <SyncLoader
-                                color={"#EA753EFF"}
-                                size={5}
-                                margin={3}
-                            />
-                        }
-                    </div>
-                }
-                {registerImageURL && registerImageVisible && repair.registerImage &&
-                    <div className="repair-element__row">
-                        <img src={registerImageURL} alt=""/>
-                    </div>
-                }
-                {(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
-                    <>
-                        {repair.successPerson && <div className="repair-element__row">
-                            <span>Согласовал:</span>
-                            <span>{repair.successPerson?.name} {repair.successPerson?.surname}</span>
-                        </div>}
-                        {repair.successDate && <div className="repair-element__row">
-                            <span>Дата согласования:</span>
-                            <span>{dayjs(repair.successDate).format('H:mm DD-MM-YYYY')}</span>
-                        </div>}
-                        {repair.successComment &&
+                <div className={classNames(
+                    "repair-element__stages",
+                    {"repair-element__stages__closed": isOpened === false},
+                    {"repair-element__stages__opened": isOpened === true}
+                )}>
+                    <div className="repair-element__stage">
+                        <h3 className='repair-element__stage-title'>Регистрация</h3>
+                        <span className='repair-element__stage-status repair-element__stage-status--comleted'>Этап завершен</span>
+                        <div className="repair-element__row">
+                            <span>Поломка:</span>
+                            <span>{repair.breakName}</span>
+                        </div>
+                        {repair.stages &&
                             <div className="repair-element__row">
-                                <span>Комментарий согласовавшего:</span>
-                                <span>{repair.successComment}</span>
+                                <span>Этап ремонта:</span>
+                                <span>{repair.stages}</span>
                             </div>
                         }
-                        {repair.successImage &&
+                        <div className="repair-element__row">
+                            <span>Зарегистрировал:</span>
+                            <span>{repair.registerPerson.name} {repair.registerPerson.surname}</span>
+                        </div>
+                        <div className="repair-element__row">
+                            <span>Дата регистрации:</span>
+                            <span>{dayjs(repair.registerDate).format('H:mm DD-MM-YYYY')}</span>
+                        </div>
+                        {repair.registerComment &&
                             <div className="repair-element__row">
-                                <span>Фото согласовавшего:</span>
-                                {!photoDownloadingStatus && <span className="repair-element__photo-button" onClick={() => {
-                                    setIsPhotoGet(true);
-                                    dispatch(fetchImage({
-                                        imageName: repair.successImage,
-                                        setImg: setSuccessImageURL,
-                                        imgURL: successImageURL,
-                                        setImgVisible: setSuccessImageVisible,
-                                        imgVisible: successImageVisible
-                                    }));
-                                }
-                                }>{successImageVisible ? 'Скрыть' : 'Показать'}</span>}
-                                {isPhotoGet && photoDownloadingStatus && !successImageURL &&
+                                <span>Комментарий регистратора:</span>
+                                <span>{repair.registerComment}</span>
+                            </div>
+                        }
+                        {repair.registerImage &&
+                            <div className="repair-element__row">
+                                <span>Фото зарегистрировавшего:</span>
+                                {!photoDownloadingStatus &&
+                                    <span className="repair-element__photo-button" onClick={() => {
+                                        setIsPhotoGet(true);
+                                        dispatch(fetchImage({
+                                            imageName: repair.registerImage,
+                                            setImg: setRegisterImageURL,
+                                            imgURL: registerImageURL,
+                                            setImgVisible: setRegisterImageVisible,
+                                            imgVisible: registerImageVisible
+                                        }));
+                                    }
+                                    }>{registerImageVisible ? 'Скрыть' : 'Показать'}</span>}
+                                {isPhotoGet && photoDownloadingStatus && !registerImageURL &&
                                     <SyncLoader
                                         color={"#EA753EFF"}
                                         size={5}
@@ -198,133 +201,244 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                                 }
                             </div>
                         }
-                        {successImageURL && successImageVisible && repair.successImage &&
+                        {registerImageURL && registerImageVisible && repair.registerImage &&
                             <div className="repair-element__row">
-                                <img src={successImageURL} alt=""/>
+                                <img src={registerImageURL} alt=""/>
                             </div>
                         }
-                    </>
-                }
-                {(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
-                    <>
-                        <div className="repair-element__row">
-                            <span>Приступил к ремонту:</span>
-                            <span>{repair.repairingPerson?.name} {repair.repairingPerson?.surname}</span>
-                        </div>
-                        <div className="repair-element__row">
-                            <span>Дата начала ремонта:</span>
-                            <span>{dayjs(repair.repairingDate).format('H:mm DD-MM-YYYY')}</span>
-                        </div>
-                        {repair.repairingComment &&
-                            <div className="repair-element__row">
-                                <span>Комментарий ремонтирующего:</span>
-                                <span>{repair.repairingComment}</span>
-                            </div>
-                        }
-                        {repair.repairingImage &&
-                            <div className="repair-element__row">
-                                <span>Фото до ремонта:</span>
-                                {!photoDownloadingStatus && <span className="repair-element__photo-button" onClick={() => {
-                                    setIsPhotoGet(true);
-                                    dispatch(fetchImage({
-                                        imageName: repair.repairingImage,
-                                        setImg: setRepairingImageURL,
-                                        imgURL: repairingImageURL,
-                                        setImgVisible: setRepairingImageVisible,
-                                        imgVisible: repairingImageVisible
-                                    }));
+                    </div>
+                    <div className="repair-element__timer">
+                        <span>{!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) ? getDurationString(dayjs(repair.registerDate), dayjs()) : getDurationString(dayjs(repair.registerDate), dayjs(repair.successDate))}</span>
+                    </div>
+                    <div className="repair-element__stage">
+                        <h3 className='repair-element__stage-title'>Согласование</h3>
+                        {!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                            <span className='repair-element__stage-status repair-element__stage-status--not-start'>Ожидается согласования</span>}
+                        {(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                            <>
+                                <span className='repair-element__stage-status repair-element__stage-status--comleted'>Этап завершен</span>
+                                {repair.successPerson && <div className="repair-element__row">
+                                    <span>Согласовал:</span>
+                                    <span>{repair.successPerson?.name} {repair.successPerson?.surname}</span>
+                                </div>}
+                                {repair.successDate && <div className="repair-element__row">
+                                    <span>Дата согласования:</span>
+                                    <span>{dayjs(repair.successDate).format('H:mm DD-MM-YYYY')}</span>
+                                </div>}
+                                {repair.successComment &&
+                                    <div className="repair-element__row">
+                                        <span>Комментарий согласовавшего:</span>
+                                        <span>{repair.successComment}</span>
+                                    </div>
                                 }
-                                }>{repairingImageVisible ? 'Скрыть' : 'Показать'}</span>}
-                                {isPhotoGet && photoDownloadingStatus && !repairingImageURL &&
-                                    <SyncLoader
-                                        color={"#EA753EFF"}
-                                        size={5}
-                                        margin={3}
-                                    />
+                                {repair.successImage &&
+                                    <div className="repair-element__row">
+                                        <span>Фото согласовавшего:</span>
+                                        {!photoDownloadingStatus &&
+                                            <span className="repair-element__photo-button" onClick={() => {
+                                                setIsPhotoGet(true);
+                                                dispatch(fetchImage({
+                                                    imageName: repair.successImage,
+                                                    setImg: setSuccessImageURL,
+                                                    imgURL: successImageURL,
+                                                    setImgVisible: setSuccessImageVisible,
+                                                    imgVisible: successImageVisible
+                                                }));
+                                            }
+                                            }>{successImageVisible ? 'Скрыть' : 'Показать'}</span>}
+                                        {isPhotoGet && photoDownloadingStatus && !successImageURL &&
+                                            <SyncLoader
+                                                color={"#EA753EFF"}
+                                                size={5}
+                                                margin={3}
+                                            />
+                                        }
+                                    </div>
                                 }
-                            </div>
+                                {successImageURL && successImageVisible && repair.successImage &&
+                                    <div className="repair-element__row">
+                                        <img src={successImageURL} alt=""/>
+                                    </div>
+                                }
+                            </>
                         }
+                    </div>
+                    <div className="repair-element__timer">
+                        {!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted)
+                            ? <span>Ожидание</span>
+                            :
+                            <span>{!(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) ? (getDurationString(dayjs(repair.successDate), dayjs())) : getDurationString(dayjs(repair.successDate), dayjs(repair.repairingDate))}</span>
+                        }
+                    </div>
+                    <div className="repair-element__stage">
+                        <h3 className='repair-element__stage-title'>Ремонт</h3>
+                        {!(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                            <span className='repair-element__stage-status repair-element__stage-status--not-start'>Ожидает ремонта</span>}
+                        {(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                            <>
+                                {(repair.stages === RepairStage.Repairing) &&
+                                    <span
+                                        className='repair-element__stage-status repair-element__stage-status--in-progress'>В процессе</span>}
+                                <div className="repair-element__row">
+                                    <span>Приступил к ремонту:</span>
+                                    <span>{repair.repairingPerson?.name} {repair.repairingPerson?.surname}</span>
+                                </div>
+                                <div className="repair-element__row">
+                                    <span>Дата начала ремонта:</span>
+                                    <span>{dayjs(repair.repairingDate).format('H:mm DD-MM-YYYY')}</span>
+                                </div>
+                                {repair.repairingComment &&
+                                    <div className="repair-element__row">
+                                        <span>Комментарий ремонтирующего:</span>
+                                        <span>{repair.repairingComment}</span>
+                                    </div>
+                                }
+                                {repair.repairingImage &&
+                                    <div className="repair-element__row">
+                                        <span>Фото до ремонта:</span>
+                                        {!photoDownloadingStatus &&
+                                            <span className="repair-element__photo-button" onClick={() => {
+                                                setIsPhotoGet(true);
+                                                dispatch(fetchImage({
+                                                    imageName: repair.repairingImage,
+                                                    setImg: setRepairingImageURL,
+                                                    imgURL: repairingImageURL,
+                                                    setImgVisible: setRepairingImageVisible,
+                                                    imgVisible: repairingImageVisible
+                                                }));
+                                            }
+                                            }>{repairingImageVisible ? 'Скрыть' : 'Показать'}</span>}
+                                        {isPhotoGet && photoDownloadingStatus && !repairingImageURL &&
+                                            <SyncLoader
+                                                color={"#EA753EFF"}
+                                                size={5}
+                                                margin={3}
+                                            />
+                                        }
+                                    </div>
+                                }
 
-                        {repairingImageURL && repairingImageVisible && repair.repairingImage &&
-                            <div className="repair-element__row">
-                                <img src={repairingImageURL} alt=""/>
-                            </div>
-                        }
-                    </>
-                }
-                {(repair.stages === null || repair.status || repair.stages === RepairStage.RepairCompleted) &&
-                    <>
-                        <div className="repair-element__row">
-                            <span>Выполнил ремонт:</span>
-                            <span>{repair.repairCompletedPerson?.name} {repair.repairingPerson?.surname}</span>
-                        </div>
-                        <div className="repair-element__row">
-                            <span>Дата завершения ремонта:</span>
-                            <span>{dayjs(repair.repairCompletedDate).format('H:mm DD-MM-YYYY')}</span>
-                        </div>
-                        <div className="repair-element__row">
-                            <span>Длительность ремонта:</span>
-                            <span>{getDurationString(dayjs(repair.repairingDate), dayjs(repair.repairCompletedDate))}</span>
-                        </div>
-                        <div className="repair-element__row">
-                            <span>Что проделано:</span>
-                            <span>{repair.repairCompletedComment}</span>
-                        </div>
-                        {repair.repairEndComment &&
-                            <div className="repair-element__row">
-                                <span>Комментарий завершившего:</span>
-                                <span>{repair.repairEndComment}</span>
-                            </div>
-                        }
-                        {repair.repairCompletedImage &&
-                            <div className="repair-element__row">
-                                <span>Фото до после:</span>
-                                {!photoDownloadingStatus && <span className="repair-element__photo-button" onClick={() => {
-                                    setIsPhotoGet(true);
-                                    dispatch(fetchImage({
-                                        imageName: repair.repairCompletedImage,
-                                        setImg: setRepairCompletedImageURL,
-                                        imgURL: repairCompletedImageURL,
-                                        setImgVisible: setRepairCompletedImageVisible,
-                                        imgVisible: repairCompletedImageVisible
-                                    }));
+                                {repairingImageURL && repairingImageVisible && repair.repairingImage &&
+                                    <div className="repair-element__row">
+                                        <img src={repairingImageURL} alt=""/>
+                                    </div>
                                 }
-                                }>{repairCompletedImageVisible ? 'Скрыть' : 'Показать'}</span>}
-                                {isPhotoGet && photoDownloadingStatus && !repairCompletedImageURL &&
-                                    <SyncLoader
-                                        color={"#EA753EFF"}
-                                        size={5}
-                                        margin={3}
-                                    />
+                            </>
+                        }
+                        {(repair.stages === null || repair.status || repair.stages === RepairStage.RepairCompleted) &&
+                            <>
+                                <span className='repair-element__stage-status repair-element__stage-status--comleted'>Этап завершен</span>
+                                <div className="repair-element__row">
+                                    <span>Завершил ремонт:</span>
+                                    <span>{repair.repairCompletedPerson?.name} {repair.repairCompletedPerson?.surname}</span>
+                                </div>
+                                <div className="repair-element__row">
+                                    <span>Дата завершения:</span>
+                                    <span>{dayjs(repair.repairCompletedDate).format('H:mm DD-MM-YYYY')}</span>
+                                </div>
+                                <div className="repair-element__row">
+                                    <span>Длительность ремонта:</span>
+                                    <span>{getDurationString(dayjs(repair.repairingDate), dayjs(repair.repairCompletedDate))}</span>
+                                </div>
+                                <div className="repair-element__row">
+                                    <span>Что проделано:</span>
+                                    <span>{repair.repairCompletedComment}</span>
+                                </div>
+                                {repair.repairEndComment &&
+                                    <div className="repair-element__row">
+                                        <span>Комментарий завершившего:</span>
+                                        <span>{repair.repairEndComment}</span>
+                                    </div>
                                 }
-                            </div>
+                                {repair.repairCompletedImage &&
+                                    <div className="repair-element__row">
+                                        <span>Фото до после:</span>
+                                        {!photoDownloadingStatus &&
+                                            <span className="repair-element__photo-button" onClick={() => {
+                                                setIsPhotoGet(true);
+                                                dispatch(fetchImage({
+                                                    imageName: repair.repairCompletedImage,
+                                                    setImg: setRepairCompletedImageURL,
+                                                    imgURL: repairCompletedImageURL,
+                                                    setImgVisible: setRepairCompletedImageVisible,
+                                                    imgVisible: repairCompletedImageVisible
+                                                }));
+                                            }
+                                            }>{repairCompletedImageVisible ? 'Скрыть' : 'Показать'}</span>}
+                                        {isPhotoGet && photoDownloadingStatus && !repairCompletedImageURL &&
+                                            <SyncLoader
+                                                color={"#EA753EFF"}
+                                                size={5}
+                                                margin={3}
+                                            />
+                                        }
+                                    </div>
+                                }
+                                {repairCompletedImageURL && repairCompletedImageVisible && repair.repairCompletedImage &&
+                                    <div className="repair-element__row">
+                                        <img src={repairCompletedImageURL} alt=""/>
+                                    </div>
+                                }
+                            </>
                         }
-                        {repairCompletedImageURL && repairCompletedImageVisible && repair.repairCompletedImage &&
-                            <div className="repair-element__row">
-                                <img src={repairCompletedImageURL} alt=""/>
-                            </div>
+                    </div>
+                    <div className="repair-element__timer">
+                        {!(repair.stages === null || repair.status || repair.stages === RepairStage.RepairCompleted)
+                            ? <span>Ожидание</span>
+                            :
+                            <span>{!(repair.stages === null) ? getDurationString(dayjs(repair.repairCompletedDate), dayjs()) : getDurationString(dayjs(repair.repairCompletedDate), dayjs(repair.repairEndDate))}</span>
                         }
-                    </>
-                }
+                    </div>
+                    <div className="repair-element__stage">
+                        <h3 className='repair-element__stage-title'>Ремонт принят</h3>
+                        {!(repair.stages === null) &&
+                            <span className='repair-element__stage-status repair-element__stage-status--not-start'>Не подтвержден</span>}
+                        {(repair.stages === null) &&
+                            <>
+                                <span className='repair-element__stage-status repair-element__stage-status--comleted'>Этап завершен</span>
+                                {repair.repairEndPerson && <div className="repair-element__row">
+                                    <span>Принял:</span>
+                                    <span>{repair.repairEndPerson?.name} {repair.repairEndPerson?.surname}</span>
+                                </div>}
+                                {repair.repairEndDate && <div className="repair-element__row">
+                                    <span>Дата согласования:</span>
+                                    <span>{dayjs(repair.repairEndDate).format('H:mm DD-MM-YYYY')}</span>
+                                </div>}
+                                {repair.repairEndComment &&
+                                    <div className="repair-element__row">
+                                        <span>Комментарий:</span>
+                                        <span>{repair.repairEndComment}</span>
+                                    </div>
+                                }
+                            </>
+                        }
+                    </div>
+                </div>
                 {(agreement && repair.stages === RepairStage.Register) &&
                     <div className="repair-element__button-wrapper">
-                            <textarea onChange={(event) => onCommentChange(event, CommentType.SuccessComment)} cols={30}
-                                      rows={10} placeholder="Комментарий к согласованию"></textarea>
-                        <input type="file" accept="image/png, image/jpeg"
-                               onChange={(evt) => handleImageUpload(evt, setSuccessImage)}/>
+                            <textarea className="repair-element__textarea" onChange={(event) => onCommentChange(event, CommentType.SuccessComment)} cols={30}
+                                      rows={3} placeholder="Комментарий к согласованию"></textarea>
+                        <label className="repair-element__photo-input">
+                            <span>Прикрепить фото</span>
+                            <input type="file" accept="image/png, image/jpeg"
+                                   onChange={(evt) => handleImageUpload(evt, setSuccessImage)}/>
+                        </label>
                         {successImage && <img src={URL.createObjectURL(successImage)} alt=""/>}
                         <button className="repair-element__button repair-element__button--success"
                                 onClick={() => {
                                     if (successImage) {
-                                        dispatch(updateSuccessImageAction({file: successImage, id: repair.id})).then(() => {
+                                        dispatch(updateSuccessImageAction({
+                                            file: successImage,
+                                            id: repair.id
+                                        })).then(() => {
                                             dispatch(updateBreakStageAction({
-                                            id: repair.id,
-                                            machine: repair.machine.id,
-                                            stages: RepairStage.RepairSuccess,
-                                            successPerson: currentUser.id,
-                                            successDate: dayjs().toString(),
-                                            successComment: successComment,
-                                        }));
+                                                id: repair.id,
+                                                machine: repair.machine.id,
+                                                stages: RepairStage.RepairSuccess,
+                                                successPerson: currentUser.id,
+                                                successDate: dayjs().toString(),
+                                                successComment: successComment,
+                                            }));
                                             setIsAgreementChange(true);
                                             dispatch(increaseNotificationCount());
                                         });
@@ -363,10 +477,15 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                 }
                 {(agreement && repair.stages === RepairStage.RepairSuccess) &&
                     <div className="repair-element__button-wrapper">
-                            <textarea onChange={(event) => onCommentChange(event, CommentType.RepairingComment)} cols={30}
-                                      rows={10} placeholder="Комментарий ремонту"></textarea>
-                        <input type="file" accept="image/png, image/jpeg"
-                               onChange={(evt) => handleImageUpload(evt, setRepairingImage)}/>
+                            <textarea className="repair-element__textarea"
+                                      onChange={(event) => onCommentChange(event, CommentType.RepairingComment)}
+                                      cols={30}
+                                      rows={3} placeholder="Комментарий ремонту"></textarea>
+                        <label className="repair-element__photo-input">
+                            <span>Прикрепить фото</span>
+                            <input type="file" accept="image/png, image/jpeg"
+                                   onChange={(evt) => handleImageUpload(evt, setRepairingImage)}/>
+                        </label>
                         {repairingImage && <img src={URL.createObjectURL(repairingImage)} alt=""/>}
                         <button className="repair-element__button repair-element__button--success"
                                 onClick={() => {
@@ -390,11 +509,16 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                 }
                 {(agreement && repair.stages === RepairStage.Repairing) &&
                     <div className="repair-element__button-wrapper">
-                        <textarea onChange={(event) => onCommentChange(event, CommentType.RepairCompletedComment)} cols={30}
-                                  rows={10} placeholder="Комментарий о проделанной работе (мин 20 символов)"
+                        <textarea className="repair-element__textarea"
+                                  onChange={(event) => onCommentChange(event, CommentType.RepairCompletedComment)}
+                                  cols={30}
+                                  rows={3} placeholder="Комментарий о проделанной работе (мин 20 символов)"
                                   required={true}></textarea>
-                        <input type="file" accept="image/png, image/jpeg"
-                               onChange={(evt) => handleImageUpload(evt, setRepairCompletedImage)}/>
+                        <label className="repair-element__photo-input">
+                            <span>Прикрепить фото</span>
+                            <input type="file" accept="image/png, image/jpeg"
+                                   onChange={(evt) => handleImageUpload(evt, setRepairCompletedImage)}/>
+                        </label>
                         {repairCompletedImage && <img src={URL.createObjectURL(repairCompletedImage)} alt=""/>}
                         <button disabled={repairCompletedComment.length < 20} className={classNames(
                             'repair-element__button repair-element__button--success',
@@ -409,7 +533,10 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                                 repairCompletedComment: repairCompletedComment
                             }));
                             if (repairCompletedImage) {
-                                dispatch(updateRepairCompletedImageAction({file: repairCompletedImage, id: repair.id}));
+                                dispatch(updateRepairCompletedImageAction({
+                                    file: repairCompletedImage,
+                                    id: repair.id
+                                }));
                             }
 
                             setIsAgreementChange(true);
@@ -420,8 +547,8 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                 }
                 {(agreement && repair.stages === RepairStage.RepairCompleted) &&
                     <div className="repair-element__button-wrapper">
-                            <textarea onChange={(event) => onCommentChange(event, CommentType.RepairEndComment)} cols={30}
-                                      rows={10} placeholder="Комментарий по завершению ремонта"></textarea>
+                            <textarea className="repair-element__textarea" onChange={(event) => onCommentChange(event, CommentType.RepairEndComment)} cols={30}
+                                      rows={3} placeholder="Комментарий по завершению ремонта"></textarea>
                         <button className="repair-element__button repair-element__button--success"
                                 onClick={() => {
                                     dispatch(updateBreakStageAction({
