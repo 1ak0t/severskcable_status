@@ -19,9 +19,9 @@ export const getDurationString = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) 
     const durationMinutes = endDate.diff(startDate, 'minute');
     const days = Math.floor(durationMinutes/60/24);
     if (days > 0) {
-        return `${days.toFixed()} д. ${Math.floor(durationMinutes/60) - days*24} ч. ${durationMinutes % 24} мин.`;
+        return `${days.toFixed()} д. ${Math.floor(durationMinutes/60) - days*24} ч. ${durationMinutes - (days*24*60) - (Math.floor(durationMinutes/60)*60 - days*24*60)} мин.`;
     }
-    return `${Math.floor(durationMinutes/60)} ч. ${durationMinutes % 24} мин.`;
+    return `${Math.floor(durationMinutes/60)} ч. ${durationMinutes - (Math.floor(durationMinutes/60)*60)} мин.`;
 }
 
 export const getMachineStatusByPriority = (priority: number) => {

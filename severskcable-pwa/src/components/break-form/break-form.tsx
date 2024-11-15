@@ -96,15 +96,17 @@ function BreakForm() {
         setCurrentRepair('');
     }
 
+    const onPriorityListFocus = () => {
+        setIsOpenPriorityList(true);
+        setCurrentPriority('');
+    }
+
     const onPriorityChange = (newValue: any) => {
         setCurrentPriority(newValue.value);
         setIsOpenPriorityList(false);
     }
 
     const onCreateRepair = (newRepair: string) => {
-        if (currentMachine) {
-            dispatch(createNewBreakTypeAction({machine: currentMachine.id, description: newRepair}));
-        }
         const newList = repairList;
         newList.push({value: newRepair, label: newRepair});
         setRepairList(newList);
@@ -131,6 +133,10 @@ function BreakForm() {
 
             if (registerImage) {
                 data = {...data, registerImage: registerImage};
+            }
+
+            if (breaksTypesByMachine.findIndex(type => type.description === currentRepair) === -1) {
+                dispatch(createNewBreakTypeAction({machine: currentMachine.id, description: currentRepair}));
             }
 
             dispatch(createNewBreakAction(data));
@@ -181,10 +187,14 @@ function BreakForm() {
                     menuIsOpen={isOpenPriorityList}
                     required={true}
                     noOptionsMessage={() => 'Нет вариантов'}
+                    onFocus={onPriorityListFocus}
                 />
-                <input type="file" accept="image/png, image/jpeg"
-                       onChange={(evt) => handleImageUpload(evt, setRegisterImage)}/>
-                {registerImage && <img src={URL.createObjectURL(registerImage)} alt=""/>}
+                <label className="repair-element__photo-input">
+                    <span>Прикрепить фото</span>
+                    <input type="file" accept="image/png, image/jpeg"
+                           onChange={(evt) => handleImageUpload(evt, setRegisterImage)}/>
+                    {registerImage && <img src={URL.createObjectURL(registerImage)} alt=""/>}
+                </label>
                 <button className="break-form__submit" type="submit" onClick={onBreakSubmit}>Отправить</button>
             </div>
             <div className="break-form__result">
