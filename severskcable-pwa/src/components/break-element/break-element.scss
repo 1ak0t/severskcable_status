@@ -57,9 +57,9 @@
     margin-left: 15px;
     font-size: 9px;
     row-gap: 3px;
-    max-width: 150px;
     text-align: end;
     width: 50%;
+    flex-grow: 1;
   }
 
   &__machine-wrapper {
