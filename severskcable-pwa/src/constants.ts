@@ -11,7 +11,8 @@ export enum AppRoutes {
     MachineBreaks = '/machine-breaks',
     NotFound = '*',
     Agreement = '/agreement',
-    Notifications = '/notifications'
+    Notifications = '/notifications',
+    Supply = '/supply',
 }
 
 export enum MachinesStatus {
@@ -52,7 +53,8 @@ export enum RepairStage {
     Register = "Зарегистрирована",
     RepairSuccess = "Поломка потверждена",
     Repairing = "Ремонт",
-    RepairCompleted = "Ремонт выполнен"
+    RepairCompleted = "Ремонт выполнен",
+    Supply = "Ожидает снабжения"
 }
 
 export enum UserRoles {
@@ -61,7 +63,8 @@ export enum UserRoles {
     Engineers = "Инженеры",
     HeadEngineer = "Главный инженер",
     CEO = "Генеральный директор",
-    Admin = "Администратор"
+    Admin = "Администратор",
+    Supply = "Снабжение"
 }
 
 export const Priority = ['Высокий - Неработает', 'Средний - Работает нештатно','Низкий - Требует внимания'];
@@ -74,7 +77,8 @@ export enum APIRoute{
     Images = '/upload/',
     Logout = '/logout',
     Notifications = '/notifications',
-    Users = '/users'
+    Users = '/users',
+    SupplyOrders = '/supplies',
 }
 
 export enum NameSpace {

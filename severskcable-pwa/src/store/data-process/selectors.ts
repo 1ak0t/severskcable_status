@@ -1,6 +1,12 @@
 import {State} from "../../types/state.type";
 import {NameSpace} from "../../constants";
-import {Break, BreaksTypeByMachine, MachineType, NotificationType} from "../../types/initialState.type";
+import {
+    Break,
+    BreaksTypeByMachine,
+    MachineType,
+    NotificationType,
+    SupplyOrdersType
+} from "../../types/initialState.type";
 
 export const getDataLoadingStatus = (state: State): boolean => state[NameSpace.Data].isDataLoading;
 export const getMachines = (state: State): MachineType[] => state[NameSpace.Data].machines;
@@ -13,3 +19,4 @@ export const getPhotoDownloadingStatus = (state: State): boolean => state[NameSp
 export const getChangingStageStatus = (state: State): boolean => state[NameSpace.Data].isChangingStage;
 export const getChangedStageStatus = (state: State): null | boolean => state[NameSpace.Data].isChangedStage;
 export const getNotifications = (state: State): NotificationType[] => state[NameSpace.Data].notifications;
+export const getSupplyOrders = (state: State): SupplyOrdersType[] => state[NameSpace.Data].supplies;

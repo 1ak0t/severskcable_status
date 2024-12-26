@@ -1,14 +1,20 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {AppDispatch, State} from "../types/state.type";
 import {AxiosInstance} from "axios";
-import {Break, BreaksTypeByMachine, MachineType, NotificationType} from "../types/initialState.type";
-import {APIRoute, AppRoutes, MachinesStatus, NameSpace} from "../constants";
+import {Break, BreaksTypeByMachine, MachineType, NotificationType, SupplyOrdersType} from "../types/initialState.type";
+import {APIRoute, AppRoutes, MachinesStatus, NameSpace, RepairStage} from "../constants";
 import {redirectToRoute} from "./actions";
 import {AuthDataType} from "../types/auth-data.type";
 import {UserLoggedDataType} from "../types/user-data.type";
 import {dropToken, saveToken} from "../services/token";
 import {store} from "./index";
-import {CreateRepairType, NewBreakType, UpdateBreakStageType, UpdateMachineStatusType} from "../types/types";
+import {
+    CreateNewSupplyType,
+    CreateRepairType,
+    NewBreakType,
+    UpdateBreakStageType,
+    UpdateMachineStatusType, UpdateSupplyType
+} from "../types/types";
 import {getMachineStatusByPriority} from "../helpers/helpers";
 import {
     registerImageActionType,
@@ -36,6 +42,22 @@ export const fetchAllData = createAsyncThunk<void, undefined, {
     }
 );
 
+export const fetchSupplyData = createAsyncThunk<void, undefined, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'fetchSupplyData',
+    async (_arg, {dispatch}) => {
+        dispatch(fetchNotifications());
+        dispatch(fetchUserNotificationCount(<string>store.getState().USER?.user.id));
+        dispatch(fetchBreaks());
+        dispatch(fetchSupplyOrders());
+        //@ts-ignore
+        navigator.setAppBadge(store.getState().USER?.user.notificationsCount);
+    }
+);
+
 export const fetchMachines = createAsyncThunk<MachineType[], undefined, {
     dispatch: AppDispatch;
     state: State;
@@ -44,6 +66,18 @@ export const fetchMachines = createAsyncThunk<MachineType[], undefined, {
     'fetchMachines',
     async (_arg, {extra: api}) => {
         const {data} = await api.get<MachineType[]>(APIRoute.Machines);
+        return data;
+    }
+);
+
+export const fetchSupplyOrders = createAsyncThunk<SupplyOrdersType[], undefined, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'fetchSupplyOrders',
+    async (_arg, {extra: api}) => {
+        const {data} = await api.get<SupplyOrdersType[]>(APIRoute.SupplyOrders);
         return data;
     }
 );
@@ -109,10 +143,6 @@ export const checkAuthAction = createAsyncThunk<UserLoggedDataType, undefined, {
     'checkAuthAction',
     async (_arg, {dispatch, extra: api}) => {
         const {data} = await api.get<UserLoggedDataType>(APIRoute.Login);
-        dispatch(fetchMachines());
-        dispatch(fetchBreaks());
-        dispatch(fetchBreakTypesByMachine());
-        dispatch(fetchNotifications());
         return data;
     }
 );
@@ -127,10 +157,6 @@ export const loginAction = createAsyncThunk<UserLoggedDataType, AuthDataType, {
         dropToken();
         const {data} = await api.post<UserLoggedDataType>(APIRoute.Login, {email, password});
         saveToken(data.token);
-        dispatch(fetchMachines());
-        dispatch(fetchBreaks());
-        dispatch(fetchBreakTypesByMachine());
-        dispatch(fetchNotifications());
         dispatch(redirectToRoute(AppRoutes.Root));
         return data;
     },
@@ -324,5 +350,50 @@ export const resetNotificationCountAction = createAsyncThunk<void, string, {
     async (arg, {extra: api}) => {
         const updateUrl = APIRoute.Users + `/${arg}/reset-notification-status`;
         await api.post(updateUrl);
+    },
+);
+
+export const updateSupplyAction = createAsyncThunk<SupplyOrdersType, UpdateSupplyType, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'updateSupplyAction',
+    async (arg, {extra: api}) => {
+        const updateUrl = APIRoute.SupplyOrders + `/${arg.id}/change-status`;
+        if (arg.supplyImage) {
+            const formData = new FormData();
+            formData.set('image', arg.supplyImage);
+            const { data } = await api.patch<SupplyOrdersType>(updateUrl, formData, {
+                headers: {'Content-Type': 'multipart/form-data'},
+            });
+
+            return data;
+        }
+
+        const {data} = await api.patch<SupplyOrdersType>(updateUrl, arg);
+
+        return data;
+    },
+);
+
+export const createNewSuppliesAction = createAsyncThunk<SupplyOrdersType, CreateNewSupplyType, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'createNewSuppliesAction',
+    async (arg, {dispatch, extra: api}) => {
+        let supplyImage = null;
+        if (arg.supplyImage) {
+            supplyImage = arg.supplyImage;
+            delete arg.supplyImage;
+        }
+        const {data} = await api.post<SupplyOrdersType>(APIRoute.SupplyOrders, {...arg, break: arg.break.id});
+        if (supplyImage && data.id) {
+            dispatch(updateSupplyAction({supplyImage: supplyImage, id: data.id}));
+        }
+        dispatch(updateBreakStageAction({id: arg.break.id, stages: RepairStage.Supply, machine: arg.break.machine.id}))
+        return data;
     },
 );

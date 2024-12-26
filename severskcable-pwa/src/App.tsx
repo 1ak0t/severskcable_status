@@ -1,5 +1,5 @@
 import {Route, Routes} from 'react-router-dom';
-import {AppRoutes} from "./constants";
+import {AppRoutes, AuthorizationStatus, UserRoles} from "./constants";
 import AuthorizationPage from "./pages/authorization-page/authorization-page";
 import StatusPage from "./pages/status-page/status-page";
 import NotFoundPage from "./pages/not-found-page/not-found-page";
@@ -18,7 +18,8 @@ import {CSSProperties, useEffect} from "react";
 import companyLogo from './imgs/logo-main.svg';
 import NetworkErrorPage from "./pages/network-error-page/network-error-page";
 import NotificationPage from "./pages/notification-page/notification-page";
-import {fetchAllData} from "./store/api-actions";
+import SupplyPage from "./pages/supply-page/supply-page";
+import {fetchAllData, fetchSupplyData} from "./store/api-actions";
 
 const override: CSSProperties = {
     display: "block",
@@ -46,11 +47,24 @@ function App () {
         subscribe();
     },[]);
 
+    useEffect(() => {
+        if (authorizationStatus === AuthorizationStatus.Auth){
+            if (user.role.includes(UserRoles.Supply)) {
+                dispatch(fetchSupplyData());
+            } else if (user.role.includes(UserRoles.CEO) || user.role.includes(UserRoles.Admin)) {
+                dispatch(fetchSupplyData());
+                dispatch(fetchAllData());
+            } else {
+                dispatch(fetchAllData());
+                dispatch(fetchSupplyData());
+            }
+        }
+    }, [authorizationStatus]);
+
     const subscribe = async () => {
         const eventSource = new EventSource(`https://corp.severskcable.ru:4875/connect`)
         eventSource.onmessage = function (event) {
             const message = JSON.parse(event.data);
-            dispatch(fetchAllData());
         }
     }
 
@@ -80,7 +94,7 @@ function App () {
                     <Route
                         path={AppRoutes.Root}
                         element={
-                            <PrivateRoute authorizationStatus={authorizationStatus}>
+                            <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Supply]}>
                                 <StatusPage />
                             </PrivateRoute>
                         }
@@ -92,7 +106,7 @@ function App () {
                     <Route
                         path={AppRoutes.BreakRegistration}
                         element={
-                            <PrivateRoute authorizationStatus={authorizationStatus}>
+                            <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Supply]}>
                                 <BreakRegisterPage />
                             </PrivateRoute>
                         }
@@ -100,7 +114,7 @@ function App () {
                     <Route
                         path={AppRoutes.BreaksList}
                         element={
-                            <PrivateRoute authorizationStatus={authorizationStatus}>
+                            <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Supply]}>
                                 <BreaksListPage />
                             </PrivateRoute>
                         }
@@ -108,7 +122,7 @@ function App () {
                     <Route
                         path={AppRoutes.Agreement}
                         element={
-                            <PrivateRoute authorizationStatus={authorizationStatus}>
+                            <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Supply]}>
                                 <AgreementPage />
                             </PrivateRoute>
                         }
@@ -123,7 +137,7 @@ function App () {
                     />
                     <Route path={AppRoutes.MachineBreaks}>
                         <Route path=":machineId" element={
-                            <PrivateRoute authorizationStatus={authorizationStatus}>
+                            <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Supply]}>
                                 <MachineBreaksPage />
                             </PrivateRoute>} />
                     </Route>
@@ -132,6 +146,14 @@ function App () {
                         element={
                             <PrivateRoute authorizationStatus={authorizationStatus}>
                                 <SendingStatusPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoutes.Supply}
+                        element={
+                            <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Operator]}>
+                                <SupplyPage />
                             </PrivateRoute>
                         }
                     />

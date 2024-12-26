@@ -13,7 +13,7 @@ import {
     updateRegisterImageAction,
     updateRepairCompletedImageAction,
     updateRepairingImageAction,
-    updateSuccessImageAction
+    updateSuccessImageAction, fetchSupplyOrders, createNewSuppliesAction, updateSupplyAction
 } from "../api-actions";
 
 const initialState: DataProcess = {
@@ -22,6 +22,7 @@ const initialState: DataProcess = {
     breaks: [],
     breaksTypesByMachine: [],
     notifications: [],
+    supplies: [],
     hasError: false,
     isCreatingNewBreak: false,
     isCreatedNewBreak: null,
@@ -52,6 +53,18 @@ export const dataProcess = createSlice({
                 state.isDataLoading = false;
             })
             .addCase(fetchMachines.rejected, (state) => {
+                state.isDataLoading = false;
+                state.hasError = true;
+            })
+            .addCase(fetchSupplyOrders.pending, (state) => {
+                state.isDataLoading = true;
+                state.hasError = false;
+            })
+            .addCase(fetchSupplyOrders.fulfilled, (state, action) => {
+                state.supplies = action.payload;
+                state.isDataLoading = false;
+            })
+            .addCase(fetchSupplyOrders.rejected, (state) => {
                 state.isDataLoading = false;
                 state.hasError = true;
             })
@@ -240,6 +253,28 @@ export const dataProcess = createSlice({
             })
             .addCase(fetchImage.fulfilled, (state) => {
                 state.isPhotoDownloading = false;
+            })
+            .addCase(createNewSuppliesAction.pending, (state, action) => {
+                state.isDataLoading = true;
+                state.hasError = false;
+            })
+            .addCase(createNewSuppliesAction.fulfilled, (state, action) => {
+                state.supplies = state.supplies.concat(action.payload);
+                state.isDataLoading = false;
+            })
+            .addCase(createNewSuppliesAction.rejected, (state, action) => {
+                state.isDataLoading = false;
+                state.hasError = true;
+            })
+            .addCase(updateSupplyAction.pending, (state, action) => {
+                state.hasError = false;
+            })
+            .addCase(updateSupplyAction.fulfilled, (state, action) => {
+                const currentSupplyIndex = state.supplies.findIndex(order => order.id === action.payload.id);
+                state.supplies[currentSupplyIndex] = action.payload;
+            })
+            .addCase(updateSupplyAction.rejected, (state, action) => {
+                state.hasError = true;
             })
     }
 });

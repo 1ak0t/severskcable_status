@@ -1,0 +1,90 @@
+.supply-register-form {
+  background-color: #fff;
+  width: 86%;
+  height: 85vh;
+  transform: translateX(-50%);
+  padding: 30px 7% 100px 7%;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.25);
+  border: 1px solid #D6D6D6;
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+  font-size: 14px;
+  overflow: auto;
+
+  &__close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+  }
+
+  &__title {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 25px;
+  }
+
+  &__new {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,.25);
+    row-gap: 10px;
+  }
+
+  &__new-name {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px dotted #ccc;
+  }
+
+  &__new-description {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px dotted #ccc;
+  }
+
+  &__error {
+    color: red;
+  }
+
+  &__photo-input {
+    display: flex;
+    background-color: $main-orange;
+    padding: 0.7em 2em;
+    color: white;
+    cursor: pointer;
+    justify-content: center;
+
+    input[type=file] {
+      position: absolute;
+      z-index: -1;
+      opacity: 0;
+      display: block;
+      width: 0;
+      height: 0;
+    }
+  }
+
+  &__add-button {
+    border: 1px dotted #ccc;
+    border-radius: 5px;
+    background-color: transparent;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  &__send-button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: $main_orange;
+    color: white;
+  }
+}

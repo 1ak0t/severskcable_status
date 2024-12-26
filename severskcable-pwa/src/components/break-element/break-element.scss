@@ -161,6 +161,11 @@
     span:first-child {
       font-weight: 600;
     }
+
+    &--supply-list {
+      flex-direction: column;
+      align-items: baseline;
+    }
   }
 
   &__details {
@@ -200,6 +205,11 @@
     &--reject {
       background-color: #efaaaa;
       border: 1px solid #c57e7e;
+    }
+
+    &--supply {
+      background-color: #bbd2f4;
+      border: 1px solid #7e8cc5;
     }
 
     &--inactive {

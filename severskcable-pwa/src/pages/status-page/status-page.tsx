@@ -10,6 +10,8 @@ import {getBreaks, getMachines} from "../../store/data-process/selectors";
 import {getUser} from "../../store/user-process/selectors";
 import {setNewBreakFinished} from "../../store/data-process/data-process";
 import {urlBase64ToUint8Array} from "../../helpers/helpers";
+import {fetchAllData} from "../../store/api-actions";
+import {store} from "../../store";
 
 function StatusPage () {
     const [isSubscription, setIsSubscription] = useState(false);
@@ -17,6 +19,7 @@ function StatusPage () {
     const breaks = useAppSelector(getBreaks);
     const user = useAppSelector(getUser);
     const dispatch = useAppDispatch();
+    const [isFirstsRender, setIsFirstRender] = useState(true);
     const sortedMachines = [...machines].sort((machineA, machineB) => {
         if (machineA.status === MachinesStatus.Inspection) {
             return -1;
@@ -72,7 +75,7 @@ function StatusPage () {
         })
 
 
-        await fetch(`https://corp.severskcable.ru:4875/users/${user.id}/subscribe`, {
+        await fetch(`http://localhost:5000/users/${user.id}/subscribe`, {
             method: 'POST',
             body: JSON.stringify(subscription),
             headers: {
