@@ -7,12 +7,19 @@ import {useEffect} from "react";
 import {resetNotificationCountAction} from "../../store/api-actions";
 import {getUser} from "../../store/user-process/selectors";
 import dayjs from "dayjs";
+import {UserRoles} from "../../constants";
 
 function NotificationPage() {
     const notifications = useAppSelector(getNotifications);
     const dispatch = useAppDispatch();
     const user = useAppSelector(getUser);
-    const notificationSorted = [...notifications].sort((a, b) => {
+    let notificationByUser = notifications.filter(not => not.roles?.find(role => role !== UserRoles.Supply));
+    if (user.role.includes(UserRoles.Supply)) {
+        notificationByUser = notifications.filter(not => not.roles?.includes(UserRoles.Supply));
+    } else if (user.role.includes(UserRoles.CEO) || user.role.includes(UserRoles.Admin)) {
+        notificationByUser = [...notificationByUser, ...notificationByUser.filter(not => not.roles?.includes(UserRoles.Supply))];
+    }
+    const notificationSorted = [...notificationByUser].sort((a, b) => {
         if (dayjs(a.createdAt).unix() < dayjs(b.createdAt).unix()) {
             return 1;
         }

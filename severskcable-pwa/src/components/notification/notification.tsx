@@ -24,7 +24,7 @@ function Notification({notification, newItem}: NotificationPropsType) {
                 .split(/\n/).map(line => <Fragment><span>{line}</span></Fragment>);
         }
 
-        return '';
+        return string;
     }
 
     return(

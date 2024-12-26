@@ -31,7 +31,29 @@ export type Break = {
 export type NotificationType = {
     title: string,
     text: string,
-    createdAt: string
+    createdAt: string,
+    roles?: UserRoles[]
+}
+
+export type SupplyOrdersType = {
+    id: string;
+    break: Break;
+    supplyTitle: string;
+    supplyDescription: string;
+    supplyImage?: string;
+    supplyStatus: SupplyStatus | null;
+    acceptedDate?: string;
+    paymentDate?: string;
+    deliveryDate?: string;
+    inStockDate?: string;
+}
+
+export enum SupplyStatus {
+    Accepted = "Принят в работу",
+    Payment = "Ожидает оплаты",
+    Delivery = "Ожидает поступления",
+    InStock = "На складе",
+    New = "Новый"
 }
 
 export type MachineType = {

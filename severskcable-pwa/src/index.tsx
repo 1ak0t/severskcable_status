@@ -8,7 +8,7 @@ import App from "./App";
 import {Provider} from "react-redux";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {checkAuthAction, fetchAllData} from "./store/api-actions";
+import {checkAuthAction} from "./store/api-actions";
 import browserHistory from "./browser-history";
 import HistoryRouter from "./components/history-route/history-route";
 

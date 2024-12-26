@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import {CommentType, MachinesStatus, RepairStage} from "../../constants";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {CSSProperties, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Break} from "../../types/initialState.type";
 import dayjs from "dayjs";
-import {fetchImageTest, getDurationString, handleImageUpload} from "../../helpers/helpers";
+import {getDurationString, handleImageUpload} from "../../helpers/helpers";
 import {
     fetchImage,
     updateBreakStageAction,
@@ -16,7 +16,8 @@ import {getUser} from "../../store/user-process/selectors";
 import {
     getChangedStageStatus,
     getChangingStageStatus,
-    getPhotoDownloadingStatus
+    getPhotoDownloadingStatus,
+    getSupplyOrders
 } from "../../store/data-process/selectors";
 import {SyncLoader} from "react-spinners";
 import {FcHighPriority, FcOk} from "react-icons/fc";
@@ -26,11 +27,15 @@ import {increaseNotificationCount} from "../../store/user-process/user-process";
 type RepairElementProps = {
     repair: Break,
     agreement?: boolean,
+    setIsSupplyFormVisible?:  React.Dispatch<React.SetStateAction<boolean>>,
+    setBreakToSupply?: React.Dispatch<React.SetStateAction<Break | undefined>>
 }
 
-function BreakElement({repair, agreement}: RepairElementProps) {
+function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupply}: RepairElementProps) {
     const dispatch = useAppDispatch();
     const currentUser = useAppSelector(getUser);
+    const supplies = useAppSelector(getSupplyOrders);
+    const currentSupplies = supplies.filter(order => order.break.id === repair.id);
     const photoDownloadingStatus = useAppSelector(getPhotoDownloadingStatus);
     const isChangedStage = useAppSelector(getChangedStageStatus);
     const isChangingStage = useAppSelector(getChangingStageStatus);
@@ -131,12 +136,12 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                             <span className="progress-bar__dot progress-bar__dot--register"></span>
                             <span className={classNames(
                                 "progress-bar__dot",
-                                {"progress-bar__dot--repair-success": repair.stages === (RepairStage.RepairSuccess) || (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.RepairCompleted)},
-                                {"progress-bar__dot--repair-success": repair.stages === (RepairStage.RepairSuccess) || (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.RepairCompleted)}
+                                {"progress-bar__dot--repair-success": repair.stages === (RepairStage.RepairSuccess) || (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.Supply) || (repair.stages === RepairStage.RepairCompleted)},
+                                {"progress-bar__dot--repair-success": repair.stages === (RepairStage.RepairSuccess) || (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.Supply) || (repair.stages === RepairStage.RepairCompleted)}
                             )}></span>
                             <span className={classNames(
                                 "progress-bar__dot",
-                                {"progress-bar__dot--repairing": (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.RepairCompleted)}
+                                {"progress-bar__dot--repairing": (repair.stages === RepairStage.Repairing) || (repair.stages === RepairStage.Supply) || (repair.stages === RepairStage.RepairCompleted)}
                             )}></span>
                             <span className={classNames(
                                 "progress-bar__dot",
@@ -208,13 +213,13 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                         }
                     </div>
                     <div className="repair-element__timer">
-                        <span>{!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) ? getDurationString(dayjs(repair.registerDate), dayjs()) : getDurationString(dayjs(repair.registerDate), dayjs(repair.successDate))}</span>
+                        <span>{!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || (repair.stages === RepairStage.Supply) || repair.stages === RepairStage.RepairCompleted) ? getDurationString(dayjs(repair.registerDate), dayjs()) : getDurationString(dayjs(repair.registerDate), dayjs(repair.successDate))}</span>
                     </div>
                     <div className="repair-element__stage">
                         <h3 className='repair-element__stage-title'>Согласование</h3>
-                        {!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                        {!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || (repair.stages === RepairStage.Supply) || repair.stages === RepairStage.RepairCompleted) &&
                             <span className='repair-element__stage-status repair-element__stage-status--not-start'>Ожидается согласования</span>}
-                        {(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                        {(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || (repair.stages === RepairStage.Supply) || repair.stages === RepairStage.RepairCompleted) &&
                             <>
                                 <span className='repair-element__stage-status repair-element__stage-status--comleted'>Этап завершен</span>
                                 {repair.successPerson && <div className="repair-element__row">
@@ -264,17 +269,19 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                         }
                     </div>
                     <div className="repair-element__timer">
-                        {!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted)
+                        {!(repair.stages === null || repair.stages === RepairStage.RepairSuccess || repair.stages === RepairStage.Repairing || (repair.stages === RepairStage.Supply) || repair.stages === RepairStage.RepairCompleted)
                             ? <span>Ожидание</span>
                             :
-                            <span>{!(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) ? (getDurationString(dayjs(repair.successDate), dayjs())) : getDurationString(dayjs(repair.successDate), dayjs(repair.repairingDate))}</span>
+                            <span>{!(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || (repair.stages === RepairStage.Supply) || repair.stages === RepairStage.RepairCompleted) ? (getDurationString(dayjs(repair.successDate), dayjs())) : getDurationString(dayjs(repair.successDate), dayjs(repair.repairingDate))}</span>
                         }
                     </div>
                     <div className="repair-element__stage">
                         <h3 className='repair-element__stage-title'>Ремонт</h3>
-                        {!(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                        {!(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.Supply || repair.stages === RepairStage.RepairCompleted) &&
                             <span className='repair-element__stage-status repair-element__stage-status--not-start'>Ожидает ремонта</span>}
-                        {(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || repair.stages === RepairStage.RepairCompleted) &&
+                        {(repair.stages === RepairStage.Supply) &&
+                            <span className='repair-element__stage-status repair-element__stage-status--not-start'>Ожидает снабжение</span>}
+                        {(repair.stages === null || repair.status || repair.stages === RepairStage.Repairing || (repair.stages === RepairStage.Supply) || repair.stages === RepairStage.RepairCompleted) &&
                             <>
                                 {(repair.stages === RepairStage.Repairing) &&
                                     <span
@@ -323,11 +330,21 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                                         <img src={repairingImageURL} alt=""/>
                                     </div>
                                 }
+                                {currentSupplies.length > 0 &&
+                                    <div className="repair-element__row repair-element__row--supply-list">
+                                        <span>{repair.stages === RepairStage.Supply ? 'Ожидает снабжения' : 'Обеспечено:'}</span>
+                                        {currentSupplies &&
+                                            <ol>
+                                                {currentSupplies.map(order => <li>{order.supplyTitle} ({order.supplyStatus})</li>)}
+                                            </ol>
+                                        }
+                                    </div>
+                                }
                             </>
                         }
                         {(repair.stages === null || repair.status || repair.stages === RepairStage.RepairCompleted) &&
                             <>
-                                <span className='repair-element__stage-status repair-element__stage-status--comleted'>Этап завершен</span>
+                            <span className='repair-element__stage-status repair-element__stage-status--comleted'>Этап завершен</span>
                                 <div className="repair-element__row">
                                     <span>Завершил ремонт:</span>
                                     <span>{repair.repairCompletedPerson?.name} {repair.repairCompletedPerson?.surname}</span>
@@ -507,20 +524,40 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                         </button>
                     </div>
                 }
-                {(agreement && repair.stages === RepairStage.Repairing) &&
+                {((agreement && repair.stages === RepairStage.Repairing) || (agreement && repair.stages === RepairStage.Supply)) &&
                     <div className="repair-element__button-wrapper">
+                        {((currentSupplies.length > 0) && repair.stages === RepairStage.Supply) &&
+                            <div className="repair-element__row repair-element__row--supply-list">
+                                <span>{repair.stages === RepairStage.Supply ? 'Ожидает снабжения' : 'Обеспечено:'}</span>
+                                {currentSupplies &&
+                                    <ol>
+                                        {currentSupplies.map(order => <li>{order.supplyTitle} ({order.supplyStatus})</li>)}
+                                    </ol>
+                                }
+                            </div>
+                        }
+                        {currentSupplies.length > 0 && <h3>Снабжение обеспечено</h3>}
                         <textarea className="repair-element__textarea"
                                   onChange={(event) => onCommentChange(event, CommentType.RepairCompletedComment)}
                                   cols={30}
                                   rows={3} placeholder="Комментарий о проделанной работе (мин 20 символов)"
                                   required={true}></textarea>
-                        <label className="repair-element__photo-input">
+                        <button className="repair-element__button repair-element__button--supply"
+                                onClick={() => {
+                                    if (setIsSupplyFormVisible && setBreakToSupply) {
+                                        setIsSupplyFormVisible(true);
+                                        setBreakToSupply(repair);
+                                    }
+                                }}>{repair.stages === RepairStage.Supply ? 'Добавить к снабжению' : 'Запросить снабжение'}
+                        </button>
+                        {repair.stages !== RepairStage.Supply &&
+                            <label className="repair-element__photo-input">
                             <span>Прикрепить фото</span>
                             <input type="file" accept="image/png, image/jpeg"
                                    onChange={(evt) => handleImageUpload(evt, setRepairCompletedImage)}/>
-                        </label>
-                        {repairCompletedImage && <img src={URL.createObjectURL(repairCompletedImage)} alt=""/>}
-                        <button disabled={repairCompletedComment.length < 20} className={classNames(
+                        </label>}
+                        {repairCompletedImage && repair.stages !== RepairStage.Supply && <img src={URL.createObjectURL(repairCompletedImage)} alt=""/>}
+                        {repair.stages !== RepairStage.Supply && <button disabled={repairCompletedComment.length < 20} className={classNames(
                             'repair-element__button repair-element__button--success',
                             {'repair-element__button--inactive': repairCompletedComment.length < 20}
                         )} onClick={() => {
@@ -542,21 +579,23 @@ function BreakElement({repair, agreement}: RepairElementProps) {
                             setIsAgreementChange(true);
                             dispatch(increaseNotificationCount());
                         }}>Завершить ремонт
-                        </button>
+                        </button>}
                     </div>
                 }
                 {(agreement && repair.stages === RepairStage.RepairCompleted) &&
                     <div className="repair-element__button-wrapper">
-                            <textarea className="repair-element__textarea" onChange={(event) => onCommentChange(event, CommentType.RepairEndComment)} cols={30}
+                            <textarea className="repair-element__textarea"
+                                      onChange={(event) => onCommentChange(event, CommentType.RepairEndComment)}
+                                      cols={30}
                                       rows={3} placeholder="Комментарий по завершению ремонта"></textarea>
                         <button className="repair-element__button repair-element__button--success"
                                 onClick={() => {
                                     dispatch(updateBreakStageAction({
-                                    id: repair.id,
-                                    machine: repair.machine.id,
-                                    stages: null,
-                                    status: true,
-                                    repairEndPerson: currentUser.id,
+                                        id: repair.id,
+                                        machine: repair.machine.id,
+                                        stages: null,
+                                        status: true,
+                                        repairEndPerson: currentUser.id,
                                     repairEndDate: dayjs().toString(),
                                     repairEndComment: repairEndComment
                                 }));

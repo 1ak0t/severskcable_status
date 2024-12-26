@@ -1,4 +1,4 @@
-import {Break, MachineType, UserType} from "./initialState.type";
+import {Break, MachineType, SupplyStatus, UserType} from "./initialState.type";
 import {MachinesStatus, RepairStage} from "../constants";
 
 export interface OptionTypes {
@@ -9,6 +9,25 @@ export interface OptionTypes {
 export type CreateRepairType = {
     description: string,
     machine: string,
+}
+
+export type CreateNewSupplyType = {
+    break: Break,
+    supplyTitle: string,
+    supplyDescription: string,
+    supplyImage?: File,
+    supplyStatus: SupplyStatus | null,
+    registerDate: string,
+}
+
+export type UpdateSupplyType = {
+    id: string,
+    supplyStatus?: SupplyStatus,
+    acceptedDate?: string,
+    paymentDate?: string,
+    deliveryDate?: string,
+    inStockDate?: string,
+    supplyImage?: File,
 }
 
 export type RepairElementType = {
