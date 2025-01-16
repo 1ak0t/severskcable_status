@@ -13,7 +13,7 @@ type PrivateRouteProps = {
 function PrivateRoute({authorizationStatus, children, notAccess}: PrivateRouteProps) {
     const user = useAppSelector(getUser);
     if (authorizationStatus === AuthorizationStatus.Auth) {
-        if (notAccess !== undefined && (notAccess.filter(element => user.role.includes(element)).length > 0)) {
+        if ((notAccess?.includes(UserRoles.Admin)) && (notAccess?.includes(UserRoles.CEO)) && notAccess !== undefined && (notAccess.filter(element => user.role.includes(element)).length > 0)) {
             let navigatePath = AppRoutes.Root;
             notAccess.map(role => {
                 switch (role) {

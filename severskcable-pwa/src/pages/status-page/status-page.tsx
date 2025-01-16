@@ -75,7 +75,7 @@ function StatusPage () {
         })
 
 
-        await fetch(`http://localhost:5000/users/${user.id}/subscribe`, {
+        await fetch(`https://corp.severskcable.ru:4875/users/${user.id}/subscribe`, {
             method: 'POST',
             body: JSON.stringify(subscription),
             headers: {

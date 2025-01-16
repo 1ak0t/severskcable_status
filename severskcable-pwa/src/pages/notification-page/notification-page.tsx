@@ -17,7 +17,7 @@ function NotificationPage() {
     if (user.role.includes(UserRoles.Supply)) {
         notificationByUser = notifications.filter(not => not.roles?.includes(UserRoles.Supply));
     } else if (user.role.includes(UserRoles.CEO) || user.role.includes(UserRoles.Admin)) {
-        notificationByUser = [...notificationByUser, ...notificationByUser.filter(not => not.roles?.includes(UserRoles.Supply))];
+        notificationByUser = notifications;
     }
     const notificationSorted = [...notificationByUser].sort((a, b) => {
         if (dayjs(a.createdAt).unix() < dayjs(b.createdAt).unix()) {
