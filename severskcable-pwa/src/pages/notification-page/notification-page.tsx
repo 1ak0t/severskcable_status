@@ -13,7 +13,7 @@ function NotificationPage() {
     const notifications = useAppSelector(getNotifications);
     const dispatch = useAppDispatch();
     const user = useAppSelector(getUser);
-    let notificationByUser = notifications.filter(not => not.roles?.find(role => role !== UserRoles.Supply));
+    let notificationByUser = notifications.filter(not => !not.roles?.includes(UserRoles.Supply));
     if (user.role.includes(UserRoles.Supply)) {
         notificationByUser = notifications.filter(not => not.roles?.includes(UserRoles.Supply));
     } else if (user.role.includes(UserRoles.CEO) || user.role.includes(UserRoles.Admin)) {

@@ -1,6 +1,6 @@
 .status-page {
   width: 100%;
-  max-width: 600px;
+  max-width: 1024px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,14 +23,26 @@
   }
 
   &__add-break-button {
-    position: fixed;
+    background: url("../../imgs/icons/add-break-icon.svg");
+    position: sticky;
     width: 57px;
     height: 57px;
     bottom: 120px;
-    right: 15px;
-    background: url("../../imgs/icons/add-break-icon.svg");
+    left: 100%;
     cursor: pointer;
-    box-shadow: 4px 4px 2px rgba(0,0,0,0.4);
+    box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.4);
     border: 1px solid #565656;
+
+    @media (width > 880px){
+      transform: translateX(40%);
+    }
+
+    @media (width > 930px){
+      transform: translateX(80%);
+    }
+
+    @media (width > 1050px){
+      transform: translateX(130%);
+    }
   }
 }

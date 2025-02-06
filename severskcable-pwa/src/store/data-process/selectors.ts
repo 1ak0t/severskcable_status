@@ -5,7 +5,7 @@ import {
     BreaksTypeByMachine,
     MachineType,
     NotificationType,
-    SupplyOrdersType
+    SupplyOrdersType, UserType
 } from "../../types/initialState.type";
 
 export const getDataLoadingStatus = (state: State): boolean => state[NameSpace.Data].isDataLoading;
@@ -20,3 +20,4 @@ export const getChangingStageStatus = (state: State): boolean => state[NameSpace
 export const getChangedStageStatus = (state: State): null | boolean => state[NameSpace.Data].isChangedStage;
 export const getNotifications = (state: State): NotificationType[] => state[NameSpace.Data].notifications;
 export const getSupplyOrders = (state: State): SupplyOrdersType[] => state[NameSpace.Data].supplies;
+export const getUsers = (state: State): UserType[] => state[NameSpace.Data].users;

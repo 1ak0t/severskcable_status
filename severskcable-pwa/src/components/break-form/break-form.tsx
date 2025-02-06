@@ -1,23 +1,20 @@
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {NewBreakType, OptionTypes} from "../../types/types";
 import Select from "react-select";
-import {useState} from "react";
-import {AppRoutes, Priority, RepairStage} from "../../constants";
+import {useEffect, useState} from "react";
+import {Priority, RepairStage, UserRoles} from "../../constants";
 import CreatableSelect from "react-select/creatable";
 import dayjs from "dayjs";
 import {useNavigate} from "react-router-dom";
 import {getPriorityNumber, handleImageUpload} from "../../helpers/helpers";
-import {MachineType} from "../../types/initialState.type";
-import {
-    createNewBreakAction,
-    createNewBreakTypeAction,
-    fetchBreakTypesByMachine
-} from "../../store/api-actions";
+import {MachineType, UserType} from "../../types/initialState.type";
+import {createNewBreakAction, createNewBreakTypeAction} from "../../store/api-actions";
 import {
     getBreakCreatedStatus,
     getBreakCreatingStatus,
     getBreaksTypesByMachine,
-    getMachines
+    getMachines,
+    getUsers
 } from "../../store/data-process/selectors";
 import {getUser} from "../../store/user-process/selectors";
 import SendingStatusPage from "../sending-status-page/sending-status-page";
@@ -29,11 +26,13 @@ function BreakForm() {
 
     const machines = useAppSelector(getMachines);
     const user = useAppSelector(getUser);
+    const users = useAppSelector(getUsers);
     const breaksTypesByMachine = useAppSelector(getBreaksTypesByMachine);
     const isCreatingBreak = useAppSelector(getBreakCreatingStatus);
     const isCreatedBreak = useAppSelector(getBreakCreatedStatus);
     const [currentMachine, setCurrentMachine] = useState<null | MachineType>(null);
     const [isMachineSelected, setIsMachineSelected] = useState(true);
+    const [isOpenMachineList, setIsOpenMachineList] = useState(true);
     const [currentRepair, setCurrentRepair] = useState('');
     const [isRepairSelected, setIsRepairSelected] = useState(true);
     const [repairList, setRepairList] = useState<OptionTypes[]>([]);
@@ -42,11 +41,26 @@ function BreakForm() {
     const [priorityList, setPriorityList] = useState<OptionTypes[]>([]);
     const [isOpenPriorityList, setIsOpenPriorityList] = useState(false);
     const [registerImage, setRegisterImage] = useState<File>();
+    const [currentUser, setCurrentUser] = useState<UserType>(user);
+    const [isUserSelected, setIsUserSelected] = useState(false);
     let machineList: OptionTypes[] = [];
     machines.map(machine => machineList.push({label: machine.name, value: machine.name}));
 
+    let usersList: OptionTypes[] = [];
+    users.filter(user => user.role.includes(UserRoles.Operator)).map(user => usersList.push({label: `${user.surname} ${user.name}`, value: `${user.surname} ${user.name}`}));
+
+    useEffect(() => {
+        if (user.email === "slesarka@severskcable.ru") {
+            setIsUserSelected(true);
+        }
+    }, [user]);
+
     const getMachineValue = () => {
         return currentMachine ? machineList.find(machine => machine.value === currentMachine.name) : '';
+    }
+
+    const getUserValue = () => {
+        return currentUser ? usersList.find(user => user.value === currentUser.name) : '';
     }
 
     const getRepairValue = () => {
@@ -71,13 +85,28 @@ function BreakForm() {
         const findMachine = machines.find(machine => machine.name === newValue.value);
         if (findMachine) {
             const list: OptionTypes[] = [];
-           breaksTypesByMachine.filter(type => type.machine.id === findMachine.id).map(type => list.push({value: type.description, label: type.description}));
-           setRepairList(list);
-           setIsMachineSelected(false);
-           if (list.length > 0) {
-               setIsOpenRepairList(true);
-           }
+            breaksTypesByMachine.filter(type => type.machine.id === findMachine.id).map(type => list.push({value: type.description, label: type.description}));
+            setRepairList(list);
+            setIsMachineSelected(false);
+            if (list.length > 0) {
+                setIsOpenRepairList(true);
+            }
         }
+    }
+
+    const onChangeUser = (newValue: any) => {
+        const user = users.find(user => `${user.surname} ${user.name}` === newValue.value);
+        if (user){
+            setCurrentUser(user);
+        }
+        setCurrentRepair('');
+        setCurrentPriority('');
+        setCurrentMachine(null);
+        setIsOpenRepairList(false);
+        setIsOpenPriorityList(false);
+        setIsMachineSelected(true);
+        setIsRepairSelected(true);
+        setIsUserSelected(false);
     }
 
     const onRepairChange = (newValue: any) => {
@@ -125,7 +154,7 @@ function BreakForm() {
                 machine: currentMachine.id,
                 breakName: currentRepair,
                 priority: getPriorityNumber(currentPriority),
-                registerPerson: user.id,
+                registerPerson: currentUser.id,
                 registerDate: dayjs().toString(),
                 status: false,
                 stages: RepairStage.Register
@@ -153,8 +182,21 @@ function BreakForm() {
     return(
         <>
             <div className="break-form">
+                {(user.email === "slesarka@severskcable.ru") && <label>Выберите сотрудника</label>}
+                {(user.email === "slesarka@severskcable.ru") &&
+                    <Select
+                        options={usersList}
+                        placeholder={'Выбрать'}
+                        onChange={onChangeUser}
+                        value={getUserValue()}
+                        required={true}
+                        noOptionsMessage={() => 'Нет вариантов'}
+
+                    />
+                }
                 <label>Выберите оборудование</label>
                 <Select
+                    isDisabled={isUserSelected}
                     options={machineList}
                     placeholder={'Выбрать'}
                     onChange={onChangeMachine}
@@ -199,7 +241,7 @@ function BreakForm() {
             </div>
             <div className="break-form__result">
                 <span>Кем зарегистрирован:</span>
-                <span className="break-form__data">{user.name}</span>
+                <span className="break-form__data">{currentUser.surname} {currentUser.name}</span>
             </div>
             <div className="break-form__result">
                 <span>Дата:</span>

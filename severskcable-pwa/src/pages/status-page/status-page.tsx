@@ -108,7 +108,7 @@ function StatusPage () {
                 <title>Статусы оборудования</title>
             </Helmet>
             <h1 className="status-page__title">Статусы оборудования</h1>
-            {!isSubscription && <button onClick={async () => {
+            {(!isSubscription) && <button onClick={async () => {
                 await send();
             }}>Подписаться</button>}
             <section className="status-page__machines">

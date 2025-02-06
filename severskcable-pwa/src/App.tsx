@@ -65,6 +65,7 @@ function App () {
         const eventSource = new EventSource(`https://corp.severskcable.ru:4875/connect`)
         eventSource.onmessage = function (event) {
             const message = JSON.parse(event.data);
+            dispatch(fetchAllData());
         }
     }
 

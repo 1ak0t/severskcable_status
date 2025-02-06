@@ -61,7 +61,7 @@ function BottomMenu () {
                 {/*    Статистика<br></br>поломок*/}
                 {/*    </Link>*/}
                 {/*}*/}
-                {!(user.role.find(role => role === UserRoles.Supply)) &&
+                {(!(user.role.find(role => role === UserRoles.Supply)) && !(user.role.find(role => role === UserRoles.Operator))) &&
                     <Link to={AppRoutes.Agreement} className="bottom-menu__button">
                     {getAgreementCount() > 0 && <span className="bottom-menu__breaks-counter">{getAgreementCount()}</span>}
                     <img src="/icons/menu-icon/menu-success-icon.svg" alt=""/>

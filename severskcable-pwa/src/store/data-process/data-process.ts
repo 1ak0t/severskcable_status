@@ -13,7 +13,7 @@ import {
     updateRegisterImageAction,
     updateRepairCompletedImageAction,
     updateRepairingImageAction,
-    updateSuccessImageAction, fetchSupplyOrders, createNewSuppliesAction, updateSupplyAction
+    updateSuccessImageAction, fetchSupplyOrders, createNewSuppliesAction, updateSupplyAction, fetchUsersAction
 } from "../api-actions";
 
 const initialState: DataProcess = {
@@ -23,6 +23,7 @@ const initialState: DataProcess = {
     breaksTypesByMachine: [],
     notifications: [],
     supplies: [],
+    users: [],
     hasError: false,
     isCreatingNewBreak: false,
     isCreatedNewBreak: null,
@@ -101,6 +102,18 @@ export const dataProcess = createSlice({
                 state.isDataLoading = false;
             })
             .addCase(fetchNotifications.rejected, (state) => {
+                state.isDataLoading = false;
+                state.hasError = true;
+            })
+            .addCase(fetchUsersAction.pending, (state) => {
+                state.isDataLoading = true;
+                state.hasError = false;
+            })
+            .addCase(fetchUsersAction.fulfilled, (state, action) => {
+                state.users = action.payload;
+                state.isDataLoading = false;
+            })
+            .addCase(fetchUsersAction.rejected, (state) => {
                 state.isDataLoading = false;
                 state.hasError = true;
             })

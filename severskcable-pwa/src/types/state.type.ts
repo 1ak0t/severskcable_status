@@ -25,6 +25,7 @@ export type DataProcess = {
     breaks: Break[];
     notifications: NotificationType[];
     supplies: SupplyOrdersType[];
+    users: UserType[];
     hasError: boolean;
     isCreatedNewBreak: null | boolean;
     isCreatingNewBreak: boolean;

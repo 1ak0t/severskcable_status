@@ -36,6 +36,7 @@ export const fetchAllData = createAsyncThunk<void, undefined, {
         dispatch(fetchBreaks());
         dispatch(fetchBreakTypesByMachine());
         dispatch(fetchNotifications());
+        dispatch(fetchUsersAction())
         dispatch(fetchUserNotificationCount(<string>store.getState().USER?.user.id))
         //@ts-ignore
         navigator.setAppBadge(store.getState().USER?.user.notificationsCount);
@@ -172,6 +173,18 @@ export const logoutAction = createAsyncThunk<void, undefined, {
         await api.delete(APIRoute.Logout);
         dropToken();
     },
+);
+
+export const fetchUsersAction = createAsyncThunk<UserLoggedDataType[], undefined, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'getUsersAction',
+    async (_arg, {dispatch, extra: api}) => {
+        const {data} = await api.get<UserLoggedDataType[]>(APIRoute.Users);
+        return data;
+    }
 );
 
 export const createNewBreakTypeAction = createAsyncThunk<BreaksTypeByMachine, CreateRepairType, {
