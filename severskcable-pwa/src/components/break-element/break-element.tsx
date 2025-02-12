@@ -109,16 +109,13 @@ function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupp
                 }
                 <div className={classNames(
                     'repair-element__header',
-                    {'repair-element__header--not-complete': repair.status === false}
+                    {'repair-element__header--work': !repair.status},
+                    {'repair-element__header--warning': repair.priority === 1},
+                    {'repair-element__header--wrong': repair.priority === 2},
+                    {'repair-element__header--inspection': repair.priority === 3}
                 )} onClick={() => {
                         setIsOpened(!isOpened);
                 }}>
-                     <span className={classNames(
-                         'repair-element__icon',
-                         {'repair-element__icon--warning': repair.machine.status === MachinesStatus.Warning},
-                         {'repair-element__icon--wrong': repair.machine.status === MachinesStatus.Wrong},
-                         {'repair-element__icon--inspection': repair.machine.status === MachinesStatus.Inspection}
-                     )}></span>
                     <div className='repair-element__machine-wrapper'>
                         <span className="repair-element__title">{repair.machine.name}</span>
                         <span className="repair-element__machine-status">{repair.machine.status}</span>
@@ -131,8 +128,8 @@ function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupp
                         </div>
                     }
                     {(!(repair.stages === null)) &&
-                        <div className="machine__progress-bar progress-bar">
-                            <div className="progress-bar__time">{getDurationString(dayjs(repair.registerDate), dayjs())}</div>
+                        <div className="repair-element__progress-bar progress-bar">
+                            <div className="repair-element__header-time">{getDurationString(dayjs(repair.registerDate), dayjs())}</div>
                             <span className="progress-bar__dot progress-bar__dot--register"></span>
                             <span className={classNames(
                                 "progress-bar__dot",
@@ -150,6 +147,10 @@ function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupp
                         </div>
                     }
                 </div>
+                {!isOpened && <div className={classNames(
+                    "repair-element__short-discription",
+                    {"repair-element__short-agr-discription": agreement}
+                )}><b>Поломка:</b> {repair.breakName}</div>}
                 <div className={classNames(
                     "repair-element__stages",
                     {"repair-element__stages__closed": isOpened === false},

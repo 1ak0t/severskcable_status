@@ -15,19 +15,30 @@ function AgreementList() {
     const [isSupplyFormVisible, setIsSupplyFormVisible] = useState(false);
     const [breakToSupply, setBreakToSupply] = useState<Break>();
 
+    const windowInnerWidth = window.innerWidth;
+
     function getITRAgreementList() {
         if (user.role.find(role => role === UserRoles.ITR) || user.role.find(role => role === UserRoles.CEO) || user.role.find(role => role === UserRoles.Admin)) {
             return (
-                <>
-                    {currentBreaks.find(repair => repair.stages === RepairStage.Register) &&
+                <div className="agreement-list__type-wrapper">
+                    {(currentBreaks.find(repair => repair.stages === RepairStage.Register) || windowInnerWidth > 1200) &&
                         <h2 className="agreement-list__sub-title">Подтвердить поломку</h2>
                     }
                     {currentBreaks.filter(repair => repair.stages === RepairStage.Register).map(repair => <BreakElement repair={repair} agreement={true} key={repair.breakName}/>)}
-                    {currentBreaks.find(repair => repair.stages === RepairStage.RepairCompleted) &&
+                </div>
+            );
+        }
+    }
+
+    function getITRFinishAgreementList() {
+        if (user.role.find(role => role === UserRoles.ITR) || user.role.find(role => role === UserRoles.CEO) || user.role.find(role => role === UserRoles.Admin)) {
+            return (
+                <div className="agreement-list__type-wrapper">
+                    {(currentBreaks.find(repair => repair.stages === RepairStage.RepairCompleted) || windowInnerWidth > 1200) &&
                         <h2 className="agreement-list__sub-title">Принять ремонт</h2>
                     }
                     {currentBreaks.filter(repair => repair.stages === RepairStage.RepairCompleted).map(repair => <BreakElement repair={repair} agreement={true} key={repair.breakName}/>)}
-                </>
+                </div>
             );
         }
     }
@@ -35,12 +46,12 @@ function AgreementList() {
     function getEngineerAgreementList() {
         if (user.role.find(role => role === UserRoles.Engineers) || user.role.find(role => role === UserRoles.HeadEngineer)) {
             return (
-                <>
-                    {currentBreaks.find(repair => repair.stages === RepairStage.RepairSuccess) &&
+                <div className="agreement-list__type-wrapper">
+                    {(currentBreaks.find((repair => repair.stages === RepairStage.RepairSuccess)) || windowInnerWidth > 1200) &&
                         <h2 className="agreement-list__sub-title">Приступить к ремонту</h2>
                     }
                     {currentBreaks.filter(repair => repair.stages === RepairStage.RepairSuccess).map(repair => <BreakElement repair={repair} agreement={true} key={repair.breakName}/>)}
-                </>
+                </div>
             );
         }
     }
@@ -48,12 +59,12 @@ function AgreementList() {
     function getHeadEngineerAgreementList() {
         if (user.role.find(role => role === UserRoles.HeadEngineer)) {
             return (
-                <>
-                    {currentBreaks.find((repair => (repair.stages === RepairStage.Repairing) || ( repair.stages === RepairStage.Supply))) &&
-                        <h2 className="agreement-list__sub-title">Подтвердить выполнение ремонта</h2>
+                <div className="agreement-list__type-wrapper">
+                    {(currentBreaks.find((repair => (repair.stages === RepairStage.Repairing) || ( repair.stages === RepairStage.Supply))) || windowInnerWidth > 1200) &&
+                        <h2 className="agreement-list__sub-title">Завершить ремонт</h2>
                     }
                     {currentBreaks.filter((repair => (repair.stages === RepairStage.Repairing) || ( repair.stages === RepairStage.Supply))).map(repair => <BreakElement repair={repair} agreement={true} setIsSupplyFormVisible={setIsSupplyFormVisible} setBreakToSupply={setBreakToSupply} key={repair.breakName}/>)}
-                </>
+                </div>
             );
         }
     }
@@ -63,8 +74,9 @@ function AgreementList() {
         <>
             <section className="agreement-list">
                 {!isSupplyFormVisible && getITRAgreementList()}
-                {!isSupplyFormVisible && getHeadEngineerAgreementList()}
                 {!isSupplyFormVisible && getEngineerAgreementList()}
+                {!isSupplyFormVisible && getHeadEngineerAgreementList()}
+                {!isSupplyFormVisible && getITRFinishAgreementList()}
             </section>
             {isSupplyFormVisible && breakToSupply && <SupplyRegisterForm repair={breakToSupply} setIsOpen={setIsSupplyFormVisible}/>}
         </>

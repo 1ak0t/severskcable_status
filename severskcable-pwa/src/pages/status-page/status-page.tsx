@@ -3,7 +3,7 @@ import BottomMenu from "../../components/bottom-menu/bottom-menu";
 import Machine from "../../components/machine/machine";
 import {Helmet} from "react-helmet-async";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {AppRoutes, MachinesStatus, publicVapidKey} from "../../constants";
+import {AppRoutes, MachinesStatus, publicVapidKey, RepairStage} from "../../constants";
 import {Link} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {getBreaks, getMachines} from "../../store/data-process/selectors";
@@ -12,6 +12,7 @@ import {setNewBreakFinished} from "../../store/data-process/data-process";
 import {urlBase64ToUint8Array} from "../../helpers/helpers";
 import {fetchAllData} from "../../store/api-actions";
 import {store} from "../../store";
+import classNames from "classnames";
 
 function StatusPage () {
     const [isSubscription, setIsSubscription] = useState(false);
@@ -45,6 +46,8 @@ function StatusPage () {
         }
         return 0;
     });
+
+    const windowInnerWidth = window.innerWidth;
 
     const send = async () => {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
@@ -111,8 +114,40 @@ function StatusPage () {
             {(!isSubscription) && <button onClick={async () => {
                 await send();
             }}>Подписаться</button>}
+            {windowInnerWidth > 1200 &&
+                <div className="status-page__details">
+                    <div className="machine__details-wrapper">
+                    {/*    <div className="progress-bar progress-bar--vertical">*/}
+                    {/*        <span className="progress-bar__dot progress-bar__dot--register"></span>*/}
+                    {/*        <span className="progress-bar__dot progress-bar__dot--repair-success"></span>*/}
+                    {/*        <span className="progress-bar__dot progress-bar__dot--repairing"></span>*/}
+                    {/*        <span className="progress-bar__dot progress-bar__dot--repair-completed"></span>*/}
+                    {/*    </div>*/}
+                    {/*    <div className="progress-bar progress-bar--vertical-text">*/}
+                    {/*        <span className="progress-bar__text">- ремонт завершён</span>*/}
+                    {/*        <span className="progress-bar__text">- ремонтируется</span>*/}
+                    {/*        <span className="progress-bar__text">- ожидает согласования</span>*/}
+                    {/*        <span className="progress-bar__text">- загеристрирована</span>*/}
+                    {/*    </div>*/}
+                    </div>
+                    <div className="machine__details-wrapper machine__details-wrapper--right">
+                        <div className="machine__details-rows machine__details-rows--right">
+                            <span className="progress-bar__text">работает -  </span>
+                            <span className="progress-bar__text">линия стоит -  </span>
+                            <span className="progress-bar__text">работает нештатно -  </span>
+                            <span className="progress-bar__text">требует внимания -  </span>
+                        </div>
+                        <div className="machine__details-rows">
+                            <span className="machine__details-colors machine__details-colors--good"></span>
+                            <span className="machine__details-colors machine__details-colors--wrong"></span>
+                            <span className="machine__details-colors machine__details-colors--warning"></span>
+                            <span className="machine__details-colors machine__details-colors--inspection"></span>
+                        </div>
+                    </div>
+                </div>
+            }
             <section className="status-page__machines">
-                {sortedMachines.map(machine => {
+                {(windowInnerWidth < 1200 ? sortedMachines : machines).map(machine => {
                     const breaksByMachine = breaks.filter(el => el.machine.id === machine.id);
                     if (breaksByMachine.length > 0 && breaksByMachine.find(el => !el.status)) {
                         return <Machine name={machine.name} status={machine.status} currentRepairs={breaksByMachine}
@@ -124,7 +159,8 @@ function StatusPage () {
 
                 })}
             </section>
-            <Link to={AppRoutes.BreakRegistration} onClick={() => dispatch(setNewBreakFinished())} className="status-page__add-break-button"></Link>
+            <Link to={AppRoutes.BreakRegistration} onClick={() => dispatch(setNewBreakFinished())}
+                  className="status-page__add-break-button"></Link>
             <BottomMenu/>
         </div>
     );

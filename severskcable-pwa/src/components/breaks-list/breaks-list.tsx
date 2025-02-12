@@ -17,25 +17,38 @@ function BreaksList() {
         return 0;
     });
 
+    const windowInnerWidth = window.innerWidth;
 
     return (
         <section className="repair-list">
-            {currentsBreaks.find(el => el.stages === RepairStage.Register) &&
-                <h2 className="repair-list__sub-title">Зарегистрированы</h2>
-            }
-            {currentsBreaks.filter(el => el.stages === RepairStage.Register).map(el => <BreakElement repair={el} key={el.breakName}/>)}
-            {currentsBreaks.find(el => el.stages === RepairStage.RepairSuccess) &&
-                <h2 className="repair-list__sub-title">Поломка подтверждена</h2>
-            }
-            {currentsBreaks.filter(el => el.stages === RepairStage.RepairSuccess).map(el => <BreakElement repair={el} key={el.breakName}/>)}
-            {currentsBreaks.find(el => (el.stages === RepairStage.Repairing) || (el.stages === RepairStage.Supply)) &&
-                <h2 className="repair-list__sub-title">Ремонтируются</h2>
-            }
-            {currentsBreaks.filter(el => (el.stages === RepairStage.Repairing) || (el.stages === RepairStage.Supply)).map(el => <BreakElement repair={el} key={el.breakName}/>)}
-            {currentsBreaks.find(el => el.stages === RepairStage.RepairCompleted) &&
-                <h2 className="repair-list__sub-title">Ремонт завершен</h2>
-            }
-            {currentsBreaks.filter(el => el.stages === RepairStage.RepairCompleted).map(el => <BreakElement repair={el} key={el.breakName}/>)}
+            <article className="repair-list__type-wrapper">
+                {(currentsBreaks.find(el => el.stages === RepairStage.Register) || windowInnerWidth > 1200) &&
+                    <h2 className="repair-list__sub-title">Зарегистрированы</h2>
+                }
+                {currentsBreaks.filter(el => el.stages === RepairStage.Register).map(el => <BreakElement repair={el}
+                                                                                                         key={el.breakName}/>)}
+            </article>
+            <article className="repair-list__type-wrapper">
+                {(currentsBreaks.find(el => el.stages === RepairStage.RepairSuccess) || windowInnerWidth > 1200) &&
+                    <h2 className="repair-list__sub-title">Поломка подтверждена</h2>
+                }
+                {currentsBreaks.filter(el => el.stages === RepairStage.RepairSuccess).map(el => <BreakElement repair={el}
+                                                                                                              key={el.breakName}/>)}
+            </article>
+            <article className="repair-list__type-wrapper">
+                {currentsBreaks.find(el => (el.stages === RepairStage.Repairing) || (el.stages === RepairStage.Supply) || windowInnerWidth > 1200) &&
+                    <h2 className="repair-list__sub-title">Ремонтируются</h2>
+                }
+                {currentsBreaks.filter(el => (el.stages === RepairStage.Repairing) || (el.stages === RepairStage.Supply)).map(el =>
+                    <BreakElement repair={el} key={el.breakName}/>)}
+            </article>
+            <article className="repair-list__type-wrapper">
+                {(currentsBreaks.find(el => el.stages === RepairStage.RepairCompleted) || windowInnerWidth > 1200) &&
+                    <h2 className="repair-list__sub-title">Ремонт завершен</h2>
+                }
+                {currentsBreaks.filter(el => el.stages === RepairStage.RepairCompleted).map(el => <BreakElement repair={el}
+                                                                                                                key={el.breakName}/>)}
+            </article>
         </section>
     );
 }

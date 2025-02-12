@@ -9,10 +9,25 @@
   margin-bottom: 100px;
   background-color: #fafafa;
 
+  @media (width > 1200px) {
+    max-width: 100%;
+    margin-left: 90px;
+    margin-bottom: 0;
+    padding: 2% 3%;
+    height: 100vh;
+    justify-content: normal;
+  }
+
   &__title {
     font-size: 25px;
     font-weight: 500;
     margin-bottom: 25px;
+  }
+
+  &__details {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
   }
 
   &__machines {
@@ -20,6 +35,13 @@
     flex-direction: column;
     row-gap: 20px;
     width: 100%;
+
+    @media (width > 1200px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      column-gap: 2%;
+      row-gap: 10%;
+    }
   }
 
   &__add-break-button {
@@ -32,6 +54,7 @@
     cursor: pointer;
     box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.4);
     border: 1px solid #565656;
+    border-radius: 6px;
 
     @media (width > 880px){
       transform: translateX(40%);
@@ -43,6 +66,13 @@
 
     @media (width > 1050px){
       transform: translateX(130%);
+    }
+
+    @media (width > 1200px) {
+      transform: none;
+      left: auto;
+      right: 3%;
+      position: absolute;
     }
   }
 }
