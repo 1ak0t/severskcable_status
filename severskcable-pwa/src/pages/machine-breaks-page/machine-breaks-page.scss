@@ -1,6 +1,6 @@
 .machine-breaks-page {
   width: 100%;
-  max-width: 600px;
+  max-width: 1024px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,5 +12,14 @@
     font-size: 25px;
     font-weight: 500;
     margin-bottom: 5px;
+  }
+
+  &__history-button {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    background-color: #335CA8FF;
+    color: white;
+    font-size: 12px;
   }
 }

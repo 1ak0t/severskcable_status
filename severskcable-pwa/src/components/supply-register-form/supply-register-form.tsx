@@ -95,7 +95,7 @@ function SupplyRegisterForm ({repair, setIsOpen}: SupplyRegisterFormPropsType) {
                                onChange={(evt) => handleImageUpload(evt, setCurrentSupplyImage)}/>
                     </label>
                     {currentSupplyImage && <img src={URL.createObjectURL(currentSupplyImage)} alt=""/>}
-                    <button onClick={() => addOrder()}>Сохранить</button>
+                    <button className="supply-register-form__save-button" onClick={() => addOrder()}>Сохранить</button>
                 </article>}
             <button className="supply-register-form__add-button" onClick={() => setIsAddNewOrder(true)}>+ Добавить</button>
             <button className="supply-register-form__send-button" onClick={() => sendSupplyOrders()}>Отправить запрос</button>

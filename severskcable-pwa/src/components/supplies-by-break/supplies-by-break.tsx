@@ -38,13 +38,9 @@ function SuppliesByBreak ({repair}: SupplyOrderPropsType) {
                 <div className='supply-element__header' onClick={() => {
                     setIsOpened(!isOpened);
                 }}>
-                    <div className='supply-element__header-machine'>
-                        <span className={classNames(
-                            'supply-element__icon',
-                            {'supply-element__icon--warning': repair.machine.status === MachinesStatus.Warning},
-                            {'supply-element__icon--wrong': repair.machine.status === MachinesStatus.Wrong},
-                            {'supply-element__icon--inspection': repair.machine.status === MachinesStatus.Inspection}
-                        )}></span>
+                    <div className={classNames(
+                        'supply-element__header-machine'
+                    )}>
                         <div className='supply-element__machine-wrapper'>
                             <span className="supply-element__title">{repair.machine.name}</span>
                             <span className="supply-element__machine-status">{repair.machine.status}</span>

@@ -16,6 +16,7 @@ function Machine({name, status, currentRepairs, id} : MachinePropsType) {
     let duration = "";
     let repairStage: null | string = "Работает";
     const machineBreaksUrl = `${AppRoutes.MachineBreaks}/${id}`;
+    const activeBreaks = currentRepairs?.filter(repair => repair.status === false);
 
     if (currentRepairs) {
         const currentRepairsSorted = [...currentRepairs].sort(function (repairA, repairB) {
@@ -31,34 +32,18 @@ function Machine({name, status, currentRepairs, id} : MachinePropsType) {
         duration = getDurationString(dayjs(currentRepairsSorted[0].registerDate), dayjs());
     }
     return(
-        <Link to={machineBreaksUrl} className="machine">
-            <span className={classNames(
-                'machine__icon',
-                {'machine__icon--warning': status === MachinesStatus.Warning},
-                {'machine__icon--wrong': status === MachinesStatus.Wrong},
-                {'machine__icon--inspection': status === MachinesStatus.Inspection}
-            )}></span>
+        <Link to={machineBreaksUrl} className={classNames(
+            'machine',
+            {'machine--warning': status === MachinesStatus.Warning},
+            {'machine--wrong': status === MachinesStatus.Wrong},
+            {'machine--inspection': status === MachinesStatus.Inspection}
+        )}>
             <div className="machine__name-wrapper">
                 <span className="machine__name">{name}</span>
                 <span className="machine__status">{status}</span>
             </div>
-            {(!(repairStage === null) && !(repairStage === "Работает")) &&
-                <div className="machine__progress-bar progress-bar">
-                    <div className="progress-bar__time">{duration}</div>
-                    <span className="progress-bar__dot progress-bar__dot--register"></span>
-                    <span className={classNames(
-                        "progress-bar__dot",
-                        {"progress-bar__dot--repair-success": repairStage === (RepairStage.RepairSuccess) || (repairStage === RepairStage.Repairing) || (repairStage === RepairStage.RepairCompleted)}
-                    )}></span>
-                    <span className={classNames(
-                        "progress-bar__dot",
-                        {"progress-bar__dot--repairing": (repairStage === RepairStage.Repairing) || (repairStage === RepairStage.RepairCompleted)}
-                    )}></span>
-                    <span className={classNames(
-                        "progress-bar__dot",
-                        {"progress-bar__dot--repair-completed": repairStage === RepairStage.RepairCompleted}
-                    )}></span>
-                </div>
+            {(activeBreaks && activeBreaks.length > 0) &&
+                <span className="machine__active-break-counter">{activeBreaks.length}</span>
             }
         </Link>
     );

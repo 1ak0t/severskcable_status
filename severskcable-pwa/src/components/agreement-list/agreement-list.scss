@@ -5,8 +5,47 @@
   row-gap: 20px;
   position: relative;
 
+  @media (width > 1200px) {
+    flex-direction: row;
+    justify-content: center;
+    flex-grow: 1;
+  }
+
   &__sub-title {
     text-align: center;
     font-size: 18px;
+    padding-bottom: 5px;
+
+    @media (width > 1200px) {
+      border-bottom: 1px solid #A6A6A6;
+    }
+  }
+
+  &__type-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    row-gap: 20px;
+
+    @media (width > 1200px) {
+      padding: 0 15px;
+
+      &:first-child {
+        border-left: 1px solid #A6A6A6;
+      }
+
+      &:nth-child(2) {
+        border-left: 1px solid #A6A6A6;
+        border-right: 1px solid #A6A6A6;
+      }
+
+      &:nth-child(3) {
+        border-right: 1px solid #A6A6A6;
+      }
+
+      &:last-child {
+        border-right: 1px solid #A6A6A6;
+      }
+    }
   }
 }
