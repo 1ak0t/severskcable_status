@@ -13,7 +13,8 @@ import {
     CreateRepairType,
     NewBreakType,
     UpdateBreakStageType,
-    UpdateMachineStatusType, UpdateSupplyType
+    UpdateMachineStatusType,
+    UpdateSupplyType
 } from "../types/types";
 import {getMachineStatusByPriority} from "../helpers/helpers";
 import {
@@ -228,8 +229,25 @@ export const updateMachineStatusAction = createAsyncThunk<MachineType, UpdateMac
     'updateMachineStatusAction',
     async (arg, {extra: api}) => {
         const updateUrl = APIRoute.Machines + `/${arg.id}`;
-        const {data} = await api.patch<MachineType>(updateUrl, {status: arg.status});
-        return data;
+        const machine = await api.get<MachineType>(updateUrl);
+        if (arg.status !== MachinesStatus.Work) {
+            switch (machine.data.status) {
+                case MachinesStatus.Wrong:
+                    return machine.data;
+                case MachinesStatus.Warning:
+                    if (arg.status === MachinesStatus.Wrong) {
+                        const {data} = await api.patch<MachineType>(updateUrl, {status: arg.status});
+                        return data;
+                    }
+                    return machine.data;
+                default:
+                    const {data} = await api.patch<MachineType>(updateUrl, {status: arg.status});
+                    return data;
+            }
+        } else {
+            const {data} = await api.patch<MachineType>(updateUrl, {status: arg.status});
+            return data;
+        }
     },
 );
 

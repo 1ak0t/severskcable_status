@@ -110,8 +110,8 @@ function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupp
                 <div className={classNames(
                     'repair-element__header',
                     {'repair-element__header--work': !repair.status},
-                    {'repair-element__header--warning': repair.priority === 1},
-                    {'repair-element__header--wrong': repair.priority === 2},
+                    {'repair-element__header--wrong': repair.priority === 1},
+                    {'repair-element__header--warning': repair.priority === 2},
                     {'repair-element__header--inspection': repair.priority === 3}
                 )} onClick={() => {
                         setIsOpened(!isOpened);
