@@ -20,6 +20,7 @@ import NetworkErrorPage from "./pages/network-error-page/network-error-page";
 import NotificationPage from "./pages/notification-page/notification-page";
 import SupplyPage from "./pages/supply-page/supply-page";
 import {fetchAllData, fetchSupplyData} from "./store/api-actions";
+import AnalyticsPage from "./pages/analytics-page/analytics-page";
 
 const override: CSSProperties = {
     display: "block",
@@ -155,6 +156,14 @@ function App () {
                         element={
                             <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Operator]}>
                                 <SupplyPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path={AppRoutes.Analytics}
+                        element={
+                            <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Operator, UserRoles.Supply, UserRoles.Engineers]}>
+                                <AnalyticsPage />
                             </PrivateRoute>
                         }
                     />

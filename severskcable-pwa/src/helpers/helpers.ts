@@ -2,6 +2,7 @@ import {APIRoute, MachinesStatus, RepairPriority} from "../constants";
 import dayjs from "dayjs";
 import {ChangeEvent} from "react";
 import {BACKEND_URL} from "../services/api";
+import {Value} from "../types/types";
 
 export const getPriorityNumber = (name: string) => {
     if (name === 'Высокий - Неработает') {
@@ -77,3 +78,15 @@ export const urlBase64ToUint8Array = (base64String: string) => {
     }
     return outputArray;
 };
+
+export const getPeriodDayjs = (period: Value)=> {
+    if (Array.isArray(period)) {
+        const periodArr: any[] = [];
+        period.map(date => {
+            periodArr.push(dayjs(date));
+        });
+        return periodArr;
+    }
+
+    return [];
+}

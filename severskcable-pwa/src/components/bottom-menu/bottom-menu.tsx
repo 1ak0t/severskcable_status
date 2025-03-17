@@ -4,7 +4,10 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getUser} from "../../store/user-process/selectors";
 import {getBreaks} from "../../store/data-process/selectors";
 import {fetchAllData, fetchNotifications, fetchSupplyData, resetNotificationCountAction} from "../../store/api-actions";
-import {CiDeliveryTruck} from "react-icons/ci";
+import {CiDeliveryTruck, CiUser} from "react-icons/ci";
+import {HiChartBar} from "react-icons/hi2";
+import {useState} from "react";
+import classNames from "classnames";
 
 function BottomMenu () {
     const user = useAppSelector(getUser);
@@ -17,6 +20,8 @@ function BottomMenu () {
     const repairsRepairing = currentBreaks.filter(repair => repair.stages === RepairStage.Repairing);
     const repairsCompleted = currentBreaks.filter(repair => repair.stages === RepairStage.RepairCompleted);
     const repairsInSupply = currentBreaks.filter(repair => repair.stages === RepairStage.Supply);
+
+    const [isProfileSubmenu, setIsProfileSubmenu] = useState(false);
 
     function getAgreementCount() {
         let count = 0;
@@ -70,16 +75,32 @@ function BottomMenu () {
                 }
                 {(user.role.find(role => role === UserRoles.Supply) || user.role.find(role => role === UserRoles.Admin) || user.role.find(role => role === UserRoles.CEO)) &&
                     <Link to={AppRoutes.Supply} className="bottom-menu__button" onClick={() => dispatch(fetchSupplyData())}>
-                    {repairsInSupply.length > 0 && <span className="bottom-menu__breaks-counter">{repairsInSupply.length}</span>}
-                    <CiDeliveryTruck size={"30px"} style={{marginBottom: "5px"}}/>
-                    Запросы<br></br>снабжения
+                        {repairsInSupply.length > 0 && <span className="bottom-menu__breaks-counter">{repairsInSupply.length}</span>}
+                        <CiDeliveryTruck size={"30px"} style={{marginBottom: "5px"}}/>
+                        Запросы<br></br>снабжения
                     </Link>
                 }
-                <Link to={AppRoutes.Notifications} className="bottom-menu__button" onClick={() => dispatch(fetchNotifications())}>
+                <button className="bottom-menu__button" onClick={() => setIsProfileSubmenu(!isProfileSubmenu)}>
                     {user.notificationsCount > 0 && <span className="bottom-menu__breaks-counter">{user.notificationsCount}</span>}
-                    <img src="/icons/menu-icon/menu-notification-icon.svg" alt=""/>
-                    <br></br>Уведомления
-                </Link>
+                    <CiUser className="bottom-menu__button--profile"/>
+                    <br></br>Профиль
+                </button>
+                <div className={classNames(
+                    "bottom-menu__submenu",
+                    {"bottom-menu__submenu--inactive": !isProfileSubmenu}
+                )}>
+                    <Link to={AppRoutes.Notifications} className="bottom-menu__button" onClick={() => dispatch(fetchNotifications())}>
+                        {user.notificationsCount > 0 && <span className="bottom-menu__breaks-counter">{user.notificationsCount}</span>}
+                        <img src="/icons/menu-icon/menu-notification-icon.svg" alt=""/>
+                        <br></br>Уведомления
+                    </Link>
+                    {(user.role.find(role => role === UserRoles.ITR) || user.role.find(role => role === UserRoles.Admin) || user.role.find(role => role === UserRoles.CEO)) &&
+                        <Link to={AppRoutes.Analytics} className="bottom-menu__button">
+                            <HiChartBar className="bottom-menu__button--profile"/>
+                            <br></br>Аналитика
+                        </Link>
+                    }
+                </div>
             </div>
         </>
     );

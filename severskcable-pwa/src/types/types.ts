@@ -94,3 +94,7 @@ export type UpdateBreakStageType = {
     stages: RepairStage | null,
     machine: string
 }
+
+type ValuePiece = Date | null;
+
+export type Value = ValuePiece | [ValuePiece, ValuePiece];
