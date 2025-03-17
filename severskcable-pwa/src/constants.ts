@@ -13,6 +13,7 @@ export enum AppRoutes {
     Agreement = '/agreement',
     Notifications = '/notifications',
     Supply = '/supply',
+    Analytics = '/analytics',
 }
 
 export enum MachinesStatus {
