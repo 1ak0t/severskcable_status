@@ -44,6 +44,17 @@
     cursor: pointer;
   }
 
+  &__excel-button {
+    background-color: #29783a;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 12px;
+    padding: 10px;
+    margin: 0 0 15px 0;
+    cursor: pointer;
+  }
+
   &__machines {
     display: flex;
     flex-direction: column;

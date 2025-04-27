@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import {getPeriodDayjs} from "../../helpers/helpers";
 import {Value} from "../../types/types";
 import {log} from "node:util";
+import {ExcelRowType} from "../../types/export.type";
 
 type MachineAnalyticProps = {
     machine: MachineType,
@@ -23,10 +24,11 @@ type MachineAnalyticProps = {
     period: Value,
     breaks: Break[],
     hoursInPeriod: number,
-    setCurrentMachine: React.Dispatch<React.SetStateAction<string | null>>
+    setCurrentMachine: React.Dispatch<React.SetStateAction<string | null>>,
+    excelRows: ExcelRowType
 }
 
-function MachineAnalytic({machine, getBreaksHoursInPeriodByMachine, period, breaks, hoursInPeriod, setCurrentMachine}: MachineAnalyticProps) {
+function MachineAnalytic({machine, getBreaksHoursInPeriodByMachine, period, breaks, hoursInPeriod, setCurrentMachine, excelRows}: MachineAnalyticProps) {
     const getHoursByDayInPeriod = (getBreaksHoursInPeriodByMachine: any, period: Value, breaks: Break[], machine: MachineType) => {
         const hoursByDayInPeriod = [];
         for (let i = dayjs(getPeriodDayjs(period)[0]).date(); i <= (dayjs(getPeriodDayjs(period)[1]).diff(dayjs(getPeriodDayjs(period)[0]), 'day') + 1); i++) {
@@ -59,6 +61,14 @@ function MachineAnalytic({machine, getBreaksHoursInPeriodByMachine, period, brea
             Факт: factCount
         })
         factPercCount++;
+    }
+
+    if (!excelRows.find(row => row.id === machine.id)){
+        excelRows.push({
+            id: machine.id,
+            machine: machine.name,
+            efficiency: machineAccessability
+        });
     }
 
     return (
