@@ -14,21 +14,9 @@ import {OptionTypes, Value} from "../../types/types";
 import BottomMenu from "../../components/bottom-menu/bottom-menu";
 import MachineAnalytic from "../../components/machine-analytic/machine-analytic";
 import {getPeriodDayjs} from "../../helpers/helpers";
-import {
-    Area,
-    AreaChart,
-    Bar,
-    BarChart,
-    CartesianGrid, Funnel, FunnelChart,
-    Label, LabelList, ReferenceLine,
-    ResponsiveContainer, Sankey,
-    Tooltip,
-    XAxis,
-    YAxis
-} from "recharts";
-import {BsXLg} from "react-icons/bs";
 import MachineAnalyticInner from "../../components/machine-analytic-inner/machine-analytic-inner";
-import {buildCreateSlice} from "@reduxjs/toolkit";
+import * as XLSX from "xlsx-js-style";
+import {ExcelRowType} from "../../types/export.type";
 
 dayjs.extend(isBetween);
 
@@ -50,6 +38,206 @@ function AnalyticsPage() {
     const [currentMachine, setCurrentMachine] = useState<string | null>(null);
     let machineList: OptionTypes[] = [];
     machines.map(machine => machineList.push({label: machine.name, value: machine.name}));
+
+    const excelRows: ExcelRowType = [];
+
+    const getDurationsByMachine = (currentMachine: string) => {
+
+        const breaksHoursFirstPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 1).breakHours;
+        const breaksHoursSecondPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 2).breakHours;
+        const breaksHoursThirdPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 3).breakHours;
+
+        const breaksInPeriod = getBreaksInPeriod(breaks, currentMachine);
+        let successDuration = 0;
+        breaksInPeriod.filter(el => el.registerDate && el.successDate).map(el => {
+            successDuration = successDuration + dayjs(el.successDate).diff(dayjs(el.registerDate), 'minute')
+        });
+        let repairWaitingDuration = 0;
+        breaksInPeriod.filter(el => el.successDate && el.repairingDate).map(el => {
+            repairWaitingDuration = repairWaitingDuration + dayjs(el.repairingDate).diff(dayjs(el.successDate), 'minute')
+        });
+        let repairingDuration = 0;
+        breaksInPeriod.filter(el => el.repairingDate && el.repairCompletedDate).map(el => {
+            repairingDuration = repairingDuration + dayjs(el.repairCompletedDate).diff(dayjs(el.repairingDate), 'minute')
+        });
+        let repairAcceptDuration = 0;
+        breaksInPeriod.filter(el => el.repairCompletedDate && el.repairEndDate).map(el => {
+            repairAcceptDuration = repairAcceptDuration + dayjs(el.repairEndDate).diff(dayjs(el.repairCompletedDate), 'minute')
+        });
+        const allStagesDuration = successDuration + repairWaitingDuration + repairingDuration + repairAcceptDuration;
+        const allStagesDurationByType = breaksHoursFirstPriority + breaksHoursSecondPriority + breaksHoursThirdPriority;
+
+        let machineRow = excelRows.find(row => row.machine === currentMachine);
+
+        if(machineRow) {
+            machineRow.breaksHoursFirstPriority = breaksHoursFirstPriority;
+            machineRow.breaksHoursFirstPriorityPercent = Math.round(breaksHoursFirstPriority * 100 / hoursInPeriod);
+            machineRow.breaksHoursSecondPriority = breaksHoursSecondPriority;
+            machineRow.breaksHoursSecondPriorityPercent = Math.round(breaksHoursSecondPriority * 100 / hoursInPeriod);
+            machineRow.breaksHoursThirdPriority = breaksHoursThirdPriority;
+            machineRow.breaksHoursThirdPriorityPercent = Math.round(breaksHoursThirdPriority * 100 / hoursInPeriod);
+            machineRow.allStagesDuration = allStagesDurationByType;
+            machineRow.successDurationPercent = Math.round(successDuration * 100 / allStagesDuration);
+            machineRow.successDuration = Number((machineRow.successDurationPercent*allStagesDurationByType/100).toFixed(2));
+            machineRow.repairWaitingDurationPercent = Math.round(repairWaitingDuration * 100 / allStagesDuration);
+            machineRow.repairWaitingDuration = Number((machineRow.repairWaitingDurationPercent*allStagesDurationByType/100).toFixed(2));
+            machineRow.repairingDurationPercent = Math.round(repairingDuration * 100 / allStagesDuration);
+            machineRow.repairingDuration = Number((machineRow.repairingDurationPercent*allStagesDurationByType/100).toFixed(2));
+            machineRow.repairAcceptDurationPercent = Math.round(repairAcceptDuration * 100 / allStagesDuration);
+            machineRow.repairAcceptDuration = Number((machineRow.repairAcceptDurationPercent*allStagesDurationByType/100).toFixed(2));
+        }
+    }
+
+    const handleDownload = () => {
+        machines.map(machine => getDurationsByMachine(machine.name));
+        // flatten object like this {id: 1, title:'', category: ''};
+        const rows = excelRows.map((row) => ({
+            machine: row.machine,
+            efficiency: row.efficiency,
+            breaksHoursFirstPriority: row.breaksHoursFirstPriority,
+            breaksHoursFirstPriorityPercent: row.breaksHoursFirstPriorityPercent,
+            breaksHoursSecondPriority: row.breaksHoursSecondPriority,
+            breaksHoursSecondPriorityPercent: row.breaksHoursSecondPriorityPercent,
+            breaksHoursThirdPriority: row.breaksHoursThirdPriority,
+            breaksHoursThirdPriorityPercent: row.breaksHoursThirdPriorityPercent,
+            allStagesDuration: Number.isNaN(row.allStagesDuration) ? 0 : row.allStagesDuration,
+            successDuration: Number.isNaN(row.successDuration) ? 0 : row.successDuration,
+            successDurationPercent: Number.isNaN(row.successDurationPercent) ? 0 : row.successDurationPercent,
+            repairWaitingDuration: Number.isNaN(row.repairWaitingDuration) ? 0 : row.repairWaitingDuration,
+            repairWaitingDurationPercent: Number.isNaN(row.repairWaitingDurationPercent) ? 0 : row.repairWaitingDurationPercent,
+            repairingDuration: Number.isNaN(row.repairingDuration) ? 0 : row.repairingDuration,
+            repairingDurationPercent: Number.isNaN(row.repairingDurationPercent) ? 0 : row.repairingDurationPercent,
+            repairAcceptDuration: Number.isNaN(row.repairAcceptDuration) ? 0 : row.repairAcceptDuration,
+            repairAcceptDurationPercent: Number.isNaN(row.repairAcceptDurationPercent) ? 0 : row.repairAcceptDurationPercent,
+        }));
+
+        const firstHeaders = [
+            "",
+            "",
+            `Процент по типу поломки от ${hoursInPeriod} ч. в периоде`,
+            "",
+            "",
+            "",
+            "",
+            "",
+            `Доля в процентах по этапам, всего 100%`,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+        ];
+
+        const secondHeaders = [
+            "Оборудование",
+            "Эффективность, %",
+            "Линия стоит, ч.",
+            "Линия стоит, %",
+            "Работает нештатно, ч.",
+            "Работает нештатно, %",
+            "Требует внимания, ч.",
+            "Требует внимания, %",
+            "Общее время ремонта, ч.",
+            "Согласование, ч.",
+            "Согласование, %",
+            "Ожидание ремонта, ч.",
+            "Ожидание ремонта, %",
+            "Ремонт, ч.",
+            "Ремонт, %",
+            "Подтверждение ремонта, ч.",
+            "Подтверждение ремонта, %"
+        ];
+
+        // create workbook and worksheet
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet([]);
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Аналитика");
+
+        // customize header names
+        XLSX.utils.sheet_add_aoa(worksheet, [firstHeaders, secondHeaders]);
+        XLSX.utils.sheet_add_json(worksheet, rows, {
+            skipHeader: true,
+            origin: -1,
+        });
+
+        worksheet["!merges"] = [
+            { s: { c: 2, r: 0 }, e: { c: 7, r: 0 } },
+            { s: { c: 8, r: 0 }, e: { c: 16, r: 0 } },
+        ];
+
+        worksheet['!cols'] = [
+            { wpx: 130 },
+            { wpx: 130 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+            { wpx: 180 },
+        ]
+
+        const range = XLSX.utils.decode_range(worksheet["!ref"] ?? "");
+        const rowCount = range.e.r;
+        const columnCount = range.e.c;
+
+        for (let row = 0; row <= rowCount; row++) {
+            for (let col = 0; col <= columnCount; col++) {
+                const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
+                // Add center alignment to every cell
+                worksheet[cellRef].s = {
+                    alignment: { horizontal: "center" },
+                    font: {sz: 11}
+                };
+
+                if (row === 1 || col === 0) {
+                    // Format headers and names
+                    worksheet[cellRef].s = {
+                        ...worksheet[cellRef].s,
+                        font: { bold: true, sz: 13 },
+                    };
+                }
+
+                if (row === 0) {
+                    // Format headers and names
+                    worksheet[cellRef].s = {
+                        ...worksheet[cellRef].s,
+                        font: { bold: true, sz: 15},
+                    };
+                }
+
+                if (row === 0 && col === 2) {
+                    // Format headers and names
+                    worksheet[cellRef].s = {
+                        ...worksheet[cellRef].s,
+                        fill: { fgColor: {rgb: "b9c6ff"} },
+                    };
+                }
+
+                if (row === 0 && col === 8) {
+                    // Format headers and names
+                    worksheet[cellRef].s = {
+                        ...worksheet[cellRef].s,
+                        fill: { fgColor: {rgb: "b9ffe2"} },
+                    };
+                }
+            }
+        }
+
+        XLSX.writeFile(workbook, `Аналитика поломок(${getPeriodDayjs(period)[0].format('DD.MM.YYYY').toString()} - ${getPeriodDayjs(period)[1].format('DD.MM.YYYY').toString()}).xlsx`, { compression: true });
+    };
 
     const getMinDate = (breaks : Break[]) => {
         return dayjs(breaks[0].registerDate).toDate();
@@ -165,6 +353,7 @@ function AnalyticsPage() {
             }
             <div className="analytics-page__hours">Часов в периоде: {hoursInPeriod}</div>
             <button className="analytics-page__period-button" onClick={() => setIsCalendarOpen(!isCalendarOpen)}>Изменить период</button>
+            <button className="analytics-page__excel-button" onClick={handleDownload}>Скачать Excel</button>
             <Calendar
                 className={classNames(
                     {"react-calendar--inactive": !isCalendarOpen}
@@ -186,6 +375,7 @@ function AnalyticsPage() {
                                 getBreaksHoursInPeriodByMachine={getBreaksHoursInPeriodByMachine}
                                 period={period}
                                 setCurrentMachine={setCurrentMachine}
+                                excelRows={excelRows}
                             />
                         </>
                     );
