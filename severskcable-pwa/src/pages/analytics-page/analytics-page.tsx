@@ -94,6 +94,7 @@ function AnalyticsPage() {
         const rows = excelRows.map((row) => ({
             machine: row.machine,
             efficiency: row.efficiency,
+            hours: hoursInPeriod,
             breaksHoursFirstPriority: row.breaksHoursFirstPriority,
             breaksHoursFirstPriorityPercent: row.breaksHoursFirstPriorityPercent,
             breaksHoursSecondPriority: row.breaksHoursSecondPriority,
@@ -111,7 +112,40 @@ function AnalyticsPage() {
             repairAcceptDurationPercent: Number.isNaN(row.repairAcceptDurationPercent) ? 0 : row.repairAcceptDurationPercent,
         }));
 
+        const sumHours = hoursInPeriod*rows.length;
+        const sumBreaksHoursFirstPriority = rows.reduce((sum = 0, x) => sum + (x.breaksHoursFirstPriority !== undefined ? x.breaksHoursFirstPriority : 0), 0);
+        const sumBreaksHoursSecondPriority = rows.reduce((sum = 0, x) => sum + (x.breaksHoursSecondPriority !== undefined ? x.breaksHoursSecondPriority : 0), 0);
+        const sumBreaksHoursThirdPriority = rows.reduce((sum = 0, x) => sum + (x.breaksHoursThirdPriority !== undefined ? x.breaksHoursThirdPriority : 0), 0);
+        const sumAllStagesDuration = rows.reduce((sum = 0, x) => sum + (x.allStagesDuration !== undefined ? x.allStagesDuration : 0), 0);
+        const sumSuccessDuration = rows.reduce((sum = 0, x) => sum + (x.successDuration !== undefined ? x.successDuration : 0), 0);
+        const sumRepairWaitingDuration = rows.reduce((sum = 0, x) => sum + (x.repairWaitingDuration !== undefined ? x.repairWaitingDuration : 0), 0);
+        const sumRepairingDuration = rows.reduce((sum = 0, x) => sum + (x.repairingDuration !== undefined ? x.repairingDuration : 0), 0);
+        const sumRepairAcceptDuration = rows.reduce((sum = 0, x) => sum + (x.repairAcceptDuration !== undefined ? x.repairAcceptDuration : 0), 0);
+        const sumEfficiency = rows.reduce((sum = 0, x) => sum + (x.efficiency !== undefined ? x.efficiency : 0), 0);
+
+        rows.push({
+            machine: "Итого по всем линиям",
+            efficiency: Number((sumEfficiency/rows.length).toFixed(2)),
+            hours: sumHours,
+            breaksHoursFirstPriority: sumBreaksHoursFirstPriority,
+            breaksHoursFirstPriorityPercent: Number((sumBreaksHoursFirstPriority*100/sumHours).toFixed(2)),
+            breaksHoursSecondPriority: sumBreaksHoursSecondPriority,
+            breaksHoursSecondPriorityPercent: Number((sumBreaksHoursSecondPriority*100/sumHours).toFixed(2)),
+            breaksHoursThirdPriority: sumBreaksHoursThirdPriority,
+            breaksHoursThirdPriorityPercent: Number((sumBreaksHoursThirdPriority*100/sumHours).toFixed(2)),
+            allStagesDuration: sumAllStagesDuration,
+            successDuration: sumSuccessDuration,
+            successDurationPercent: Number((sumSuccessDuration*100/sumAllStagesDuration).toFixed(2)),
+            repairWaitingDuration: sumRepairWaitingDuration,
+            repairWaitingDurationPercent: Number((sumRepairWaitingDuration*100/sumAllStagesDuration).toFixed(2)),
+            repairingDuration: sumRepairingDuration,
+            repairingDurationPercent: Number((sumRepairingDuration*100/sumAllStagesDuration).toFixed(2)),
+            repairAcceptDuration: sumRepairAcceptDuration,
+            repairAcceptDurationPercent: Number((sumRepairAcceptDuration*100/sumAllStagesDuration).toFixed(2)),
+        });
+
         const firstHeaders = [
+            "",
             "",
             "",
             `Процент по типу поломки от ${hoursInPeriod} ч. в периоде`,
@@ -134,6 +168,7 @@ function AnalyticsPage() {
         const secondHeaders = [
             "Оборудование",
             "Эффективность, %",
+            "Время работы в периоде, ч.",
             "Линия стоит, ч.",
             "Линия стоит, %",
             "Работает нештатно, ч.",
@@ -165,13 +200,14 @@ function AnalyticsPage() {
         });
 
         worksheet["!merges"] = [
-            { s: { c: 2, r: 0 }, e: { c: 7, r: 0 } },
-            { s: { c: 8, r: 0 }, e: { c: 16, r: 0 } },
+            { s: { c: 3, r: 0 }, e: { c: 8, r: 0 } },
+            { s: { c: 9, r: 0 }, e: { c: 17, r: 0 } },
         ];
 
         worksheet['!cols'] = [
-            { wpx: 130 },
-            { wpx: 130 },
+            { wpx: 150 },
+            { wpx: 150 },
+            { wpx: 180 },
             { wpx: 180 },
             { wpx: 180 },
             { wpx: 180 },
@@ -218,7 +254,7 @@ function AnalyticsPage() {
                     };
                 }
 
-                if (row === 0 && col === 2) {
+                if (row === 0 && col === 3) {
                     // Format headers and names
                     worksheet[cellRef].s = {
                         ...worksheet[cellRef].s,
@@ -226,11 +262,19 @@ function AnalyticsPage() {
                     };
                 }
 
-                if (row === 0 && col === 8) {
+                if (row === 0 && col === 9) {
                     // Format headers and names
                     worksheet[cellRef].s = {
                         ...worksheet[cellRef].s,
                         fill: { fgColor: {rgb: "b9ffe2"} },
+                    };
+                }
+                if (row === 26) {
+                    // Format headers and names
+                    worksheet[cellRef].s = {
+                        ...worksheet[cellRef].s,
+                        fill: { fgColor: {rgb: "a6dfa4"} },
+                        font: { bold: true, sz: 13 }
                     };
                 }
             }

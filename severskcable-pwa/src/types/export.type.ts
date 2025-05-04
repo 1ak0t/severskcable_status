@@ -2,6 +2,7 @@ export type ExcelRowType = {
     id: string;
     machine: string,
     efficiency: number,
+    hours?: number,
     successDuration?: number,
     successDurationPercent?: number,
     repairWaitingDuration?: number,
