@@ -14,6 +14,7 @@ export enum AppRoutes {
     Notifications = '/notifications',
     Supply = '/supply',
     Analytics = '/analytics',
+    Currencies = '/currencies',
 }
 
 export enum MachinesStatus {
