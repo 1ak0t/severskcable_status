@@ -21,6 +21,7 @@ import NotificationPage from "./pages/notification-page/notification-page";
 import SupplyPage from "./pages/supply-page/supply-page";
 import {fetchAllData, fetchSupplyData} from "./store/api-actions";
 import AnalyticsPage from "./pages/analytics-page/analytics-page";
+import CurrenciesPage from "./pages/currencies/currencies";
 
 const override: CSSProperties = {
     display: "block",
@@ -164,6 +165,13 @@ function App () {
                         element={
                             <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Operator, UserRoles.Supply, UserRoles.Engineers]}>
                                 <AnalyticsPage />
+                            </PrivateRoute>
+                        }
+                    /><Route
+                        path={AppRoutes.Currencies}
+                        element={
+                            <PrivateRoute authorizationStatus={authorizationStatus} notAccess={[UserRoles.Operator, UserRoles.Supply, UserRoles.Engineers, UserRoles.ITR]}>
+                                <CurrenciesPage />
                             </PrivateRoute>
                         }
                     />

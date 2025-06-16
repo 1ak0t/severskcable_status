@@ -8,6 +8,7 @@ import {CiDeliveryTruck, CiUser} from "react-icons/ci";
 import {HiChartBar} from "react-icons/hi2";
 import {useState} from "react";
 import classNames from "classnames";
+import {BsCurrencyExchange} from "react-icons/bs";
 
 function BottomMenu () {
     const user = useAppSelector(getUser);
@@ -98,6 +99,12 @@ function BottomMenu () {
                         <Link to={AppRoutes.Analytics} className="bottom-menu__button">
                             <HiChartBar className="bottom-menu__button--profile"/>
                             <br></br>Аналитика
+                        </Link>
+                    }
+                    {(user.role.find(role => role === UserRoles.Admin) || user.role.find(role => role === UserRoles.CEO)) &&
+                        <Link to={AppRoutes.Currencies} className="bottom-menu__button">
+                            <BsCurrencyExchange className="bottom-menu__button--profile"/>
+                            <br></br>Курсы
                         </Link>
                     }
                 </div>
