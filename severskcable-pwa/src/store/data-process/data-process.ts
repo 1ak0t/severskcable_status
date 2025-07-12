@@ -6,14 +6,21 @@ import {
     createNewBreakTypeAction,
     deleteBreakAction,
     fetchBreaks,
-    fetchBreakTypesByMachine, fetchImage,
-    fetchMachines, fetchNotifications,
+    fetchBreakTypesByMachine,
+    fetchImage,
+    fetchMachines,
+    fetchNotifications,
     updateBreakStageAction,
     updateMachineStatusAction,
     updateRegisterImageAction,
     updateRepairCompletedImageAction,
     updateRepairingImageAction,
-    updateSuccessImageAction, fetchSupplyOrders, createNewSuppliesAction, updateSupplyAction, fetchUsersAction
+    updateSuccessImageAction,
+    fetchSupplyOrders,
+    createNewSuppliesAction,
+    updateSupplyAction,
+    fetchUsersAction,
+    fetchCurrencies
 } from "../api-actions";
 
 const initialState: DataProcess = {
@@ -22,6 +29,7 @@ const initialState: DataProcess = {
     breaks: [],
     breaksTypesByMachine: [],
     notifications: [],
+    currencies: [],
     supplies: [],
     users: [],
     hasError: false,
@@ -102,6 +110,18 @@ export const dataProcess = createSlice({
                 state.isDataLoading = false;
             })
             .addCase(fetchNotifications.rejected, (state) => {
+                state.isDataLoading = false;
+                state.hasError = true;
+            })
+            .addCase(fetchCurrencies.pending, (state) => {
+                state.isDataLoading = true;
+                state.hasError = false;
+            })
+            .addCase(fetchCurrencies.fulfilled, (state, action) => {
+                state.currencies = action.payload;
+                state.isDataLoading = false;
+            })
+            .addCase(fetchCurrencies.rejected, (state) => {
                 state.isDataLoading = false;
                 state.hasError = true;
             })

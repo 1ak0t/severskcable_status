@@ -1,7 +1,14 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {AppDispatch, State} from "../types/state.type";
 import {AxiosInstance} from "axios";
-import {Break, BreaksTypeByMachine, MachineType, NotificationType, SupplyOrdersType} from "../types/initialState.type";
+import {
+    Break,
+    BreaksTypeByMachine,
+    CurrenciesType,
+    MachineType,
+    NotificationType,
+    SupplyOrdersType
+} from "../types/initialState.type";
 import {APIRoute, AppRoutes, MachinesStatus, NameSpace, RepairStage} from "../constants";
 import {redirectToRoute} from "./actions";
 import {AuthDataType} from "../types/auth-data.type";
@@ -37,7 +44,8 @@ export const fetchAllData = createAsyncThunk<void, undefined, {
         dispatch(fetchBreaks());
         dispatch(fetchBreakTypesByMachine());
         dispatch(fetchNotifications());
-        dispatch(fetchUsersAction())
+        dispatch(fetchUsersAction());
+        dispatch(fetchCurrencies());
         dispatch(fetchUserNotificationCount(<string>store.getState().USER?.user.id))
         //@ts-ignore
         navigator.setAppBadge(store.getState().USER?.user.notificationsCount);
@@ -136,6 +144,18 @@ export const fetchNotifications = createAsyncThunk<NotificationType[], undefined
         return data;
     }
 );
+
+export const fetchCurrencies = createAsyncThunk<CurrenciesType[], undefined, {
+    dispatch: AppDispatch;
+    state: State;
+    extra: AxiosInstance;
+}>(
+    'fetchCurrencies',
+    async (_arg, {extra: api}) => {
+        const {data} = await api.get<CurrenciesType[]>(APIRoute.Currecies);
+        return data;
+    }
+)
 
 export const checkAuthAction = createAsyncThunk<UserLoggedDataType, undefined, {
     dispatch: AppDispatch;

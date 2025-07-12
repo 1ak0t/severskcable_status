@@ -35,6 +35,12 @@ export type NotificationType = {
     roles?: UserRoles[]
 }
 
+export type CurrenciesType = {
+    usd: number,
+    cooper: number,
+    createdAt: string,
+}
+
 export type SupplyOrdersType = {
     id: string;
     break: Break;
