@@ -2,7 +2,7 @@ import {State} from "../../types/state.type";
 import {NameSpace} from "../../constants";
 import {
     Break,
-    BreaksTypeByMachine,
+    BreaksTypeByMachine, CurrenciesType,
     MachineType,
     NotificationType,
     SupplyOrdersType, UserType
@@ -21,3 +21,4 @@ export const getChangedStageStatus = (state: State): null | boolean => state[Nam
 export const getNotifications = (state: State): NotificationType[] => state[NameSpace.Data].notifications;
 export const getSupplyOrders = (state: State): SupplyOrdersType[] => state[NameSpace.Data].supplies;
 export const getUsers = (state: State): UserType[] => state[NameSpace.Data].users;
+export const getCurrencies = (state: State): CurrenciesType[] => state[NameSpace.Data].currencies;

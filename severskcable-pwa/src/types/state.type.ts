@@ -2,7 +2,7 @@ import {store} from "../store";
 import {AuthorizationStatus} from "../constants";
 import {
     Break,
-    BreaksTypeByMachine,
+    BreaksTypeByMachine, CurrenciesType,
     MachineType,
     NotificationType,
     SupplyOrdersType,
@@ -24,6 +24,7 @@ export type DataProcess = {
     breaksTypesByMachine: BreaksTypeByMachine[];
     breaks: Break[];
     notifications: NotificationType[];
+    currencies: CurrenciesType[];
     supplies: SupplyOrdersType[];
     users: UserType[];
     hasError: boolean;

@@ -81,6 +81,7 @@ export enum APIRoute{
     Notifications = '/notifications',
     Users = '/users',
     SupplyOrders = '/supplies',
+    Currecies = '/currencies',
 }
 
 export enum NameSpace {
