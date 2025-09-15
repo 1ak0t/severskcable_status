@@ -2,7 +2,7 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {NewBreakType, OptionTypes} from "../../types/types";
 import Select from "react-select";
 import {useEffect, useState} from "react";
-import {Priority, RepairStage, UserRoles} from "../../constants";
+import {Priority, RepairStage, StopedTypes, UserRoles} from "../../constants";
 import CreatableSelect from "react-select/creatable";
 import dayjs from "dayjs";
 import {useNavigate} from "react-router-dom";
@@ -43,6 +43,7 @@ function BreakForm() {
     const [registerImage, setRegisterImage] = useState<File>();
     const [currentUser, setCurrentUser] = useState<UserType>(user);
     const [isUserSelected, setIsUserSelected] = useState(false);
+    const [isStoped, setIsStoped] = useState(false);
     let machineList: OptionTypes[] = [];
     machines.map(machine => machineList.push({label: machine.name, value: machine.name}));
 
@@ -68,7 +69,14 @@ function BreakForm() {
     }
 
     const getPriorityValue = () => {
-        return currentPriority ? priorityList.find(priority => priority.value === currentPriority) : '';
+        if (currentPriority && isStoped) {
+            return {label: "Простой", value: "Простой"};
+        }
+        if (currentPriority) {
+            return priorityList.find(priority => priority.value === currentPriority)
+        } else {
+           return '';
+        }
     }
 
     const onChangeMachine = (newValue: any) => {
@@ -85,11 +93,36 @@ function BreakForm() {
         const findMachine = machines.find(machine => machine.name === newValue.value);
         if (findMachine) {
             const list: OptionTypes[] = [];
-            breaksTypesByMachine.filter(type => type.machine.id === findMachine.id).map(type => list.push({value: type.description, label: type.description}));
-            setRepairList(list);
+            if (isStoped) {
+                setRepairList(list);
+            } else {
+                breaksTypesByMachine.filter(type => type.machine.id === findMachine.id).map(type => list.push({value: type.description, label: type.description}));
+                setRepairList(list);
+            }
             setIsMachineSelected(false);
             if (list.length > 0) {
                 setIsOpenRepairList(true);
+            }
+        }
+    }
+
+    const onStopedChange = () => {
+        setIsStoped(!isStoped);
+        const list: OptionTypes[] = [];
+        setRepairList([]);
+        if (!isStoped) {
+            StopedTypes.map(type => list.push({value: type, label: type}))
+            setRepairList(list);
+        } else {
+            const findMachine = machines.find(machine => machine.name === currentMachine?.name);
+            if (findMachine) {
+                const list: OptionTypes[] = [];
+                breaksTypesByMachine.filter(type => type.machine.id === findMachine.id).map(type => list.push({value: type.description, label: type.description}));
+                setRepairList(list);
+                setIsMachineSelected(false);
+                if (list.length > 0) {
+                    setIsOpenRepairList(true);
+                }
             }
         }
     }
@@ -115,9 +148,17 @@ function BreakForm() {
         setIsOpenRepairList(false);
         setIsRepairSelected(false);
         const list: OptionTypes[] = [];
-        Priority.map(el => list.push({label: el, value: el}));
-        setPriorityList(list);
-        setIsOpenPriorityList(true);
+        if (isStoped) {
+            setIsOpenPriorityList(true);
+            list.push({label: "Простой", value: "Простой"});
+            setPriorityList(list);
+            //setIsRepairSelected(true)
+        } else {
+            setIsOpenPriorityList(true);
+            Priority.map(el => list.push({label: el, value: el}));
+            setPriorityList(list);
+        }
+
     }
 
     const onRepairListFocus = () => {
@@ -205,6 +246,10 @@ function BreakForm() {
                     noOptionsMessage={() => 'Нет вариантов'}
 
                 />
+                <>
+                    <input type="checkbox" name="stop" id="stop" onChange={() => onStopedChange()}/>
+                    <label htmlFor="stop">Простой</label>
+                </>
                 <label>Выберите тип поломки или добавьте свой вариант</label>
                 <CreatableSelect
                     isDisabled={isMachineSelected}

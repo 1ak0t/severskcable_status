@@ -46,6 +46,7 @@ function AnalyticsPage() {
         const breaksHoursFirstPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 1).breakHours;
         const breaksHoursSecondPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 2).breakHours;
         const breaksHoursThirdPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 3).breakHours;
+        const breaksHoursStopPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 4).breakHours;
 
         const breaksInPeriod = getBreaksInPeriod(breaks, currentMachine);
         let successDuration = 0;
@@ -65,7 +66,7 @@ function AnalyticsPage() {
             repairAcceptDuration = repairAcceptDuration + dayjs(el.repairEndDate).diff(dayjs(el.repairCompletedDate), 'minute')
         });
         const allStagesDuration = successDuration + repairWaitingDuration + repairingDuration + repairAcceptDuration;
-        const allStagesDurationByType = breaksHoursFirstPriority + breaksHoursSecondPriority + breaksHoursThirdPriority;
+        const allStagesDurationByType = breaksHoursFirstPriority + breaksHoursSecondPriority + breaksHoursThirdPriority + breaksHoursStopPriority;
 
         let machineRow = excelRows.find(row => row.machine === currentMachine);
 
@@ -76,6 +77,8 @@ function AnalyticsPage() {
             machineRow.breaksHoursSecondPriorityPercent = Math.round(breaksHoursSecondPriority * 100 / hoursInPeriod);
             machineRow.breaksHoursThirdPriority = breaksHoursThirdPriority;
             machineRow.breaksHoursThirdPriorityPercent = Math.round(breaksHoursThirdPriority * 100 / hoursInPeriod);
+            machineRow.breaksHoursStopPriority = breaksHoursStopPriority;
+            machineRow.breaksHoursStopPriorityPercent = Math.round(breaksHoursStopPriority * 100 / hoursInPeriod);
             machineRow.allStagesDuration = allStagesDurationByType;
             machineRow.successDurationPercent = Math.round(successDuration * 100 / allStagesDuration);
             machineRow.successDuration = Number((machineRow.successDurationPercent*allStagesDurationByType/100).toFixed(2));
@@ -101,6 +104,8 @@ function AnalyticsPage() {
             breaksHoursSecondPriorityPercent: row.breaksHoursSecondPriorityPercent,
             breaksHoursThirdPriority: row.breaksHoursThirdPriority,
             breaksHoursThirdPriorityPercent: row.breaksHoursThirdPriorityPercent,
+            breaksHoursStopPriority: row.breaksHoursStopPriority,
+            breaksHoursStopPriorityPercent: row.breaksHoursStopPriorityPercent,
             allStagesDuration: Number.isNaN(row.allStagesDuration) ? 0 : row.allStagesDuration,
             successDuration: Number.isNaN(row.successDuration) ? 0 : row.successDuration,
             successDurationPercent: Number.isNaN(row.successDurationPercent) ? 0 : row.successDurationPercent,
@@ -116,6 +121,7 @@ function AnalyticsPage() {
         const sumBreaksHoursFirstPriority = rows.reduce((sum = 0, x) => sum + (x.breaksHoursFirstPriority !== undefined ? x.breaksHoursFirstPriority : 0), 0);
         const sumBreaksHoursSecondPriority = rows.reduce((sum = 0, x) => sum + (x.breaksHoursSecondPriority !== undefined ? x.breaksHoursSecondPriority : 0), 0);
         const sumBreaksHoursThirdPriority = rows.reduce((sum = 0, x) => sum + (x.breaksHoursThirdPriority !== undefined ? x.breaksHoursThirdPriority : 0), 0);
+        const sumBreaksHoursStopPriority = rows.reduce((sum = 0, x) => sum + (x.breaksHoursStopPriority !== undefined ? x.breaksHoursStopPriority : 0), 0);
         const sumAllStagesDuration = rows.reduce((sum = 0, x) => sum + (x.allStagesDuration !== undefined ? x.allStagesDuration : 0), 0);
         const sumSuccessDuration = rows.reduce((sum = 0, x) => sum + (x.successDuration !== undefined ? x.successDuration : 0), 0);
         const sumRepairWaitingDuration = rows.reduce((sum = 0, x) => sum + (x.repairWaitingDuration !== undefined ? x.repairWaitingDuration : 0), 0);
@@ -133,6 +139,8 @@ function AnalyticsPage() {
             breaksHoursSecondPriorityPercent: Number((sumBreaksHoursSecondPriority*100/sumHours).toFixed(2)),
             breaksHoursThirdPriority: sumBreaksHoursThirdPriority,
             breaksHoursThirdPriorityPercent: Number((sumBreaksHoursThirdPriority*100/sumHours).toFixed(2)),
+            breaksHoursStopPriority: sumBreaksHoursStopPriority,
+            breaksHoursStopPriorityPercent: Number((sumBreaksHoursStopPriority*100/sumHours).toFixed(2)),
             allStagesDuration: sumAllStagesDuration,
             successDuration: sumSuccessDuration,
             successDurationPercent: Number((sumSuccessDuration*100/sumAllStagesDuration).toFixed(2)),

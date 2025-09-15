@@ -18,4 +18,6 @@ export type ExcelRowType = {
     breaksHoursSecondPriorityPercent?: number,
     breaksHoursThirdPriority?: number,
     breaksHoursThirdPriorityPercent?: number,
+    breaksHoursStopPriority?: number,
+    breaksHoursStopPriorityPercent?: number,
 }[];

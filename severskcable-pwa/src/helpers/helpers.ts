@@ -13,6 +13,10 @@ export const getPriorityNumber = (name: string) => {
         return RepairPriority.Medium;
     }
 
+    if (name === 'Простой') {
+        return RepairPriority.Stop;
+    }
+
     return RepairPriority.Low;
 }
 

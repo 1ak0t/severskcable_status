@@ -48,6 +48,7 @@ function MachineAnalyticInner({setCurrentMachine, currentMachine, breaks, period
         const breaksHoursFirstPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 1).breakHours;
         const breaksHoursSecondPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 2).breakHours;
         const breaksHoursThirdPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 3).breakHours;
+        const breaksHoursStopPriority = getBreaksHoursInPeriodByMachine(breaks, currentMachine, period, 4).breakHours;
 
         return [
             {
@@ -67,6 +68,12 @@ function MachineAnalyticInner({setCurrentMachine, currentMachine, breaks, period
                 Факт: breaksHoursThirdPriority,
                 Label: `${Math.round(breaksHoursThirdPriority * 100 / hoursInPeriod)}%`,
                 fill: "#a5c3e4"
+            },
+            {
+                name: "Простой",
+                Факт: breaksHoursStopPriority,
+                Label: `${Math.round(breaksHoursStopPriority * 100 / hoursInPeriod)}%`,
+                fill: "#d29fec"
             }
         ]
     };
