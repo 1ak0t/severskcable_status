@@ -77,6 +77,7 @@ export type UpdateMachineStatusType = {
 
 export type UpdateBreakStageType = {
     id: string,
+    registerDate?: string,
     successPerson?: string,
     successDate?: string,
     successComment?: string,
@@ -91,8 +92,8 @@ export type UpdateBreakStageType = {
     repairEndDate?: string,
     repairEndComment?: string,
     status?: boolean,
-    stages: RepairStage | null,
-    machine: string
+    stages?: RepairStage | null,
+    machine?: string,
 }
 
 type ValuePiece = Date | null;
