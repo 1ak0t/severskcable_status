@@ -196,6 +196,10 @@ export const dataProcess = createSlice({
                 const currentMachineIndex = state.machines.findIndex(el => el.id === action.payload.machine.id);
                 state.breaks[currentBreakIndex].stages = action.payload.stages;
 
+                if (action.payload.registerDate) {
+                    state.breaks[currentBreakIndex].registerDate = action.payload.registerDate;
+                }
+
                 switch (action.payload.stages) {
                     case RepairStage.RepairSuccess: {
                         state.breaks[currentBreakIndex].successPerson = action.payload.successPerson;

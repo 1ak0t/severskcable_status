@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import {CommentType, MachinesStatus, RepairStage} from "../../constants";
+import {CommentType, MachinesStatus, RepairStage, UserRoles} from "../../constants";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import React, {useEffect, useState} from "react";
 import {Break} from "../../types/initialState.type";
@@ -23,6 +23,9 @@ import {SyncLoader} from "react-spinners";
 import {FcHighPriority, FcOk} from "react-icons/fc";
 import {setNullToChangesState} from "../../store/data-process/data-process";
 import {increaseNotificationCount} from "../../store/user-process/user-process";
+import {MdCreate} from "react-icons/md";
+import Calendar from "react-calendar";
+import {Value} from "../../types/types";
 
 type RepairElementProps = {
     repair: Break,
@@ -57,6 +60,8 @@ function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupp
     const [isPhotoGet, setIsPhotoGet] = useState(false);
     const [isAgreementChange, setIsAgreementChange] = useState(true);
     const [isOpened, setIsOpened] = useState(false);
+    const [isDateChange, setIsDateChange] = useState(false);
+    const [newRegDate, setNewRegDate] = useState<Value>(dayjs(repair.registerDate).toDate());
 
     const onCommentChange = (com: any, type: CommentType) => {
         switch (type) {
@@ -82,6 +87,23 @@ function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupp
         }, 1000);
         return () => clearTimeout(timer);
     }, [isChangedStage]);
+
+    const getMinDate = (breaks : Break) => {
+        return dayjs(breaks.registerDate).add(-5, "days").toDate();
+    }
+
+    const getMaxDate = () => {
+        return dayjs().toDate();
+    }
+
+    const calendarOnChange = async (value: Value) => {
+        dispatch(updateBreakStageAction({
+            id: repair.id,
+            registerDate: dayjs(value?.toString()).toString()
+        }))
+        setIsDateChange(false);
+        setNewRegDate(value);
+    }
 
     return (
         <>
@@ -156,6 +178,16 @@ function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupp
                     {"repair-element__stages__closed": isOpened === false},
                     {"repair-element__stages__opened": isOpened === true}
                 )}>
+                    <Calendar
+                        className={classNames(
+                            {"react-calendar--inactive": !isDateChange}
+                        )}
+                        minDate={getMinDate(repair)}
+                        maxDate={getMaxDate()}
+                        selectRange={false}
+                        onChange={calendarOnChange}
+                        value={newRegDate}
+                    />
                     <div className="repair-element__stage">
                         <h3 className='repair-element__stage-title'>Регистрация</h3>
                         <span className='repair-element__stage-status repair-element__stage-status--comleted'>Этап завершен</span>
@@ -174,8 +206,11 @@ function BreakElement({repair, agreement, setIsSupplyFormVisible, setBreakToSupp
                             <span>{repair.registerPerson.name} {repair.registerPerson.surname}</span>
                         </div>
                         <div className="repair-element__row">
+                            {((currentUser.role.find(role => role === UserRoles.ITR) || currentUser.role.find(role => role === UserRoles.CEO) || currentUser.role.find(role => role === UserRoles.Admin)) && repair.stages !== null && !isDateChange) &&
+                                <MdCreate onClick={() => setIsDateChange(!isDateChange)} className="repair-element__change-date"></MdCreate>
+                            }
                             <span>Дата регистрации:</span>
-                            <span>{dayjs(repair.registerDate).format('H:mm DD-MM-YYYY')}</span>
+                            <span>{dayjs(newRegDate?.toString()).format('H:mm DD-MM-YYYY')}</span>
                         </div>
                         {repair.registerComment &&
                             <div className="repair-element__row">
